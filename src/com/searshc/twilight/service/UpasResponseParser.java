@@ -1,5 +1,6 @@
 package com.searshc.twilight.service;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -62,20 +63,27 @@ public class UpasResponseParser{
 
   private static Logger logger = Logger.getLogger(UpasResponseParser.class);
   
-  public void parseResponse(byte[] buf)
-  {
-      ByteBuffer buffer = ByteBuffer.wrap(buf);
+  
+  public List<SegmentIndex> parseResponse(byte[] buf) throws Exception
+  {   
+      final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      outputStream.write(createXMLResponseHeader());
+      outputStream.write(buf);
+      
+      ByteBuffer buffer = ByteBuffer.wrap(outputStream.toByteArray());
       SearsMessageParser parser = SearsMessageParser.createBuilder()
               .setBuffer(buffer)
               .addSegments(createSearsResponseTypes())
               .build();
-      
-      logger.info("Request Header " + parser.getXMLHeaderAsString());
+      /**
+      System.out.println("Request Header " + parser.getXMLHeaderAsString());
 
       List<SegmentIndex> segmentIndexes = parser.getSegmentList();
       for (SegmentIndex segmentIndex : segmentIndexes) {
-          logger.info("Segment " + segmentIndex.getIndicatorString() + "\t at position " + segmentIndex.getPosition() + " length of\t " + segmentIndex.getLength());
-      }
+        System.out.println("Segment " + segmentIndex.getIndicatorString() + "\t at position " + segmentIndex.getPosition() + " length of\t " + segmentIndex.getLength());
+        
+      }*/
+      return parser.getSegmentList();
   }
   
   private Map<String, SearsResponseType> createSearsResponseTypes() {
@@ -146,12 +154,19 @@ public class UpasResponseParser{
     srt = new SearsResponseType(ResponseSegmentEA.INDICATOR.HEX_STRING.getHexString(), ResponseSegmentEA.class, SegmentEALengthCalculator.class );
     map.put(srt.getIndicator(), srt);
     
+    /**
     srt = new SearsResponseType(CouponInquiry2AA7Segment.INDICATOR.HEX_STRING.getHexString(), CouponInquiry2AA7Segment.class, Segment2AA7LengthCalculator.class );
     map.put(srt.getIndicator(), srt);
     
     srt = new SearsResponseType(PluInquiryD8Segment.INDICATOR.HEX_STRING.getHexString(), PluInquiryD8Segment.class, Segment2AA7LengthCalculator.class );
     map.put(srt.getIndicator(), srt);
-    
+    */
     return map;
   }
+  
+  protected byte[] createXMLResponseHeader() {
+    String s =
+            "<POSRESP><type>NR45</type><unitNumber>00000</unitNumber><id></id><returnCode>0</returnCode><responseDescription>success</responseDescription></POSRESP>";
+    return s.getBytes();
+}
 }

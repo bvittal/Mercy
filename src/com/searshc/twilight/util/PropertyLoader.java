@@ -1,5 +1,6 @@
 package com.searshc.twilight.util;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -47,18 +48,25 @@ public abstract class PropertyLoader
             }
             else
             {
-                name = name.replace ('.', '/');
+              String path = System.getProperty("user.dir");  
+              
+              name = name.replace ('.', '/');
                 
                 if (! name.endsWith (SUFFIX))
                     name = name.concat (SUFFIX);
-                                
+                  
                 // Returns null on lookup failures:
-                in = loader.getResourceAsStream ("resources/" + name);
+                //in = loader.getResourceAsStream ("/" + name);
+                String url = path + "/resources/" + name;
+                result = new Properties ();
+                result.load (new FileInputStream(url));
+                /**
+                in = loader.getResourceAsStream (url);
                 if (in != null)
                 {
                     result = new Properties ();
                     result.load (in); // Can throw IOException
-                }
+                }*/
             }
         }
         catch (Exception e)

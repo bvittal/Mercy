@@ -25,15 +25,15 @@ public class ScriptCommandFactory
   
   /** supported CUSTOM responses */
   //D3 Inquiry
-  private static final String HTTP_D3 = "D3";
+  private static final String HTTP_FILE_INQ = "FILE_INQ";
   private static final String HTTP_PMP = "PMP";
   private static final String HTTP_MP0 = "MP0";
   private static final String HTTP_D00 = "D00";
   
   //D8 Plu
-  private static final String HTTP_D8 = "D8";
+  private static final String HTTP_PLU_INQ = "PLU_INQ";
+  private static final String HTTP_PLU_RSP = "PLU_RSP";
   private static final String HTTP_EA = "EA";
-  private static final String HTTP_E8 = "E8";
   private static final String HTTP_EC = "EC";
   private static final String HTTP_9C = "9C";
   private static final String HTTP_98 = "98";
@@ -41,8 +41,8 @@ public class ScriptCommandFactory
   private static final String HTTP_60B1 = "60B1";
   
   //2AA7 Coupon
-  private static final String HTTP_2AA7 = "2AA7";
-  private static final String HTTP_2AB7 = "2AB7";
+  private static final String HTTP_COUPON_INQ = "COUPON_INQ";
+  private static final String HTTP_COUPON_RSP = "COUPON_RSP";
   
   public AbstractScriptCommand getCommand(String method, String action, Object obj)
   {
@@ -61,10 +61,10 @@ public class ScriptCommandFactory
     }
     
     //D3 Inquiry
-    if(method.equals(HTTP_D3))
+    if(method.equals(HTTP_FILE_INQ))
     {
       if(action.equals(ACTION_ISP_REQUEST))
-        return new HttpD3Command(byteArrayObj);
+        return new HttpFileInqCommand(byteArrayObj);
       else
         return null;
     }
@@ -91,10 +91,10 @@ public class ScriptCommandFactory
     }
     
     //D8 Plu Inquiry
-    if(method.equals(HTTP_D8))
+    if(method.equals(HTTP_PLU_INQ))
     {
       if(action.equals(ACTION_ISP_REQUEST))
-        return new HttpD8Command(byteArrayObj);
+        return new HttpPluInqCommand(byteArrayObj);
       else
         return null;
     }
@@ -105,10 +105,10 @@ public class ScriptCommandFactory
       else
         return null;
     }
-    if(method.equals(HTTP_E8))
+    if(method.equals(HTTP_PLU_RSP))
     {
       if(action.equals(ACTION_ISP_RESPONSE))
-        return new HttpE8Command(byteArrayObj);
+        return new HttpPluRspCommand(byteArrayObj);
       else
         return null;
     }
@@ -149,17 +149,17 @@ public class ScriptCommandFactory
     }
     
     //2AA7 Coupon Inquiry
-    if(method.equals(HTTP_2AA7))
+    if(method.equals(HTTP_COUPON_INQ))
     {
       if(action.equals(ACTION_ISP_REQUEST))
-        return new Http2AA7Command(byteArrayObj);
+        return new HttpCouponInqCommand(byteArrayObj);
       else
         return null;
     }
-    if(method.equals(HTTP_2AB7))
+    if(method.equals(HTTP_COUPON_RSP))
     {
       if(action.equals(ACTION_ISP_RESPONSE))
-        return new Http2AB7Command(byteArrayObj);
+        return new HttpCouponRspCommand(byteArrayObj);
       else
         return null;
     }

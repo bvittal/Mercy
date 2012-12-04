@@ -4,13 +4,25 @@ import java.util.*;
 import java.io.*;
 
 import org.apache.log4j.Logger;
-import com.searshc.twilight.util.ObjectBuilder;
+import org.apache.log4j.PropertyConfigurator;
+
 import com.searshc.twilight.util.PropertyLoader;
 import com.searshc.twilight.util.TwilightHttpServer;
 
 public class Twilight
 {  
   private static Logger logger = Logger.getLogger(Twilight.class);
+  private static Properties prop;
+  //private static final ClassLoader classLoader = Twilight.class.getClassLoader();
+  
+  static{
+    try{
+      prop = PropertyLoader.loadProperties("log4j", null);
+      PropertyConfigurator.configure(prop);
+    }catch(Exception ex){
+      logger.error("Error " + ex);
+    }
+  }
   
   public Twilight(String tag)
   {
@@ -113,10 +125,8 @@ public class Twilight
 	}
 	
 	private void searchTag(String tags){
-	  final ClassLoader classLoader = Twilight.class.getClassLoader();
-    final Properties prop = PropertyLoader.loadProperties("config", null);
+    prop = PropertyLoader.loadProperties("config", null);
 	  try{
-	    classLoader.loadClass("com.searshc.twilight.util.PropertyLoader");
   	  if(tags.equalsIgnoreCase(prop.getProperty("tag0"))){
           final File dir = new File(prop.getProperty(tags + "_dir_url"));
           final File file = new File(dir.getPath());

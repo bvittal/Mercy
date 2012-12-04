@@ -1,17 +1,21 @@
 package com.searshc.twilight.util;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import com.searshc.twilight.service.UPASResponseFinder;
+import com.searshc.twilight.service.UpasResponseParser;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -64,6 +68,8 @@ class EchoHandler implements HttpHandler
     public void handle(HttpExchange t) throws IOException {
         
         final UPASResponseFinder finder = new UPASResponseFinder();
+        final UpasResponseParser parser = new UpasResponseParser();
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         
         OutputStream os = null;     
         InputStream is = t.getRequestBody();
@@ -76,6 +82,7 @@ class EchoHandler implements HttpHandler
           }
         }*/
         
+        
         byte[] requestBuffer = new byte[is.available()];
         is.read(requestBuffer);
         is.close();
@@ -83,17 +90,31 @@ class EchoHandler implements HttpHandler
         int endPosition = findXMLHeaderEnd(requestBuffer);
         byte[] buffer = new byte[requestBuffer.length - endPosition];
         buffer = Arrays.copyOfRange(requestBuffer, endPosition, requestBuffer.length);
-        byte [] inquryResp = finder.findResponse(buffer);
-        
+        byte[] inquryResp = finder.findResponse(buffer);
+        System.out.println("RESPONSE SENT     " + byteResponse(inquryResp));
         int respLength = createXMLResponseHeader().length + inquryResp.length;
         
-        logger.info("HTTP Response length : " + respLength);
-        logger.info("HTTP Response : " + new String(inquryResp));
+        System.out.println("HTTP Response length : " + respLength);
+        System.out.println("HTTP Response : " + new String(inquryResp));
+        
+        outputStream.write(createXMLResponseHeader());
+        outputStream.write(inquryResp);
+        byte [] responseObject = outputStream.toByteArray();
+        /**
+        if(responseObject != null){
+          try
+          {
+            parser.parseResponse(responseObject);
+          }
+          catch (Exception e)
+          {
+            e.printStackTrace();
+          }
+        }*/
         
           t.sendResponseHeaders(HTTP_OK, respLength);
           os = t.getResponseBody();
-          os.write(createXMLResponseHeader());
-          os.write(inquryResp);
+          os.write(responseObject);
           os.close();
           t.close();
       }
@@ -114,5 +135,15 @@ class EchoHandler implements HttpHandler
       String s =
               "<POSRESP><type>NR45</type><unitNumber>00000</unitNumber><id></id><returnCode>0</returnCode><responseDescription>success</responseDescription></POSRESP>";
       return s.getBytes();
+  }
+  
+  private String byteResponse(byte [] buffer){
+    StringBuilder sb = new StringBuilder();
+
+    for (byte b : buffer) {
+        sb.append(String.format("%02x", b).toUpperCase());
+        sb.append(" ");
+    }
+    return sb.toString();
   }
 }

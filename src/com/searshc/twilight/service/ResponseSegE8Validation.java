@@ -2,7 +2,6 @@ package com.searshc.twilight.service;
 
 import static junit.framework.Assert.assertEquals;
 import junit.framework.AssertionFailedError;
-import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 

@@ -8,6 +8,8 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.upas.sears.service.domain.*;
 
 public class LineItemValidationCommand extends AbstractListValidationCommand
@@ -35,16 +37,23 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
   @Override
   public boolean passes(List<LineItem> list)
   {
-	  HashMap<String, Boolean> results = new HashMap<String, Boolean>();
-	  
+	  Multimap<String, Boolean> results = ArrayListMultimap.create();
+	  System.out.println("LINE ITEM LIST SIZE " + list.size());
+	  System.out.println("LINE ITEM BASE LIST SIZE " + getBaseValue().size());
+	  int base_index = 0;
     /** iterate through baseObject looking for non-null parameters to validate */
  if(this.getBaseValue() != null && list != null){
 
-   for(LineItem item : list){
+   for(LineItem item : list)
+   {
        adjustments = item.getAdjustments();
        dcAdjustments = item.getDcAdjustments();
        manualReductions = item.getManualReductions();
-         for(LineItem baseItem : this.getBaseValue()){
+       
+         //for(LineItem baseItem : this.getBaseValue())
+         //{
+         for (int index = base_index; index <  this.getBaseValue().size(); index++) {
+           LineItem baseItem = getBaseValue().get(index);
            baseAdjustments = baseItem.getAdjustments();
            baseDcAdjustments = baseItem.getDcAdjustments();
            baseManualReductions = baseItem.getManualReductions();
@@ -144,8 +153,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 			 if(StringUtils.isNotBlank(deliveryCharge) && StringUtils.isNotBlank(baseDeliveryCharge)){
 				 results.put("deliveryCharge", deliveryCharge.equals(baseDeliveryCharge) ? Boolean.TRUE : Boolean.FALSE);
 			 }
-     }
-   }
+
 		//adjustments Iterator start
 		if(adjustments != null && baseAdjustments != null){
 			 Iterator<Adjustment> adjustmentsItr = adjustments.iterator();
@@ -316,9 +324,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 						 }
 				 }	 
 			 }//dcadjustments Iterator ends
-				
-		 
-			  
+
 				  //manualReductions Iterator start
 					  if(manualReductions != null && baseManualReductions != null){
 						 Iterator<ManualReduction> manualReductionsItr = manualReductions.iterator();
@@ -349,19 +355,18 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 								 }
 						  }
 					  }//manualReductions Iterator ends
+					  base_index++;
+					  break;
          }
+       }
+     }
  
-	  Iterator<Map.Entry<String, Boolean>> entries = results.entrySet().iterator();
-	  
-	  if(entries != null){
-		  while (entries.hasNext()) {
-		      Map.Entry<String, Boolean> entry = entries.next();
+   for (Map.Entry<String, Boolean> entry : results.entries()){
 		      System.out.println("Validating Line Item : " + entry.getKey() + " - Match Found : " + entry.getValue());
 		      	if(entry.getValue() == Boolean.FALSE){
 		      		return false;
-		      	}
-		  	}
-	  	}
+		      	  }
+		  	  }
 	  return true;
   	}
 
