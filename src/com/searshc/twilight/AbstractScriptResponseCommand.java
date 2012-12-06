@@ -94,7 +94,7 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
       
       if(StringUtils.isNotBlank(recvdMethod) && this.getMethod().equals(recvdMethod))
       {
-        logger.info("Recieved " + recvdMethod + " " + response.getStatusLine().getReasonPhrase());
+        System.out.println("Recieved " + recvdMethod + " " + response.getStatusLine().getReasonPhrase());
         
         if(this.getContentType(response).equals("application/json"))
         {
@@ -106,6 +106,7 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
           /** now convert OrderResponse to JSON and then JSON to OrderResponseValidator */
           this.toOrderResponse(jasonObj);
           OrderResponseValidator orderRespValidator = mapper.readValue(mapper.writeValueAsString(orderResponse), com.searshc.twilight.validation.OrderResponseValidator.class);
+          
           if(orderRespValidator.isValid(orderResp))
           {
             /** passed */

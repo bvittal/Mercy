@@ -16,7 +16,7 @@ public class ScriptCommandParser
 
   public ScriptCommandParser(String commandLine)
   { 
-    logger.info("Parsing command: [" + commandLine + "]");
+    System.out.println("Parsing command: [" + commandLine + "]");
     parse(commandLine);
   }
    
@@ -48,7 +48,7 @@ public class ScriptCommandParser
       if(token.equals("(") || token.equals(","))
       {
         String nextToken = tok.nextToken();
-        //System.out.println("Token " + nextToken);
+        
         if(nextToken.equals(TwilightPojo.ITEMS_KEY))
         {
           builder.newObject(TwilightPojo.ITEMS_KEY);
@@ -57,27 +57,14 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.ITEM_KEY); 
         }
-        /**
-        if(nextToken.equals(TwilightPojo.ADJUSTMENTS_KEY))
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.ADJUSTMENTS_KEY)) //code refactoring required here, will do it later
         {
-          System.out.println("Token " + nextToken);
-          builder.newObject(TwilightPojo.ADJUSTMENTS_KEY);
+          builder.newObject(TwilightPojo.ADJUSTMENTS_KEY); 
         }
-        else if(nextToken.equals(TwilightPojo.ADJUSTMENT_KEY))
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.DCADJUSTMENTS_KEY)) //code refactoring required here, will do it later
         {
-          System.out.println("Token " + nextToken);
-          builder.newObject(TwilightPojo.ADJUSTMENT_KEY); 
+          builder.newObject(TwilightPojo.DCADJUSTMENTS_KEY); 
         }
-        if(nextToken.equals(TwilightPojo.DCADJUSTMENTS_KEY))
-        {
-          System.out.println("INSIDE DC ADJUSTMENTS Token " + nextToken);
-          builder.newObject(TwilightPojo.DCADJUSTMENTS_KEY);
-        }
-        else if(nextToken.equals(TwilightPojo.DCADJUSTMENT_KEY))
-        {
-          System.out.println("Token " + nextToken);
-          builder.newObject(TwilightPojo.DCADJUSTMENT_KEY); 
-        }*/
         else if(nextToken.equals(TwilightPojo.COUPON_KEY))
         {
           builder.newObject(TwilightPojo.COUPON_KEY);    

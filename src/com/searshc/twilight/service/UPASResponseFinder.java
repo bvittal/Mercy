@@ -1,7 +1,6 @@
 package com.searshc.twilight.service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.Multimap;
+import com.searshc.twilight.segments.CouponInquiry2AA7Segment;
+import com.searshc.twilight.segments.PluInquiryD8Segment;
 import com.searshc.twilight.util.KeyMatcher;
 import com.searshc.twilight.util.ObjectBuilder;
 import com.starmount.ups.sears.SegmentIndex;
@@ -23,16 +24,11 @@ public class UPASResponseFinder
   private static final String REQUEST_INDICATOR_PLU_INQ = "PLU_INQ";
   private static final String REQUEST_INDICATOR_FILE_INQ = "FILE_INQ";
 
-  private final SegmentFactory segFactory = new SegmentFactory();
   private final Multimap<String, byte[]> results = ObjectBuilder.getObjects();
   private final UpasResponseParser parser = new UpasResponseParser();
-
+  
   public byte[] findResponse(byte[] reqBuffer)
   {
-    Segment reqSeg = null;
-    Segment respSeg = null;
-    StringBuilder sb = new StringBuilder();
-
     if (results.size() > 0)
     {
       final String indicator = this.getIndicator(reqBuffer);
@@ -42,10 +38,10 @@ public class UPASResponseFinder
       {
         if (indicator.equals(REQUEST_INDICATOR_PLU_INQ))
         {
-          reqSeg = segFactory.getSegment(indicator, reqBuffer);
-          String pluSKU = reqSeg.pluSKU();
-          String pluDivisionNumber = reqSeg.pluDivisionNumber();
-          String pluItemNumber = reqSeg.pluItemNumber();
+          final PluInquiryD8Segment pluReqInq = new PluInquiryD8Segment(reqBuffer);
+          String pluSKU = pluReqInq.getPLUSKU();
+          String pluDivisionNumber = pluReqInq.getPLUDivisionNumber();
+          String pluItemNumber = pluReqInq.getPLUItemNumber();
 
           if (pluSKU.equals("000") && pluDivisionNumber.equals("998")
               && pluItemNumber.equals("99999"))
@@ -81,24 +77,22 @@ public class UPASResponseFinder
               {
                 try
                 {
-                  System.out.println("THE FULL BUFFER : "
-                      + byteResponse(respBuffer));
-                  List<SegmentIndex> segmentIndexes = parser
-                      .parseResponse(respBuffer);
+                  //System.out.println("PLU RESPONSE : " + byteResponse(respBuffer));
+                  List<SegmentIndex> segmentIndexes = parser.parseResponse(respBuffer);
                   for (SegmentIndex segmentIndex : segmentIndexes)
                   {
+                    /**
                     System.out.println("Segment "
                         + segmentIndex.getIndicatorString() + "\t at position "
                         + segmentIndex.getPosition() + " length of\t "
-                        + segmentIndex.getLength());
+                        + segmentIndex.getLength());*/
                     if (segmentIndex.getIndicatorString().equals("E8"))
                     {
-                      ResponseSegmentE8 e8Seg = segmentIndex
-                          .getAsResponseSegmentE8();
+                      ResponseSegmentE8 e8Seg = segmentIndex.getAsResponseSegmentE8();
+                      
                       if (e8Seg.getPLUItemNumber().equals(pluItemNumber))
                       {
-                        System.out.println("Matching product number found : "
-                            + pluItemNumber);
+                        System.out.println("Matching plu Item number found : " + pluItemNumber);
                         os.write(respBuffer);
                       }
                     }
@@ -120,10 +114,10 @@ public class UPASResponseFinder
           {
             for (byte[] respBuffer : responseObject)
             {
-              reqSeg = segFactory.getSegment(indicator, reqBuffer);
-              respSeg = segFactory.getSegment(indicator, respBuffer);
-              String coupon = reqSeg.couponNumber();
-              if (coupon.equals(respSeg.couponNumber()))
+              final CouponInquiry2AA7Segment couponReqInq = new CouponInquiry2AA7Segment(reqBuffer);
+              final CouponInquiry2AA7Segment couponResInq = new CouponInquiry2AA7Segment(reqBuffer);
+              String coupon = couponReqInq.getCouponNumber();
+              if (coupon.equals(couponResInq.getCouponNumber()))
               {
                 System.out.println("Matching coupon number found " + coupon);
                 return respBuffer;
@@ -201,7 +195,7 @@ public class UPASResponseFinder
 
     if (str.contains("D3")) indicator = "FILE_INQ";
     else if (str.contains("D8")) indicator = "PLU_INQ";
-    else if (str.contains("2A A7")) indicator = "COUPON_INQ";
+    else if (str.replace(" ", "").contains("2AA7")) indicator = "COUPON_INQ";
 
     return indicator;
   }

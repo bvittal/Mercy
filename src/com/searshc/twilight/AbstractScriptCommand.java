@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -54,9 +55,10 @@ public abstract class AbstractScriptCommand
   public static final String ADJUSTMENT_NFX_CODE = "nfxCode";
   public static final String ADJUSTMENT_PROMO_NAME = "promoName";
   public static final String ADJUSTMENT_PROMO_TYPE = "promoType";
+  public static final String ADJUSTMENT_PROMO_CODE = "promoCode";
+  public static final String ADJUSTMENT_COUPON_OFFER_CODE = "couponOfferCode";
   public static final String ADJUSTMENT_SHORT_DESC = "shortDesc";
-  public static final String ADJUSTMENT_TYPE = "adjustmentType";
- 
+  public static final String ADJUSTMENT_SOURCE = "adjustmentSource";
   
   /** the default values for each order attribute */
   private static final String DEFAULT_REGISTER_NUM = "00000";
@@ -67,7 +69,6 @@ public abstract class AbstractScriptCommand
   private static final String DEFAULT_CRAFTSMAN_FLAG = "0";
   private static final String DEFAULT_PULSE_FLAG = "0";
   private static final String DEFAULT_SEARS_CARD = "0";
-  private static final String [] DEFAULT_COUPON_CODE = { "R575555", "R5711111" };;
   
   private static final String DEFAULT_ITEM_ADJUST_FLAG = "1";
   private static final String DEFAULT_ITEM_ID = "0";
@@ -87,18 +88,6 @@ public abstract class AbstractScriptCommand
   private static final String DEFAULT_ITEM_ZERO_PERCENT = "";
   private static final String DEFAULT_ITEM_MANUAL_REDUCTIONS = null;
   
-  /** Defaults Adjustments Values */
-  public static final String DEFAULT_ADJUSTMENT_AMOUNT = "";
-  public static final String DEFAULT_ADJUSTMENT_CSO_CODE = "";
-  public static final String DEFAULT_ADJUSTMENT_ENDDATE = "";
-  public static final String DEFAULT_ADJUSTMENT_EXCL_TEXT = "";
-  public static final String DEFAULT_ADJUSTMENT_LONG_DESC = "";
-  public static final String DEFAULT_ADJUSTMENT_MARK_DOWN = "";
-  public static final String DEFAULT_ADJUSTMENT_NFX_CODE = "";
-  public static final String DEFAULT_ADJUSTMENT_PROMO_NAME = "";
-  public static final String DEFAULT_ADJUSTMENT_PROMO_TYPE = "";
-  public static final String DEFAULT_ADJUSTMENT_SHORT_DESC = "";
-  public static final String DEFAULT_ADJUSTMENT_TYPE = "";
   
   protected Order order = new Order();
   protected OrderResponse orderResponse = new OrderResponse();
@@ -127,6 +116,7 @@ public abstract class AbstractScriptCommand
   protected void toOrder(TwilightJsonObject obj, boolean useDefaults)
   {
     HashMap<String,String> map = obj.getParameters();
+    
     
     if(map != null)
     {
@@ -192,18 +182,44 @@ public abstract class AbstractScriptCommand
       
       /** the item-level parameters */
       List<LineItem> allItems = new ArrayList<LineItem>();
+      List<Adjustment> adjustments = new ArrayList<Adjustment>();
+      List<Adjustment> dcAdjustments = new ArrayList<Adjustment>();
       TwilightJsonObject lineItems;
-      
       
       if(obj.getTwilightJsonObject().size() > 0)
       {
         List<TwilightJsonObject> itemList = obj.getTwilightJsonObject().get(0).getTwilightJsonObject();
         Iterator<TwilightJsonObject> itemIterator = itemList.iterator();
+        
         while(itemIterator.hasNext())
         {
           LineItem item = new LineItem();
           lineItems = itemIterator.next();
           HashMap<String,String> items = lineItems.getParameters();
+          Iterator<TwilightJsonObject> itr = lineItems.getTwilightJsonObject().iterator();
+          
+          while(itr.hasNext())
+          {
+            TwilightJsonObject adjustmentObj = itr.next();
+            if(adjustmentObj != null)
+            {
+              HashMap<String,String> adjustmentMap = adjustmentObj.getParameters();
+              
+            if(adjustmentMap != null)
+            {
+              if(adjustmentObj.getName().equalsIgnoreCase("adjustments"))
+              {
+                adjustments.add(this.getAdjustments(adjustmentMap));
+                item.setAdjustments(adjustments);
+              }
+              else if(adjustmentObj.getName().equalsIgnoreCase("dcAdjustments"))
+              {
+                dcAdjustments.add(this.getAdjustments(adjustmentMap));
+                item.setDcAdjustments(dcAdjustments);
+                }
+              }
+            }
+          }
           
           if(items.containsKey(ITEM_ID))
             item.setLineItemId(items.get(ITEM_ID));
@@ -244,11 +260,6 @@ public abstract class AbstractScriptCommand
             item.setFulfillmentType(items.get(ITEM_FULFILL_TYPE));
           else
             if(useDefaults) item.setFulfillmentType(DEFAULT_ITEM_FULFILLMENT_TYPE);
-          
-          if(items.containsKey(ADJUSTMENT_AMOUNT))
-            item.setFulfillmentCost(items.get(ADJUSTMENT_AMOUNT));
-          else
-            if(useDefaults) item.setFulfillmentCost(DEFAULT_ADJUSTMENT_AMOUNT);
       
           if(items.containsKey(ITEM_REGULAR_PRICE))
             item.setRegularPrice(items.get(ITEM_REGULAR_PRICE));
@@ -259,12 +270,12 @@ public abstract class AbstractScriptCommand
             item.setManualPrice(items.get(ITEM_MANUAL_PRICE));
           else
             if(useDefaults) item.setManualPrice(DEFAULT_ITEM_MANUAL_PRICE);
- /*       
-        if(items.containsKey(ITEM_PRICE_MATCH))
-          item.setPriceMatch(items.get(ITEM_PRICE_MATCH));
-        else
-          item.setPriceMatch(DEFAULT_ITEM_PRICE_MATCH);
-   */   
+          /**
+          if(items.containsKey(ITEM_PRICE_MATCH))
+            item.setPriceMatch(items.get(ITEM_PRICE_MATCH));
+          else
+            item.setPriceMatch(DEFAULT_ITEM_PRICE_MATCH);
+          */   
           if(items.containsKey(ITEM_PLU_PRICE))
             item.setPluPrice(items.get(ITEM_PLU_PRICE));
           else
@@ -288,37 +299,39 @@ public abstract class AbstractScriptCommand
           allItems.add(item);          
         }
       }
-      /**
-      if(obj.getTwilightJsonObject().size() > 0)
-      {
-        List<TwilightJsonObject> adjustmentList = obj.getTwilightJsonObject().get(1).getTwilightJsonObject();
-        Iterator<TwilightJsonObject> adjustmentItr = adjustmentList.iterator();
-        while(adjustmentItr.hasNext())
-        {
-          LineItem adjustment = new LineItem();
-          TwilightJsonObject adjustmentItems = adjustmentItr.next();
-          HashMap<String,String> adjustments = adjustmentItems.getParameters();
-          /**
-          if(adjustments.containsKey(ADJUSTMENT_AMOUNT))
-            adjustments.setAmount(items.get(ADJUSTMENT_AMOUNT));
-          else
-            if(useDefaults) item.getAdjustments().iterator().next().setAmount(DEFAULT_ADJUSTMENT_AMOUNT);
-          
-          if(items.containsKey(ADJUSTMENT_CSO_CODE))
-            item.getAdjustments().iterator().next().setCsoCode(items.get(ADJUSTMENT_CSO_CODE));
-          else
-            if(useDefaults) item.getAdjustments().iterator().next().setCsoCode(DEFAULT_ADJUSTMENT_CSO_CODE);
-          
-          if(items.containsKey(ADJUSTMENT_ENDDATE))
-            item.getAdjustments().iterator().next().setEndDate(items.get(ADJUSTMENT_ENDDATE));
-          else
-            if(useDefaults) item.getAdjustments().iterator().next().setEndDate(DEFAULT_ADJUSTMENT_ENDDATE);
-          
-          allItems.add(item);
-          }  
-        }
-      }*/
-      
       order.setLineItems(allItems);
+    }
+  
+  private Adjustment getAdjustments(HashMap<String,String> map){
+    Adjustment adj = new Adjustment();
+    for (Map.Entry<String, String> entry : map.entrySet()){
+      if(entry.getKey().equals(ADJUSTMENT_AMOUNT))
+        adj.setAmount(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_CSO_CODE))
+        adj.setCsoCode(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_ENDDATE))  
+        adj.setEndDate(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_EXCL_TEXT))
+        adj.setExclusionText(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_LONG_DESC))
+        adj.setLongDesc(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_MARK_DOWN))
+        adj.setMarkdownCode(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_NFX_CODE))
+        adj.setNfxCode(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_PROMO_NAME))
+        adj.setPromoName(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_PROMO_TYPE))
+        adj.setPromoType(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_PROMO_CODE))
+        adj.setPromoCode(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_COUPON_OFFER_CODE))
+        adj.setCouponOfferCode(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_SHORT_DESC))
+        adj.setShortDesc(entry.getValue());
+      else if(entry.getKey().equals(ADJUSTMENT_SOURCE))
+        adj.setAdjustmentSource(entry.getValue());
+    }
+    return adj;
     }
   }

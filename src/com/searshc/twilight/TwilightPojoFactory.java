@@ -17,7 +17,6 @@ public class TwilightPojoFactory
       obj = new TwilightJsonObject();
       obj.setName(name);
     }
-    
     return obj;
   }
 }
