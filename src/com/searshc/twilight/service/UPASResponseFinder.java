@@ -100,7 +100,8 @@ public class UPASResponseFinder
                 }
                 catch (Exception e)
                 {
-                  e.printStackTrace();
+                  System.err.println("Error in parsing response in script - " + e.getMessage());
+                  break;
                 }
               }
             }
@@ -148,7 +149,7 @@ public class UPASResponseFinder
       }
       else
       {
-        logger.error("Request not found/corrupted in script for indicator : "
+        System.err.println("Request not found/corrupted in script for indicator : "
             + indicator + " please correct your script");
       }
     }

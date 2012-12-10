@@ -123,6 +123,7 @@ public class OrderValidator extends Order implements ResponseValidator
   
   public void setUnusedCouponCodes(List<CoupounCode> unusedCouponCodes)
   {
+    commands.add(new UnusedCouponCodesValidationCommand().setBaseValueforUnusedCoupons(unusedCouponCodes));
     super.setUnusedCouponCodes(unusedCouponCodes);
   }
 

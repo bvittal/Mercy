@@ -60,6 +60,10 @@ public abstract class AbstractScriptCommand
   public static final String ADJUSTMENT_SHORT_DESC = "shortDesc";
   public static final String ADJUSTMENT_SOURCE = "adjustmentSource";
   
+  /** Unused Coupon Codes */
+  public static final String UNUSED_COUPON_CODE = "code";
+  public static final String UNUSED_COUPON_CODE_REASON = "reason";
+  
   /** the default values for each order attribute */
   private static final String DEFAULT_REGISTER_NUM = "00000";
   private static final String DEFAULT_PHYSICAL_STORE = "11111";
@@ -115,13 +119,30 @@ public abstract class AbstractScriptCommand
   
   protected void toOrder(TwilightJsonObject obj, boolean useDefaults)
   {
+    List<CoupounCode> couponCodesList = new ArrayList<CoupounCode>();
     HashMap<String,String> map = obj.getParameters();
+    TwilightJsonObject unusedCouponObj = null;
+    Iterator<TwilightJsonObject> couponItr = obj.getTwilightJsonObject().iterator();
     
+    order = new Order();
+
+    while(couponItr.hasNext())
+    {
+     unusedCouponObj = couponItr.next();
+     
+    if(unusedCouponObj != null && unusedCouponObj.getName().equalsIgnoreCase("unusedCouponCodes"))
+    {
+      List<TwilightJsonObject> subObject = unusedCouponObj.getTwilightJsonObject();
+      for(TwilightJsonObject objt : subObject)
+      {
+          couponCodesList.add(this.getCouponCodes(objt.getParameters()));
+          order.setUnusedCouponCodes(couponCodesList);
+        }
+      }
+    }
     
     if(map != null)
     {
-      order = new Order();
-
       if(map.containsKey(REGISTER_NUM))
         order.setRegisterNumber(map.get(REGISTER_NUM));
       else
@@ -184,42 +205,52 @@ public abstract class AbstractScriptCommand
       List<LineItem> allItems = new ArrayList<LineItem>();
       List<Adjustment> adjustments = new ArrayList<Adjustment>();
       List<Adjustment> dcAdjustments = new ArrayList<Adjustment>();
+      Iterator<TwilightJsonObject> itemIterator = null;
       TwilightJsonObject lineItems;
       
-      if(obj.getTwilightJsonObject().size() > 0)
-      {
-        List<TwilightJsonObject> itemList = obj.getTwilightJsonObject().get(0).getTwilightJsonObject();
-        Iterator<TwilightJsonObject> itemIterator = itemList.iterator();
+    if (obj.getTwilightJsonObject().size() > 0)
+    {
+        List<TwilightJsonObject> itemList = obj.getTwilightJsonObject();
         
-        while(itemIterator.hasNext())
-        {
-          LineItem item = new LineItem();
-          lineItems = itemIterator.next();
-          HashMap<String,String> items = lineItems.getParameters();
-          Iterator<TwilightJsonObject> itr = lineItems.getTwilightJsonObject().iterator();
+        for(TwilightJsonObject itemObj : itemList){
+          List<TwilightJsonObject> subItemList = itemObj.getTwilightJsonObject();
           
-          while(itr.hasNext())
+          for(TwilightJsonObject subItemObj : subItemList){
+            if(!subItemObj.getName().equalsIgnoreCase("couponCode")){
+                itemIterator = subItemList.iterator();
+             }
+          }
+        }
+
+      while (itemIterator.hasNext())
+      {
+        LineItem item = new LineItem();
+        lineItems = itemIterator.next();
+        HashMap<String, String> items = lineItems.getParameters();
+        Iterator<TwilightJsonObject> itr = lineItems.getTwilightJsonObject().iterator();
+
+        while (itr.hasNext())
+        {
+          TwilightJsonObject adjustmentObj = itr.next();
+          if (adjustmentObj != null)
+        {
+          HashMap<String, String> adjustmentMap = adjustmentObj.getParameters();
+
+          if (adjustmentMap != null)
           {
-            TwilightJsonObject adjustmentObj = itr.next();
-            if(adjustmentObj != null)
+            if (adjustmentObj.getName().equalsIgnoreCase("adjustments"))
             {
-              HashMap<String,String> adjustmentMap = adjustmentObj.getParameters();
-              
-            if(adjustmentMap != null)
-            {
-              if(adjustmentObj.getName().equalsIgnoreCase("adjustments"))
-              {
-                adjustments.add(this.getAdjustments(adjustmentMap));
-                item.setAdjustments(adjustments);
-              }
-              else if(adjustmentObj.getName().equalsIgnoreCase("dcAdjustments"))
-              {
-                dcAdjustments.add(this.getAdjustments(adjustmentMap));
-                item.setDcAdjustments(dcAdjustments);
-                }
+              adjustments.add(this.getAdjustments(adjustmentMap));
+              item.setAdjustments(adjustments);
+            }
+          else if (adjustmentObj.getName().equalsIgnoreCase("dcAdjustments"))
+          {
+            dcAdjustments.add(this.getAdjustments(adjustmentMap));
+            item.setDcAdjustments(dcAdjustments);
               }
             }
           }
+        }
           
           if(items.containsKey(ITEM_ID))
             item.setLineItemId(items.get(ITEM_ID));
@@ -299,6 +330,7 @@ public abstract class AbstractScriptCommand
           allItems.add(item);          
         }
       }
+    //}
       order.setLineItems(allItems);
     }
   
@@ -333,5 +365,19 @@ public abstract class AbstractScriptCommand
         adj.setAdjustmentSource(entry.getValue());
     }
     return adj;
+    }
+  
+  private CoupounCode getCouponCodes(HashMap<String,String> map){
+    CoupounCode couponCode = new CoupounCode();
+    for (Map.Entry<String, String> entry : map.entrySet())
+    {
+      if(entry.getKey().equals(UNUSED_COUPON_CODE)){
+        String code [] = {entry.getValue()};
+        couponCode.setCodes(code);
+      }else if(entry.getKey().equals(UNUSED_COUPON_CODE_REASON)){
+        couponCode.setReason(entry.getValue());
+      }
+    }
+    return couponCode;
     }
   }

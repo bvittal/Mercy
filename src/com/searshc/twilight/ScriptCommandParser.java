@@ -48,7 +48,7 @@ public class ScriptCommandParser
       if(token.equals("(") || token.equals(","))
       {
         String nextToken = tok.nextToken();
-        
+        //System.out.println(nextToken);
         if(nextToken.equals(TwilightPojo.ITEMS_KEY))
         {
           builder.newObject(TwilightPojo.ITEMS_KEY);
@@ -57,13 +57,21 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.ITEM_KEY); 
         }
-        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.ADJUSTMENTS_KEY)) //code refactoring required here, will do it later
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.ADJUSTMENTS_KEY))
         {
           builder.newObject(TwilightPojo.ADJUSTMENTS_KEY); 
         }
-        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.DCADJUSTMENTS_KEY)) //code refactoring required here, will do it later
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.DCADJUSTMENTS_KEY))
         {
           builder.newObject(TwilightPojo.DCADJUSTMENTS_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.UNUSED_COUPON_CODES))
+        {
+          builder.newObject(TwilightPojo.UNUSED_COUPON_CODES); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.UNUSED_COUPON_KEY))
+        {
+          builder.newObject(TwilightPojo.UNUSED_COUPON_KEY); 
         }
         else if(nextToken.equals(TwilightPojo.COUPON_KEY))
         {

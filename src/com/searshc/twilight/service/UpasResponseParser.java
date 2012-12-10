@@ -75,14 +75,7 @@ public class UpasResponseParser{
               .setBuffer(buffer)
               .addSegments(createSearsResponseTypes())
               .build();
-      /**
-      System.out.println("Request Header " + parser.getXMLHeaderAsString());
-
-      List<SegmentIndex> segmentIndexes = parser.getSegmentList();
-      for (SegmentIndex segmentIndex : segmentIndexes) {
-        System.out.println("Segment " + segmentIndex.getIndicatorString() + "\t at position " + segmentIndex.getPosition() + " length of\t " + segmentIndex.getLength());
-        
-      }*/
+      
       return parser.getSegmentList();
   }
   

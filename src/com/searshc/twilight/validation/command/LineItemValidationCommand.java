@@ -1,10 +1,7 @@
 package com.searshc.twilight.validation.command;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -17,11 +14,11 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
     protected List<LineItem> baseObject;
     private List<Adjustment> adjustments;
     private List<Adjustment> dcAdjustments;
-    private List<ManualReduction> manualReductions;
+    //private List<ManualReduction> manualReductions;
     
     private List<Adjustment> baseAdjustments;
     private List<Adjustment> baseDcAdjustments;
-    private List<ManualReduction> baseManualReductions;
+    //private List<ManualReduction> baseManualReductions;
 	
   public LineItemValidationCommand setBaseValue(List<LineItem> obj)
   {
@@ -41,23 +38,21 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
     int base_index = 0;
     
 	  Multimap<String, Boolean> results = ArrayListMultimap.create();	  
-	  
-	  
-	  
+	   
     /** iterate through baseObject looking for non-null parameters to validate */
   if(this.getBaseValue() != null && list != null){
    for(LineItem item : list)
    {
        adjustments = item.getAdjustments();
        dcAdjustments = item.getDcAdjustments();
-       manualReductions = item.getManualReductions();
+       //manualReductions = item.getManualReductions();
        
          for (int index = base_index; index <  this.getBaseValue().size(); index++)
          {
            LineItem baseItem = getBaseValue().get(index);
            baseAdjustments = baseItem.getAdjustments();
            baseDcAdjustments = baseItem.getDcAdjustments();
-           baseManualReductions = baseItem.getManualReductions();
+           //baseManualReductions = baseItem.getManualReductions();
 
 		 String lineItemId = item.getLineItemId();
 		 String baseLineItemId = baseItem.getLineItemId();
@@ -414,7 +409,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
  
    for (Map.Entry<String, Boolean> entry : results.entries())
    {
-		      System.out.println(" " + entry.getKey() + " - Match Found : " + entry.getValue() + "\n");
+		      System.out.println("Validating : " + entry.getKey() + " - Match Found : " + entry.getValue() + "\n");
 	 }
    
    if(results.containsValue(Boolean.FALSE))

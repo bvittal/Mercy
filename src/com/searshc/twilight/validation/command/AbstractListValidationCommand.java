@@ -8,7 +8,7 @@ public abstract class AbstractListValidationCommand extends AbstractValidationCo
   
   public AbstractListValidationCommand()
   {
-    System.out.println("Validating list: " + getParameterName());
+    System.out.println("Validating list: " + getParameterName()+"\n");
   }
   
   private String message = "";
