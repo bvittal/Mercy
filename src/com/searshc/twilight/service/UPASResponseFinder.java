@@ -29,6 +29,9 @@ public class UPASResponseFinder
   
   public byte[] findResponse(byte[] reqBuffer)
   {
+    String coupon = StringUtils.EMPTY;
+    String pluItemNumber = StringUtils.EMPTY;
+    
     if (results.size() > 0)
     {
       final String indicator = this.getIndicator(reqBuffer);
@@ -41,7 +44,7 @@ public class UPASResponseFinder
           final PluInquiryD8Segment pluReqInq = new PluInquiryD8Segment(reqBuffer);
           String pluSKU = pluReqInq.getPLUSKU();
           String pluDivisionNumber = pluReqInq.getPLUDivisionNumber();
-          String pluItemNumber = pluReqInq.getPLUItemNumber();
+          pluItemNumber = pluReqInq.getPLUItemNumber();
 
           if (pluSKU.equals("000") && pluDivisionNumber.equals("998")
               && pluItemNumber.equals("99999"))
@@ -117,7 +120,7 @@ public class UPASResponseFinder
             {
               final CouponInquiry2AA7Segment couponReqInq = new CouponInquiry2AA7Segment(reqBuffer);
               final CouponInquiry2AA7Segment couponResInq = new CouponInquiry2AA7Segment(reqBuffer);
-              String coupon = couponReqInq.getCouponNumber();
+              coupon = couponReqInq.getCouponNumber();
               if (coupon.equals(couponResInq.getCouponNumber()))
               {
                 System.out.println("Matching coupon number found " + coupon);
@@ -148,9 +151,18 @@ public class UPASResponseFinder
         }
       }
       else
-      {
-        System.err.println("Request not found/corrupted in script for indicator : "
-            + indicator + " please correct your script");
+      { 
+        System.err.println("Request corrupted or not found in the script");
+        /**
+         * if(indicator.equalsIgnoreCase(REQUEST_INDICATOR_COUPON_INQ))
+         * System.err.println(
+         * "Request corrupted or not found in the script for Coupon Inquiry (Coupon) : "
+         * + coupon + " please correct your script"); else
+         * if(indicator.equalsIgnoreCase(REQUEST_INDICATOR_COUPON_INQ))
+         * System.err.println(
+         * "Request corrupted or not found in the script for Plu Item Inquiry (Plu Item): "
+         * + pluItemNumber + " please correct your script");
+         */
       }
     }
     return null;

@@ -48,7 +48,7 @@ public class ScriptCommandParser
       if(token.equals("(") || token.equals(","))
       {
         String nextToken = tok.nextToken();
-        //System.out.println(nextToken);
+        System.out.println(nextToken);
         if(nextToken.equals(TwilightPojo.ITEMS_KEY))
         {
           builder.newObject(TwilightPojo.ITEMS_KEY);
@@ -72,6 +72,34 @@ public class ScriptCommandParser
         else if(action.equals("RECV") && nextToken.equals(TwilightPojo.UNUSED_COUPON_KEY))
         {
           builder.newObject(TwilightPojo.UNUSED_COUPON_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITIES_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITIES_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITY_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITY_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITIES_UNAPPLIED_OFFERS_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITIES_UNAPPLIED_OFFERS_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITIES_UNAPPLIED_OFFER_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITIES_UNAPPLIED_OFFER_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITIES_REASONS_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITIES_REASONS_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITIES_REASON_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITIES_REASON_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.INCOMPATIBILITIES_FIELDS_KEY))
+        {
+          builder.newObject(TwilightPojo.INCOMPATIBILITIES_FIELDS_KEY); 
         }
         else if(nextToken.equals(TwilightPojo.COUPON_KEY))
         {

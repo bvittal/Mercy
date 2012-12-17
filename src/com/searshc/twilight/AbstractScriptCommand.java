@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.searshc.twilight.util.PropertyLoader;
@@ -60,9 +59,17 @@ public abstract class AbstractScriptCommand
   public static final String ADJUSTMENT_SHORT_DESC = "shortDesc";
   public static final String ADJUSTMENT_SOURCE = "adjustmentSource";
   
-  /** Unused Coupon Codes */
+  /** Incompatibility */
+  public static final String INCOMPATIBILITY_OPTED_PROMO = "incompOptedPromo";
+  public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS_OFFER_ID = "incompOfferId";
+  public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS_REASON_CODE = "incompReasonCode";
+  public static final String INCOMPATIBILITY_REASON_FIELD = "incompField";
+  public static final String INCOMPATIBILITY_REASON_PROMO_CODES = "incompPromoCodes";
+  public static final String INCOMPATIBILITY_REASON_COUPON_CODES = "incompCouponCodes";
+  
+  /** Unused Coupon Codes*/
   public static final String UNUSED_COUPON_CODE = "code";
-  public static final String UNUSED_COUPON_CODE_REASON = "reason";
+  public static final String UNUSED_COUPON_CODE_REASON = "couponReason";
   
   /** the default values for each order attribute */
   private static final String DEFAULT_REGISTER_NUM = "00000";
@@ -120,26 +127,35 @@ public abstract class AbstractScriptCommand
   protected void toOrder(TwilightJsonObject obj, boolean useDefaults)
   {
     List<CoupounCode> couponCodesList = new ArrayList<CoupounCode>();
+    List<Incompatibility> incompatibilityList = new ArrayList<Incompatibility>();
     HashMap<String,String> map = obj.getParameters();
-    TwilightJsonObject unusedCouponObj = null;
-    Iterator<TwilightJsonObject> couponItr = obj.getTwilightJsonObject().iterator();
-    
+    Iterator<TwilightJsonObject> jasonObjItr = obj.getTwilightJsonObject().iterator();
     order = new Order();
-
-    while(couponItr.hasNext())
+    
+    while(jasonObjItr.hasNext())
     {
-     unusedCouponObj = couponItr.next();
+      TwilightJsonObject twilightJsonObj = jasonObjItr.next();
      
-    if(unusedCouponObj != null && unusedCouponObj.getName().equalsIgnoreCase("unusedCouponCodes"))
+    if(twilightJsonObj != null && twilightJsonObj.getName().equalsIgnoreCase("unusedCouponCodes"))
     {
-      List<TwilightJsonObject> subObject = unusedCouponObj.getTwilightJsonObject();
+      List<TwilightJsonObject> subObject = twilightJsonObj.getTwilightJsonObject();
       for(TwilightJsonObject objt : subObject)
       {
           couponCodesList.add(this.getCouponCodes(objt.getParameters()));
           order.setUnusedCouponCodes(couponCodesList);
         }
       }
+    else if(twilightJsonObj != null && twilightJsonObj.getName().equalsIgnoreCase("incompatibilities"))
+    {
+      Iterator<TwilightJsonObject> incompatibilityObjItr = twilightJsonObj.getTwilightJsonObject().iterator();
+      
+      while(incompatibilityObjItr.hasNext())
+      {
+        TwilightJsonObject subTwilightJsonObj = incompatibilityObjItr.next();
+        incompatibilityList.add(this.getIncompatibilities(subTwilightJsonObj));
+      }
     }
+  }
     
     if(map != null)
     {
@@ -197,9 +213,9 @@ public abstract class AbstractScriptCommand
         else if(name.equals(TwilightJsonArray.OPTED_PROMO_KEY))
         {
           order.setOptedPromotions(arrayList.get(i).getStringArray());
+          }
         }
       }
-    }
       
       /** the item-level parameters */
       List<LineItem> allItems = new ArrayList<LineItem>();
@@ -330,7 +346,12 @@ public abstract class AbstractScriptCommand
           allItems.add(item);          
         }
       }
-    //}
+    
+      if(incompatibilityList.size() > 0){
+        Incompatibility[] incompatibilityArray = new Incompatibility[incompatibilityList.size()];
+        incompatibilityList.toArray(incompatibilityArray);
+        order.setIncompatibilities(incompatibilityArray);
+      }
       order.setLineItems(allItems);
     }
   
@@ -380,4 +401,115 @@ public abstract class AbstractScriptCommand
     }
     return couponCode;
     }
-  }
+  
+  
+
+  private Incompatibility getIncompatibilities(TwilightJsonObject incompatibilityObj)
+  {
+    Incompatibility incompatibility = new Incompatibility();
+    UnappliedOffer unappliedOffer = new UnappliedOffer();
+    AppMessage appMessage = new AppMessage();
+    
+    List<String> fieldsList = new ArrayList<String>();
+    List<AppMessage> appMessageList = new ArrayList<AppMessage>();
+    List<UnappliedOffer> unappliedOfferList = new ArrayList<UnappliedOffer>();
+    
+    if(incompatibilityObj != null && incompatibilityObj.getName().equalsIgnoreCase("incompatibility"))
+    {
+      HashMap<String,String> optedPromoMap = incompatibilityObj.getParameters();
+    
+      for (Map.Entry<String, String> entry : optedPromoMap.entrySet())
+      {
+        if(entry.getKey().equals(INCOMPATIBILITY_OPTED_PROMO))
+          incompatibility.setOptedPromo(entry.getValue());
+      }
+      
+      Iterator<TwilightJsonObject> unappliedOffersItr = incompatibilityObj.getTwilightJsonObject().iterator();
+      
+      while(unappliedOffersItr.hasNext())
+      {
+        TwilightJsonObject unappliedOfferObj = unappliedOffersItr.next();
+          
+        Iterator<TwilightJsonObject> unappliedOfferItr = unappliedOfferObj.getTwilightJsonObject().iterator();
+
+        while(unappliedOfferItr.hasNext())
+        {
+          TwilightJsonObject unappliedOffersTwilightJsonObj = unappliedOfferItr.next();
+          
+          if(unappliedOffersTwilightJsonObj != null && unappliedOffersTwilightJsonObj.getName().equalsIgnoreCase("unappliedOffer"))
+          {
+            HashMap<String,String> unappliedOffersMap = unappliedOffersTwilightJsonObj.getParameters();
+            
+            for (Map.Entry<String, String> entry : unappliedOffersMap.entrySet())
+            {
+              if(entry.getKey().equals(INCOMPATIBILITY_UNAPPLIED_OFFERS_OFFER_ID))
+                unappliedOffer.setOfferId(entry.getValue());
+              }
+            }
+          
+          Iterator<TwilightJsonObject> subUnappliedOfferItr = unappliedOffersTwilightJsonObj.getTwilightJsonObject().iterator();
+          
+          while(subUnappliedOfferItr.hasNext())
+          {
+            TwilightJsonObject reasonsTwilightJsonObj = subUnappliedOfferItr.next();
+            
+            Iterator<TwilightJsonObject> reasonOfferItr = reasonsTwilightJsonObj.getTwilightJsonObject().iterator();
+            
+            while(reasonOfferItr.hasNext())
+            {
+              TwilightJsonObject reasonTwilightJsonObj = reasonOfferItr.next();
+              
+              if(reasonTwilightJsonObj != null && reasonTwilightJsonObj.getName().equalsIgnoreCase("reason"))
+              {
+                HashMap<String,String> reasonsOffersMap = reasonTwilightJsonObj.getParameters();
+                
+                for (Map.Entry<String, String> entry : reasonsOffersMap.entrySet())
+                {
+                  if(entry.getKey().equals(INCOMPATIBILITY_UNAPPLIED_OFFERS_REASON_CODE))
+                    appMessage.setCode(entry.getValue());
+                    }
+                  }
+              
+                Iterator<TwilightJsonObject> fieldsItr = reasonTwilightJsonObj.getTwilightJsonObject().iterator();
+                
+                  while(fieldsItr.hasNext())
+                  {
+                    TwilightJsonObject fieldsTwilightJsonObj = fieldsItr.next();
+                    
+                    if(fieldsTwilightJsonObj != null && fieldsTwilightJsonObj.getName().equalsIgnoreCase("fields"))
+                    {
+                      HashMap<String,String> fieldsMap = fieldsTwilightJsonObj.getParameters();
+                      
+                      for (Map.Entry<String, String> entry : fieldsMap.entrySet())
+                      {
+                        if(entry.getKey().equals(INCOMPATIBILITY_REASON_FIELD))
+                          fieldsList.add(entry.getValue());
+                        else if(entry.getKey().equals(INCOMPATIBILITY_REASON_PROMO_CODES))
+                          fieldsList.add(entry.getValue());
+                        else if(entry.getKey().equals(INCOMPATIBILITY_REASON_COUPON_CODES))
+                          fieldsList.add(entry.getValue());
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              
+              String[] fieldsArray = new String[fieldsList.size()];
+              fieldsList.toArray(fieldsArray);
+              appMessage.setFields(fieldsArray);
+              appMessageList.add(appMessage);
+              
+              AppMessage[] reasonsArray = new AppMessage[appMessageList.size()];
+              appMessageList.toArray(reasonsArray);
+              unappliedOffer.setReasons(reasonsArray);
+              unappliedOfferList.add(unappliedOffer);
+              
+              UnappliedOffer[] unappliedOfferArray = new UnappliedOffer[unappliedOfferList.size()];
+              unappliedOfferList.toArray(unappliedOfferArray);
+              incompatibility.setUnappliedOffers(unappliedOfferArray);
+            }
+            return incompatibility;
+          }
+        }
