@@ -16,7 +16,7 @@ public class ScriptCommandParser
 
   public ScriptCommandParser(String commandLine)
   { 
-    System.out.println("Parsing command: [" + commandLine + "]");
+    //System.out.println("Parsing command: [" + commandLine + "]");
     parse(commandLine);
   }
    
@@ -48,7 +48,7 @@ public class ScriptCommandParser
       if(token.equals("(") || token.equals(","))
       {
         String nextToken = tok.nextToken();
-        System.out.println(nextToken);
+        //System.out.println(nextToken);
         if(nextToken.equals(TwilightPojo.ITEMS_KEY))
         {
           builder.newObject(TwilightPojo.ITEMS_KEY);

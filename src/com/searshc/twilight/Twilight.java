@@ -66,7 +66,16 @@ public class Twilight
       Scanner scanner = new Scanner(file);
       while (scanner.hasNextLine())
       {
-        commands.add(scanner.nextLine());
+        String line = scanner.nextLine();  
+        if (line.startsWith("#"))
+        {
+         //Do nothing
+        } 
+        else 
+        {  
+          commands.add(line);
+        }  
+          
       }
 
       ScriptCommandParser cmdParser;      

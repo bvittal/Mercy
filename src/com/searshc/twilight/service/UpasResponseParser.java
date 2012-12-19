@@ -76,7 +76,14 @@ public class UpasResponseParser{
               .addSegments(createSearsResponseTypes())
               .build();
       
-      return parser.getSegmentList();
+      List<SegmentIndex> segmentIndexes = parser.getSegmentList();
+      /**
+      for (SegmentIndex segmentIndex : segmentIndexes) {
+        System.out.println("Segment " + segmentIndex.getIndicatorString() + "\t at position " 
+            + segmentIndex.getPosition() + " length of\t " 
+            + segmentIndex.getLength());
+      }*/
+      return segmentIndexes;
   }
   
   private Map<String, SearsResponseType> createSearsResponseTypes() {

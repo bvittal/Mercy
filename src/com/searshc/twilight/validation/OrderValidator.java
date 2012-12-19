@@ -86,9 +86,9 @@ public class OrderValidator extends Order implements ResponseValidator
     super.setPhysicalStoreNumber(physicalStoreNumber);
   }
 
-  public void setPromoIncompatibilities(Incompatibility[] incompatibilities)
+  public void setIncompatibilities(Incompatibility[] incompatibilities)
   {
-    commands.add(new PromoIncompatibilityValidationCommand().setBaseValueForIncompatibilities(incompatibilities));
+    commands.add(new IncompatibilityValidationCommand().setBaseValueForIncompatibilities(incompatibilities));
     super.setIncompatibilities(incompatibilities);
   }
   

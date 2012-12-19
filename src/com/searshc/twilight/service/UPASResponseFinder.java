@@ -31,12 +31,14 @@ public class UPASResponseFinder
   {
     String coupon = StringUtils.EMPTY;
     String pluItemNumber = StringUtils.EMPTY;
-    
+    boolean match = Boolean.FALSE;
+      
     if (results.size() > 0)
     {
       final String indicator = this.getIndicator(reqBuffer);
 
       System.out.println("REQUEST RECIEVED    " + byteResponse(reqBuffer));
+      
       if (isValidRequest(indicator, reqBuffer))
       {
         if (indicator.equals(REQUEST_INDICATOR_PLU_INQ))
@@ -74,21 +76,16 @@ public class UPASResponseFinder
           {
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             Collection<byte[]> responseObject = results.get("PLU_RSP");
+            
             if (responseObject != null)
             {
               for (byte[] respBuffer : responseObject)
               {
                 try
                 {
-                  //System.out.println("PLU RESPONSE : " + byteResponse(respBuffer));
                   List<SegmentIndex> segmentIndexes = parser.parseResponse(respBuffer);
                   for (SegmentIndex segmentIndex : segmentIndexes)
                   {
-                    /**
-                    System.out.println("Segment "
-                        + segmentIndex.getIndicatorString() + "\t at position "
-                        + segmentIndex.getPosition() + " length of\t "
-                        + segmentIndex.getLength());*/
                     if (segmentIndex.getIndicatorString().equals("E8"))
                     {
                       ResponseSegmentE8 e8Seg = segmentIndex.getAsResponseSegmentE8();

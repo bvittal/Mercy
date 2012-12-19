@@ -45,6 +45,8 @@ public abstract class AbstractScriptCommand
   public static final String ITEM_DELIVERY_CHARGE = "deliveryCharge";
   
   /** Adjustments */
+  public static final String BASE_ADJUSTMENTS = "adjustments";
+  public static final String BASE_DC_ADJUSTMENTS = "dcAdjustments";
   public static final String ADJUSTMENT_AMOUNT = "amount";
   public static final String ADJUSTMENT_CSO_CODE = "csoCode";
   public static final String ADJUSTMENT_ENDDATE = "endDate";
@@ -60,6 +62,11 @@ public abstract class AbstractScriptCommand
   public static final String ADJUSTMENT_SOURCE = "adjustmentSource";
   
   /** Incompatibility */
+  public static final String BASE_INCOMPATIBILITIES = "incompatibilities";
+  public static final String SUB_BASE_INCOMPATIBILITY = "incompatibility";
+  public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS = "unappliedOffer";
+  public static final String INCOMPATIBILITY_REASON = "reason";
+  public static final String INCOMPATIBILITY_FIELDS = "fields";
   public static final String INCOMPATIBILITY_OPTED_PROMO = "incompOptedPromo";
   public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS_OFFER_ID = "incompOfferId";
   public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS_REASON_CODE = "incompReasonCode";
@@ -68,6 +75,8 @@ public abstract class AbstractScriptCommand
   public static final String INCOMPATIBILITY_REASON_COUPON_CODES = "incompCouponCodes";
   
   /** Unused Coupon Codes*/
+  public static final String BASE_UNUSED_COUPON_CODE = "unusedCouponCodes";
+  public static final String SUB_BASE_COUPON_CODE = "couponCode";
   public static final String UNUSED_COUPON_CODE = "code";
   public static final String UNUSED_COUPON_CODE_REASON = "couponReason";
   
@@ -136,7 +145,7 @@ public abstract class AbstractScriptCommand
     {
       TwilightJsonObject twilightJsonObj = jasonObjItr.next();
      
-    if(twilightJsonObj != null && twilightJsonObj.getName().equalsIgnoreCase("unusedCouponCodes"))
+    if(twilightJsonObj != null && twilightJsonObj.getName().equalsIgnoreCase(BASE_UNUSED_COUPON_CODE))
     {
       List<TwilightJsonObject> subObject = twilightJsonObj.getTwilightJsonObject();
       for(TwilightJsonObject objt : subObject)
@@ -145,7 +154,7 @@ public abstract class AbstractScriptCommand
           order.setUnusedCouponCodes(couponCodesList);
         }
       }
-    else if(twilightJsonObj != null && twilightJsonObj.getName().equalsIgnoreCase("incompatibilities"))
+    else if(twilightJsonObj != null && twilightJsonObj.getName().equalsIgnoreCase(BASE_INCOMPATIBILITIES))
     {
       Iterator<TwilightJsonObject> incompatibilityObjItr = twilightJsonObj.getTwilightJsonObject().iterator();
       
@@ -232,7 +241,7 @@ public abstract class AbstractScriptCommand
           List<TwilightJsonObject> subItemList = itemObj.getTwilightJsonObject();
           
           for(TwilightJsonObject subItemObj : subItemList){
-            if(!subItemObj.getName().equalsIgnoreCase("couponCode")){
+            if(!subItemObj.getName().equalsIgnoreCase(SUB_BASE_COUPON_CODE)){
                 itemIterator = subItemList.iterator();
              }
           }
@@ -254,12 +263,12 @@ public abstract class AbstractScriptCommand
 
           if (adjustmentMap != null)
           {
-            if (adjustmentObj.getName().equalsIgnoreCase("adjustments"))
+            if (adjustmentObj.getName().equalsIgnoreCase(BASE_ADJUSTMENTS))
             {
               adjustments.add(this.getAdjustments(adjustmentMap));
               item.setAdjustments(adjustments);
             }
-          else if (adjustmentObj.getName().equalsIgnoreCase("dcAdjustments"))
+          else if (adjustmentObj.getName().equalsIgnoreCase(BASE_DC_ADJUSTMENTS))
           {
             dcAdjustments.add(this.getAdjustments(adjustmentMap));
             item.setDcAdjustments(dcAdjustments);
@@ -414,7 +423,7 @@ public abstract class AbstractScriptCommand
     List<AppMessage> appMessageList = new ArrayList<AppMessage>();
     List<UnappliedOffer> unappliedOfferList = new ArrayList<UnappliedOffer>();
     
-    if(incompatibilityObj != null && incompatibilityObj.getName().equalsIgnoreCase("incompatibility"))
+    if(incompatibilityObj != null && incompatibilityObj.getName().equalsIgnoreCase(SUB_BASE_INCOMPATIBILITY))
     {
       HashMap<String,String> optedPromoMap = incompatibilityObj.getParameters();
     
@@ -436,7 +445,7 @@ public abstract class AbstractScriptCommand
         {
           TwilightJsonObject unappliedOffersTwilightJsonObj = unappliedOfferItr.next();
           
-          if(unappliedOffersTwilightJsonObj != null && unappliedOffersTwilightJsonObj.getName().equalsIgnoreCase("unappliedOffer"))
+          if(unappliedOffersTwilightJsonObj != null && unappliedOffersTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_UNAPPLIED_OFFERS))
           {
             HashMap<String,String> unappliedOffersMap = unappliedOffersTwilightJsonObj.getParameters();
             
@@ -459,7 +468,7 @@ public abstract class AbstractScriptCommand
             {
               TwilightJsonObject reasonTwilightJsonObj = reasonOfferItr.next();
               
-              if(reasonTwilightJsonObj != null && reasonTwilightJsonObj.getName().equalsIgnoreCase("reason"))
+              if(reasonTwilightJsonObj != null && reasonTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_REASON))
               {
                 HashMap<String,String> reasonsOffersMap = reasonTwilightJsonObj.getParameters();
                 
@@ -476,7 +485,7 @@ public abstract class AbstractScriptCommand
                   {
                     TwilightJsonObject fieldsTwilightJsonObj = fieldsItr.next();
                     
-                    if(fieldsTwilightJsonObj != null && fieldsTwilightJsonObj.getName().equalsIgnoreCase("fields"))
+                    if(fieldsTwilightJsonObj != null && fieldsTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_FIELDS))
                     {
                       HashMap<String,String> fieldsMap = fieldsTwilightJsonObj.getParameters();
                       
