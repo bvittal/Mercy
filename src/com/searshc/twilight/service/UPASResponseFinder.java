@@ -116,8 +116,13 @@ public class UPASResponseFinder
             for (byte[] respBuffer : responseObject)
             {
               final CouponInquiry2AA7Segment couponReqInq = new CouponInquiry2AA7Segment(reqBuffer);
-              final CouponInquiry2AA7Segment couponResInq = new CouponInquiry2AA7Segment(reqBuffer);
+              final CouponInquiry2AA7Segment couponResInq = new CouponInquiry2AA7Segment(respBuffer);
               coupon = couponReqInq.getCouponNumber();
+              
+              SegmentFactory factory = new SegmentFactory();
+              factory.getSegment("2AA7", respBuffer);
+              
+              System.out.println("Request Coupon number " + coupon);
               if (coupon.equals(couponResInq.getCouponNumber()))
               {
                 System.out.println("Matching coupon number found " + coupon);

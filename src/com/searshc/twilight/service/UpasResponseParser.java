@@ -154,13 +154,6 @@ public class UpasResponseParser{
     srt = new SearsResponseType(ResponseSegmentEA.INDICATOR.HEX_STRING.getHexString(), ResponseSegmentEA.class, SegmentEALengthCalculator.class );
     map.put(srt.getIndicator(), srt);
     
-    /**
-    srt = new SearsResponseType(CouponInquiry2AA7Segment.INDICATOR.HEX_STRING.getHexString(), CouponInquiry2AA7Segment.class, Segment2AA7LengthCalculator.class );
-    map.put(srt.getIndicator(), srt);
-    
-    srt = new SearsResponseType(PluInquiryD8Segment.INDICATOR.HEX_STRING.getHexString(), PluInquiryD8Segment.class, Segment2AA7LengthCalculator.class );
-    map.put(srt.getIndicator(), srt);
-    */
     return map;
   }
   
