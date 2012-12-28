@@ -18,6 +18,9 @@ public interface TwilightPojo
   public static final String INCOMPATIBILITIES_REASON_KEY = "reason";
   public static final String INCOMPATIBILITIES_FIELDS_KEY = "fields";
   
+  //Response object
+  public static final String COUPON_RESP_INCL_EXCLS_KEY = "includeExclude";
+  public static final String COUPON_RESP_INCL_EXCL_KEY = "inclExcl";
   
   public void setName(String str);
   public TwilightPojoType getType();
