@@ -17,6 +17,9 @@ public class CouponResponseParser
   private static Logger logger = Logger.getLogger(CouponResponseParser.class);
   private static Properties prop;
   
+  private final int BASE_LENGTH = 109;
+  private final int INC_EXCL_LENGTH = 19;
+  
   //Coupon Inquiry Response - 2AB7 - parameters
   private static final String COUPON_RESP_SEGMENT_LENGTH = "segmentLength";
   private static final String COUPON_RESP_SEGMENT_LEVEL = "segmentLevel";
@@ -418,7 +421,12 @@ public class CouponResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SEGMENT_LENGTH))
+         {
            segmentLength = entry.getValue();
+           String firstByte = segmentLength.substring(0,2);
+           String secondByte = segmentLength.substring(2,4);
+           segmentLength = firstByte + " " + secondByte;
+         }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SEGMENT_LEVEL))
            segmentLevel = entry.getValue();
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_NUMBER))
@@ -438,9 +446,19 @@ public class CouponResponseParser
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_AMOUNT))
            reductionAmount = entry.getValue();
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_FLAG))
+         {
            reductionFlag = entry.getValue();
+           String firstByte = reductionFlag.substring(0,2);
+           String secondByte = reductionFlag.substring(2,4);
+           reductionFlag = firstByte + " " + secondByte;
+         }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_RETAIL_FORMAT))
+         {
            retailFormat = entry.getValue();
+           String firstByte = retailFormat.substring(0,2);
+           String secondByte = retailFormat.substring(2,4);
+           retailFormat = firstByte + " " + secondByte;
+         }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUNT_COUPON))
            countCoupon = entry.getValue();
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_TRANSACTION))
@@ -479,10 +497,17 @@ public class CouponResponseParser
            nbrOfInclExcl = entry.getValue();
         }
       }
+      
+      int length = BASE_LENGTH + (INC_EXCL_LENGTH * Integer.parseInt(nbrOfInclExcl));
+      //int length = BASE_LENGTH + (INC_EXCL_LENGTH * 3);
+      //String len = Integer.toHexString(length);
+      
       sb.append(indicator)
       .append(" ")
       //This logic needs to be revisited once Patrick will be back from holidays
-      .append("51 01 ")
+      //.append("51 01 ")
+      .append(segmentLength)
+      .append(" ")
       .append(this.byteResponse(segmentLevel.getBytes()))
       .append(this.byteResponse(couponNumber.getBytes()))
       .append(this.byteResponse(type.getBytes()))
@@ -492,10 +517,14 @@ public class CouponResponseParser
       .append(this.byteResponse(endTime.getBytes()))
       .append(this.byteResponse(reductionType.getBytes()))
       .append(this.byteResponse(reductionAmount.getBytes()))
-      //.append(this.byteResponse(reductionFlag.getBytes()))
-      .append("70 20 ")
-      //.append(this.byteResponse(retailFormat.getBytes()))
-      .append("80 20 ")
+      //.append(this.byteResponse(reductionFlag.getBytes())) //reductionFlag=0111000000100000
+      //.append("70 20 ")
+      .append(reductionFlag)
+      .append(" ")
+      //.append(this.byteResponse(retailFormat.getBytes())) //retailFormat=1000000000100000
+      //.append("80 20 ")
+      .append(retailFormat)
+      .append(" ")
       .append(this.byteResponse(countCoupon.getBytes()))
       .append(this.byteResponse(oneCouponPerTransaction.getBytes()))
       .append(this.byteResponse(oneCouponPerItem.getBytes()))
@@ -512,6 +541,8 @@ public class CouponResponseParser
       .append(this.byteResponse(validWithZeroPercentFinancing.getBytes()))
       .append(this.byteResponse(regularPriceCoupon.getBytes()))
       .append(this.byteResponse(nbrOfInclExcl.getBytes()));
+      
+      System.out.println("Main Byte Buffer " + sb);
     }
         
       
@@ -591,7 +622,8 @@ public class CouponResponseParser
                     inclExclModifiableMap.put(entry.getKey(), entry.getValue());
                   }
                 }
-              
+              }
+            
                 if(inclExclModifiableMap.size() > 0)
                 {
                   for (Map.Entry<String, String> entry : inclExclModifiableMap.entrySet())
@@ -616,18 +648,19 @@ public class CouponResponseParser
                       subLineVariable = entry.getValue();
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_ITEM_NUMBER))
                       itemNumber = entry.getValue();
+                    }
                   }
-                }
-                
+              
               sb.append(this.byteResponse(sequenceNumber.getBytes()))
                 .append(this.byteResponse(incExcFlag.getBytes()))
                 .append(this.byteResponse(divisionNumber.getBytes()))
                 .append(this.byteResponse(lineNumber.getBytes()))
                 .append(this.byteResponse(subLineNumber.getBytes()))
-                .append(this.byteResponse(subLineVariable.getBytes()));
+                .append(this.byteResponse(subLineVariable.getBytes()))
+                .append(this.byteResponse(itemNumber.getBytes()));
+                }
               }
-            }
-          }
+        System.out.println("Coupon Response " + sb);
         return sb;
      }
   

@@ -18,6 +18,7 @@ public class PluResponseParser
   private static Logger logger = Logger.getLogger(PluResponseParser.class);
   private static Properties prop;
   
+  private static final String INDICATOR = "indicator";
   private static final String SEGMENT_LEVEL = "segmentLevel";
   private static final String SEGMENT_LENGTH = "segmentLength";
   
@@ -41,10 +42,7 @@ public class PluResponseParser
   private static final String PLU_RESP_PRODUCT_SERVICE_FLAG = "productServiceFlag";
   private static final String PLU_RESP_DELIVERY_FLAG = "deliveryFlag";
   private static final String PLU_RESP_ASSOCIATE_DISCOUNT_FLAG = "associateDiscountFlag";
-  private static final String PLU_RESP_RESERVED_FOR_FUTURE_USE_ONE = "reservedforfutureUseOne";
-  private static final String PLU_RESP_RESERVED_FOR_FUTURE_USE_TWO = "reservedforfutureUseTwo";
-  private static final String PLU_RESP_RESERVED_FOR_FUTURE_USE_THREE = "reservedforfutureUseThree";
-  private static final String PLU_RESP_RESERVED_FOR_FUTURE_USE_FOUR = "reservedforfutureUseFour";
+  private static final String PLU_RESP_RESERVED_FOR_FUTURE = "reservedForFutureUse";
   private static final String PLU_RESP_COUPON_NUMBER = "couponNumber";
   private static final String PLU_RESP_COUPON_TYPE_CODE = "couponTypeCode";
   private static final String PLU_RESP_MARKDOWN_TYPE_CODE = "markdownTypeCode";
@@ -71,10 +69,7 @@ public class PluResponseParser
   private static final String DEFAULT_PLU_RESP_PRODUCT_SERVICE_FLAG = "pluResp_98_productServiceFlag";
   private static final String DEFAULT_PLU_RESP_DELIVERY_FLAG = "pluResp_98_deliveryFlag";
   private static final String DEFAULT_PLU_RESP_ASSOCIATE_DISCOUNT_FLAG = "pluResp_98_associateDiscountFlag";
-  private static final String DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_ONE = "pluResp_98_reservedforfutureUseOne";
-  private static final String DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_TWO = "pluResp_98_reservedforfutureUseTwo";
-  private static final String DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_THREE = "pluResp_98_reservedforfutureUseThree";
-  private static final String DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_FOUR = "pluResp_98_reservedforfutureUseFour";
+  private static final String DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE = "pluResp_98_reservedForFutureUse";
   private static final String DEFAULT_PLU_RESP_COUPON_NUMBER = "pluResp_98_couponNumber";
   private static final String DEFAULT_PLU_RESP_COUPON_TYPE_CODE = "pluResp_98_couponTypeCode";
   private static final String DEFAULT_PLU_RESP_MARKDOWN_TYPE_CODE = "pluResp_98_markdownTypeCode";
@@ -268,12 +263,21 @@ public class PluResponseParser
   private static final String DEFAULT_PLU_RESP_CANCELLATION_FEE_PERCENT = "pluResp_40BA_cancellationFeePercent";
   private static final String DEFAULT_PLU_RESP_UNUSED_THREE = "pluResp_40BA_unusedThree";
   
+  //Plu Inquiry Response - 58B1 - parameters
+  private static final String PLU_RESP_INSTALLER_LEAD_TIME_VALUE = "installerLeadTimeValue";
+  private static final String PLU_RESP_INSTALLATION_CUTOFF_TIME = "installationCutOffTime";
+  private static final String PLU_RESP_LONG_ITEM_DESCRIPTION = "longItemDescription";
+  
+  //Plu Inquiry Response - 58B1 - default Values
+  private static final String DEFAULT_PLU_RESP_INSTALLER_LEAD_TIME_VALUE = "pluResp_58B1_installerLeadTimeValue";
+  private static final String DEFAULT_PLU_RESP_INSTALLATION_CUTOFF_TIME = "pluResp_58B1_installationCutOffTime";
+  private static final String DEFAULT_PLU_RESP_LONG_ITEM_DESCRIPTION = "pluResp_58B1_longItemDescription";
+  
   //Plu Inquiry Response - 60B1 - parameters
   private static final String PLU_RESP_OFFER_TYPE = "offerType";
   private static final String PLU_RESP_OFFER_ID = "offerId";
   private static final String PLU_RESP_FINANCIAL_CODE = "financialCode";
   private static final String PLU_RESP_THRESHOLD_DOLLAR_AMOUNT = "thresholdDollarAmount";
-  // private static final String PLU_RESP_ASSOCIATE_DISCOUNT_FLAG = "exceptionalValueItem"; -- DUPLICATE
   private static final String PLU_RESP_MISCELLANEOUS_REDUCTION_FLAG = "miscellaneousReductionsFlag";
   private static final String PLU_RESP_INSTANT_REBATE_FLAG = "instantRebateFlag";
   private static final String PLU_RESP_MAILIN_REBATE_FLAG = "mailInRebateFlag";
@@ -301,6 +305,20 @@ public class PluResponseParser
   private static final String DEFAULT_PLU_RESP_NBR_OF_RECEIPT_PROMO_DESC_LINES = "pluResp_60B1_nbrOfReceiptPromoDescriptionLines";
   private static final String DEFAULT_PLU_RESP_RECEIPT_PROMO_DESC_LINE = "pluResp_60B1_receiptPromoDescriptionLine";
   
+  //Plu Inquiry Response - 62B1 - parameters
+  private static final String PLU_RESP_RESTRICTION_TYPE = "restrictionType";
+  private static final String PLU_RESP_MINIMUM_AGE_VALUE = "minimumAgeValue";
+  private static final String PLU_RESP_MAXIMUM_QUANTITY_VALUE = "maximumQuantityValue";
+  private static final String PLU_RESP_ITEM_MATCH_INDICATOR = "itemMatchIndicator";
+  
+  //Plu Inquiry Response - 62B1 - default Values
+  private static final String DEFAULT_PLU_RESP_SEGMENT_LEVEL_62B1 = "pluResp_62B1_segmentLevel";
+  private static final String DEFAULT_PLU_RESP_RESTRICTION_TYPE = "pluResp_62B1_restrictionType";
+  private static final String DEFAULT_PLU_RESP_MINIMUM_AGE_VALUE = "pluResp_62B1_minimumAgeValue";
+  private static final String DEFAULT_PLU_RESP_MAXIMUM_QUANTITY_VALUE = "pluResp_62B1_maximumQuantityValue";
+  private static final String DEFAULT_PLU_RESP_ITEM_MATCH_INDICATOR = "pluResp_62B1_itemMatchIndicator";
+  
+  
   public PluResponseParser()
   {
     try{
@@ -314,7 +332,26 @@ public class PluResponseParser
   
   public StringBuilder getPluResponse(TwilightJsonObject twilightJsonObject){
     StringBuilder builder = new StringBuilder();
-    //Pull indicator from twilightJsonObject and process call method's
+    
+    if(twilightJsonObject != null)
+    {
+      Iterator<TwilightJsonObject> itr = twilightJsonObject.getTwilightJsonObject().iterator();
+      
+      while(itr.hasNext())
+      { 
+        Iterator<TwilightJsonObject> subItr = itr.next().getTwilightJsonObject().iterator();
+        
+        while(subItr.hasNext())
+        {
+          TwilightJsonObject obj = subItr.next();
+          
+          if(obj != null && obj.getName().equalsIgnoreCase("indicator_98"))
+          {
+            builder.append(this.processPluResponse98(obj.getParameters()));
+          }
+        }
+      }
+    }
     return builder;
   }
   
@@ -608,7 +645,7 @@ public class PluResponseParser
    }
   
   
-  private StringBuilder processPluResponse98(TwilightJsonObject twilightJsonObject)
+  private StringBuilder processPluResponse98(Map<String,String> pluResponse98Map)
   {
       String indicator = "98";
       String unknown = "02";
@@ -631,20 +668,18 @@ public class PluResponseParser
       String productServiceFlag = StringUtils.EMPTY;
       String deliveryFlag = StringUtils.EMPTY;
       String associateDiscountFlag = StringUtils.EMPTY;
-      String reservedforfutureUseOne = StringUtils.EMPTY;
-      String reservedforfutureUseTwo = StringUtils.EMPTY;
-      String reservedforfutureUseThree = StringUtils.EMPTY;
-      String reservedforfutureUseFour = StringUtils.EMPTY;
+      String reservedForFutureUse = StringUtils.EMPTY;
       String couponNumber = StringUtils.EMPTY;
       String couponTypeCode = StringUtils.EMPTY;
       String markdownTypeCode = StringUtils.EMPTY;
       String markdownAmountPercent = StringUtils.EMPTY;
       String futurePurchaseCouponDesc = StringUtils.EMPTY;
       
-      final Map<String, String> pluResponse98Map = twilightJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
       final StringBuilder sb = new StringBuilder();
       
+    if(pluResponse98Map.size() > 0)
+     {
       for (Map.Entry<String, String> entry : pluResponse98Map.entrySet())
       { 
         if(!pluResponse98Map.containsKey(PLU_RESP_FUTURE_PURCHASE_COUPON_ID))
@@ -816,36 +851,9 @@ public class PluResponseParser
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
         
-        if(!pluResponse98Map.containsKey(PLU_RESP_RESERVED_FOR_FUTURE_USE_ONE))
+        if(!pluResponse98Map.containsKey(PLU_RESP_RESERVED_FOR_FUTURE))
         {
-            modifiableMap.put(PLU_RESP_RESERVED_FOR_FUTURE_USE_ONE, prop.getProperty(DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_ONE));
-        }
-        else
-        {
-          modifiableMap.put(entry.getKey(), entry.getValue());
-        }
-        
-        if(!pluResponse98Map.containsKey(PLU_RESP_RESERVED_FOR_FUTURE_USE_TWO))
-        {
-            modifiableMap.put(PLU_RESP_RESERVED_FOR_FUTURE_USE_TWO, prop.getProperty(DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_TWO));
-        }
-        else
-        {
-          modifiableMap.put(entry.getKey(), entry.getValue());
-        }
-        
-        if(!pluResponse98Map.containsKey(PLU_RESP_RESERVED_FOR_FUTURE_USE_THREE))
-        {
-            modifiableMap.put(PLU_RESP_RESERVED_FOR_FUTURE_USE_THREE, prop.getProperty(DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_THREE));
-        }
-        else
-        {
-          modifiableMap.put(entry.getKey(), entry.getValue());
-        }
-        
-        if(!pluResponse98Map.containsKey(PLU_RESP_RESERVED_FOR_FUTURE_USE_FOUR))
-        {
-            modifiableMap.put(PLU_RESP_RESERVED_FOR_FUTURE_USE_FOUR, prop.getProperty(DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE_USE_FOUR));
+            modifiableMap.put(PLU_RESP_RESERVED_FOR_FUTURE, prop.getProperty(DEFAULT_PLU_RESP_RESERVED_FOR_FUTURE));
         }
         else
         {
@@ -897,74 +905,169 @@ public class PluResponseParser
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
       }
+    }
       
       if(modifiableMap.size() > 0)
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_PURCHASE_COUPON_ID))
+         if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_PURCHASE_COUPON_ID)){
            futurePurchaseCouponID = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_START_DATE))
+           if(StringUtils.isBlank(futurePurchaseCouponID) || futurePurchaseCouponID.equalsIgnoreCase("null")){
+             futurePurchaseCouponID = StringUtils.rightPad(StringUtils.EMPTY, 10);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_START_DATE)){
            startDate = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_END_DATE))
+           if(StringUtils.isBlank(startDate) || startDate.equalsIgnoreCase("null")){
+             startDate = StringUtils.rightPad(StringUtils.EMPTY, 10);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_END_DATE)){
            endDate = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_QUALIFICATION_AMOUNT))
+           if(StringUtils.isBlank(endDate) || endDate.equalsIgnoreCase("null")){
+             endDate = StringUtils.rightPad(StringUtils.EMPTY, 10);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_QUALIFICATION_AMOUNT)){
            minimumQualificationAmount = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY))
+           if(StringUtils.isBlank(minimumQualificationAmount) || minimumQualificationAmount.equalsIgnoreCase("null")){
+             minimumQualificationAmount = StringUtils.rightPad(StringUtils.EMPTY, 7);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY)){
            maximumQuantity = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG))
+           if(StringUtils.isBlank(maximumQuantity) || maximumQuantity.equalsIgnoreCase("null")){
+             maximumQuantity = StringUtils.rightPad(StringUtils.EMPTY, 3);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG)){
            searsChargeFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGULAR_PRICE_FLAG))
+           if(StringUtils.isBlank(searsChargeFlag) || searsChargeFlag.equalsIgnoreCase("null")){
+             searsChargeFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGULAR_PRICE_FLAG)){
            regularPriceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PROMOTION_PRICE_FLAG))
+           if(StringUtils.isBlank(regularPriceFlag) || regularPriceFlag.equalsIgnoreCase("null")){
+             regularPriceFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PROMOTION_PRICE_FLAG)){
            promotionPriceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CLEARANCE_PRICE_FLAG))
+           if(StringUtils.isBlank(promotionPriceFlag) || promotionPriceFlag.equalsIgnoreCase("null")){
+             promotionPriceFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CLEARANCE_PRICE_FLAG)){
            clearancePriceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MALL_FLAG))
+           if(StringUtils.isBlank(clearancePriceFlag) || clearancePriceFlag.equalsIgnoreCase("null")){
+             clearancePriceFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MALL_FLAG)){
            mallFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_HARDWARE_FLAG))
+           if(StringUtils.isBlank(mallFlag) || mallFlag.equalsIgnoreCase("null")){
+             mallFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_HARDWARE_FLAG)){
            hardwareFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THE_GREAT_INDOORS_FLAG))
+           if(StringUtils.isBlank(hardwareFlag) || hardwareFlag.equalsIgnoreCase("null")){
+             hardwareFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THE_GREAT_INDOORS_FLAG)){
            theGreatIndoorsFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_AUTOMOTIVE_FLAG))
+           if(StringUtils.isBlank(theGreatIndoorsFlag) || theGreatIndoorsFlag.equalsIgnoreCase("null")){
+             theGreatIndoorsFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_AUTOMOTIVE_FLAG)){
            automotiveFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OUTLET_FLAG))
+           if(StringUtils.isBlank(automotiveFlag) || automotiveFlag.equalsIgnoreCase("null")){
+             automotiveFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OUTLET_FLAG)){
            outletFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DEALER_FLAG))
+           if(StringUtils.isBlank(outletFlag) || outletFlag.equalsIgnoreCase("null")){
+             outletFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DEALER_FLAG)){
            dealerFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WWW_FLAG))
+           if(StringUtils.isBlank(dealerFlag) || dealerFlag.equalsIgnoreCase("null")){
+             dealerFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WWW_FLAG)){
            wwwFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRODUCT_SERVICE_FLAG))
+           if(StringUtils.isBlank(wwwFlag) || wwwFlag.equalsIgnoreCase("null")){
+             wwwFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRODUCT_SERVICE_FLAG)){
            productServiceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELIVERY_FLAG))
+           if(StringUtils.isBlank(productServiceFlag) || productServiceFlag.equalsIgnoreCase("null")){
+             productServiceFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELIVERY_FLAG)){
            deliveryFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_FLAG))
+           if(StringUtils.isBlank(deliveryFlag) || deliveryFlag.equalsIgnoreCase("null")){
+             deliveryFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_FLAG)){
            associateDiscountFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESERVED_FOR_FUTURE_USE_ONE))
-           reservedforfutureUseOne = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESERVED_FOR_FUTURE_USE_TWO))
-           reservedforfutureUseTwo = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESERVED_FOR_FUTURE_USE_THREE))
-           reservedforfutureUseThree = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESERVED_FOR_FUTURE_USE_FOUR))
-           reservedforfutureUseFour = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER))
+           if(StringUtils.isBlank(associateDiscountFlag) || associateDiscountFlag.equalsIgnoreCase("null")){
+             associateDiscountFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESERVED_FOR_FUTURE)){
+           reservedForFutureUse = entry.getValue();
+           if(StringUtils.isBlank(reservedForFutureUse) || reservedForFutureUse.equalsIgnoreCase("null")){
+             reservedForFutureUse = StringUtils.rightPad(StringUtils.EMPTY, 4);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER)){
            couponNumber = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_TYPE_CODE))
+           if(StringUtils.isBlank(couponNumber) || couponNumber.equalsIgnoreCase("null")){
+             couponNumber = StringUtils.rightPad(StringUtils.EMPTY, 8);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_TYPE_CODE)){
            couponTypeCode = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_TYPE_CODE))
+           if(StringUtils.isBlank(couponTypeCode) || couponTypeCode.equalsIgnoreCase("null")){
+             couponTypeCode = StringUtils.rightPad(StringUtils.EMPTY, 10);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_TYPE_CODE)){
            markdownTypeCode = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_AMOUNT_PERCENT))
+           if(StringUtils.isBlank(markdownTypeCode) || markdownTypeCode.equalsIgnoreCase("null")){
+             markdownTypeCode = StringUtils.rightPad(StringUtils.EMPTY, 10);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_AMOUNT_PERCENT)){
            markdownAmountPercent = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_PURCHASE_COUPON_DESC))
+           if(StringUtils.isBlank(markdownAmountPercent) || markdownAmountPercent.equalsIgnoreCase("null")){
+             markdownAmountPercent = StringUtils.rightPad(StringUtils.EMPTY, 5);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_PURCHASE_COUPON_DESC)){
            futurePurchaseCouponDesc = entry.getValue();
+           if(StringUtils.isBlank(futurePurchaseCouponDesc) || futurePurchaseCouponDesc.equalsIgnoreCase("null")){
+             futurePurchaseCouponDesc = StringUtils.rightPad(StringUtils.EMPTY, 480);
+           }
+         }
         }
       }
 
      sb.append(indicator)
-      .append(" ")
+     .append(" ")
+      .append(this.byteResponse(unknown.getBytes()))
       .append(this.byteResponse(futurePurchaseCouponID.getBytes()))
-      .append(unknown)
       .append(this.byteResponse(startDate.getBytes()))
       .append(this.byteResponse(endDate.getBytes()))
       .append(this.byteResponse(minimumQualificationAmount.getBytes()))
@@ -983,6 +1086,7 @@ public class PluResponseParser
       .append(this.byteResponse(productServiceFlag.getBytes()))
       .append(this.byteResponse(deliveryFlag.getBytes()))
       .append(this.byteResponse(associateDiscountFlag.getBytes()))
+      .append(this.byteResponse(reservedForFutureUse.getBytes()))
       .append(this.byteResponse(couponNumber.getBytes()))
       .append(this.byteResponse(couponTypeCode.getBytes()))
       .append(this.byteResponse(markdownTypeCode.getBytes()))
@@ -2060,6 +2164,74 @@ public class PluResponseParser
    }
   
   
+  private StringBuilder processPluResponse58B1(TwilightJsonObject twilightJsonObject)
+  {
+    
+    String indicator = "58 B1";
+    String installerLeadTimeValue = StringUtils.EMPTY;
+    String installationCutOffTime = StringUtils.EMPTY;
+    String longItemDescription = StringUtils.EMPTY;
+    
+    final Map<String, String> pluResponse58B1Map = twilightJsonObject.getParameters();
+    final Map<String, String> modifiableMap = new HashMap<String,String>();
+    final StringBuilder sb = new StringBuilder();
+    
+  if(pluResponse58B1Map.size() > 0)
+  {
+    for (Map.Entry<String, String> entry : pluResponse58B1Map.entrySet())
+    { 
+      if(!pluResponse58B1Map.containsKey(PLU_RESP_INSTALLER_LEAD_TIME_VALUE))
+      {
+          modifiableMap.put(PLU_RESP_INSTALLER_LEAD_TIME_VALUE, prop.getProperty(DEFAULT_PLU_RESP_INSTALLER_LEAD_TIME_VALUE));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponse58B1Map.containsKey(PLU_RESP_INSTALLATION_CUTOFF_TIME))
+      {
+          modifiableMap.put(PLU_RESP_INSTALLATION_CUTOFF_TIME, prop.getProperty(DEFAULT_PLU_RESP_INSTALLATION_CUTOFF_TIME));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponse58B1Map.containsKey(PLU_RESP_LONG_ITEM_DESCRIPTION))
+      {
+          modifiableMap.put(PLU_RESP_LONG_ITEM_DESCRIPTION, prop.getProperty(DEFAULT_PLU_RESP_LONG_ITEM_DESCRIPTION));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+    }
+    
+    if(modifiableMap.size() > 0)
+    {
+      for (Map.Entry<String, String> entry : modifiableMap.entrySet())
+      { 
+       if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLER_LEAD_TIME_VALUE))
+         installerLeadTimeValue = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_CUTOFF_TIME))
+         installationCutOffTime = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_LONG_ITEM_DESCRIPTION))
+         longItemDescription = entry.getValue();
+      }
+    }
+    
+    sb.append(indicator)
+    .append(" ")
+    .append(this.byteResponse(installerLeadTimeValue.getBytes()))
+    .append(this.byteResponse(installationCutOffTime.getBytes()))
+    .append(this.byteResponse(longItemDescription.getBytes()));
+    }
+  
+    return sb;
+  }
+  
+  
   private StringBuilder processPluResponse60B1(TwilightJsonObject twilightJsonObject)
   {
     String indicator = "60 B1";
@@ -2306,6 +2478,99 @@ public class PluResponseParser
       
       return sb;
       }
+  
+  private StringBuilder processPluResponse62B1(TwilightJsonObject twilightJsonObject)
+  {
+    
+    String indicator = "62 B1";
+    String segmentLevel = StringUtils.EMPTY;
+    String restrictionType = StringUtils.EMPTY;
+    String minimumAgeValue = StringUtils.EMPTY;
+    String maximumQuantityValue = StringUtils.EMPTY;
+    String itemMatchIndicator = StringUtils.EMPTY;
+    
+    final Map<String, String> pluResponse62B1Map = twilightJsonObject.getParameters();
+    final Map<String, String> modifiableMap = new HashMap<String,String>();
+    final StringBuilder sb = new StringBuilder();
+    
+  if(pluResponse62B1Map.size() > 0)
+  {
+    for (Map.Entry<String, String> entry : pluResponse62B1Map.entrySet())
+    { 
+      if(!pluResponse62B1Map.containsKey(SEGMENT_LEVEL))
+      {
+          modifiableMap.put(SEGMENT_LEVEL, prop.getProperty(DEFAULT_PLU_RESP_SEGMENT_LEVEL_62B1));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponse62B1Map.containsKey(PLU_RESP_RESTRICTION_TYPE))
+      {
+          modifiableMap.put(PLU_RESP_RESTRICTION_TYPE, prop.getProperty(DEFAULT_PLU_RESP_RESTRICTION_TYPE));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponse62B1Map.containsKey(PLU_RESP_MINIMUM_AGE_VALUE))
+      {
+          modifiableMap.put(PLU_RESP_MINIMUM_AGE_VALUE, prop.getProperty(DEFAULT_PLU_RESP_MINIMUM_AGE_VALUE));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponse62B1Map.containsKey(PLU_RESP_MAXIMUM_QUANTITY_VALUE))
+      {
+          modifiableMap.put(PLU_RESP_MAXIMUM_QUANTITY_VALUE, prop.getProperty(DEFAULT_PLU_RESP_MAXIMUM_QUANTITY_VALUE));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponse62B1Map.containsKey(PLU_RESP_ITEM_MATCH_INDICATOR))
+      {
+          modifiableMap.put(PLU_RESP_ITEM_MATCH_INDICATOR, prop.getProperty(DEFAULT_PLU_RESP_ITEM_MATCH_INDICATOR));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+    }
+    
+    if(modifiableMap.size() > 0)
+    {
+      for (Map.Entry<String, String> entry : modifiableMap.entrySet())
+      { 
+       if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
+         segmentLevel = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTRICTION_TYPE))
+         restrictionType = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_AGE_VALUE))
+         minimumAgeValue = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY_VALUE))
+         maximumQuantityValue = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ITEM_MATCH_INDICATOR))
+         itemMatchIndicator = entry.getValue();
+      }
+    }
+    
+    sb.append(indicator)
+    .append(" ")
+    .append(this.byteResponse(segmentLevel.getBytes()))
+    .append(this.byteResponse(restrictionType.getBytes()))
+    .append(this.byteResponse(minimumAgeValue.getBytes()))
+    .append(this.byteResponse(maximumQuantityValue.getBytes()))
+    .append(this.byteResponse(itemMatchIndicator.getBytes()));
+    }
+  
+    return sb;
+  }
   
   private String byteResponse(byte[] buffer)
   {

@@ -24,13 +24,19 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
       if(baseValueForIncompatibilities != null && baseValueForIncompatibilities.length >0 
           && incompatibility != null && incompatibility.length >0)
     {
+        System.out.println("incompatibility.length : " + incompatibility.length);
+        System.out.println("baseValueForIncompatibilities.length : " + baseValueForIncompatibilities.length);
+        
      for(Incompatibility orderIncomp : incompatibility) 
      {
        for(Incompatibility baseValueIncomp : baseValueForIncompatibilities)
        {
          String optedPromo = orderIncomp.getOptedPromo();
          String baseOptedPromo = baseValueIncomp.getOptedPromo();
-       
+         
+         System.out.println("optedPromo : " + optedPromo);
+         System.out.println("baseOptedPromo : " + baseOptedPromo);
+         
          if(StringUtils.isNotBlank(optedPromo) && StringUtils.isNotBlank(baseOptedPromo))
          {
            results.put("optedPromo", optedPromo.trim().equalsIgnoreCase(baseOptedPromo.trim()) ? Boolean.TRUE : Boolean.FALSE);
@@ -39,12 +45,17 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
          UnappliedOffer[] unappliedOffers = orderIncomp.getUnappliedOffers();
          UnappliedOffer[] baseUnappliedOffers = baseValueIncomp.getUnappliedOffers();
          
+       if(unappliedOffers != null && baseUnappliedOffers != null)
+       {
          for(UnappliedOffer unappliedOffer : unappliedOffers)
            {
            for(UnappliedOffer baseUnappliedOffer : baseUnappliedOffers)
            {
              String offerId = unappliedOffer.getOfferId();
              String baseOfferId = baseUnappliedOffer.getOfferId();
+             
+             System.out.println("offerId : " + offerId);
+             System.out.println("baseOfferId : " + baseOfferId);
              
              if(StringUtils.isNotBlank(offerId) && StringUtils.isNotBlank(baseOfferId))
              {
@@ -54,12 +65,20 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
              AppMessage[] reasons = unappliedOffer.getReasons();
              AppMessage[] baseReasons = baseUnappliedOffer.getReasons();
              
+          if(reasons != null && baseReasons != null)
+          {
+            int reasonBase_index = 0;
+            
              for(AppMessage reason : reasons)
              {
-               for(AppMessage baseReason : baseReasons)
+               //for(AppMessage baseReason : baseReasons)
+               for (int index = reasonBase_index; index <  baseReasons.length;)
                {
                  String code = reason.getCode();
-                 String baseCode = baseReason.getCode();
+                 String baseCode = baseReasons[index].getCode();
+                 
+                 System.out.println("AppMessage - code : " + code);
+                 System.out.println("AppMessage - baseCode : " + baseCode);
                  
                  if(StringUtils.isNotBlank(code) && StringUtils.isNotBlank(baseCode))
                  {
@@ -67,7 +86,10 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
                  }
                  
                  String description = reason.getDescription();
-                 String baseDescription = baseReason.getDescription();
+                 String baseDescription = baseReasons[index].getDescription();
+                 
+                 System.out.println("AppMessage - description : " + description);
+                 System.out.println("AppMessage - baseDescription : " + baseDescription);
                  
                  if(StringUtils.isNotBlank(description) && StringUtils.isNotBlank(baseDescription))
                  {
@@ -75,7 +97,10 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
                  }
                  
                  String details = reason.getDetails();
-                 String baseDetails = baseReason.getDetails();
+                 String baseDetails = baseReasons[index].getDetails();
+                 
+                 System.out.println("AppMessage - details : " + details);
+                 System.out.println("AppMessage - baseDetails : " + baseDetails);
                  
                  if(StringUtils.isNotBlank(details) && StringUtils.isNotBlank(baseDetails))
                  {
@@ -83,8 +108,10 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
                  }
                  
                  String[] fields = reason.getFields();
-                 String[] baseFields = baseReason.getFields();
+                 String[] baseFields = baseReasons[index].getFields();
                  
+              if(fields != null && baseFields != null)
+              {
                  for(String field : fields)
                  {
                    for(String baseField : baseFields)
@@ -92,17 +119,25 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
                      if(StringUtils.isNotBlank(field) && StringUtils.isNotBlank(baseField))
                      {
                        results.put("fields", field.trim().equalsIgnoreCase(baseField.trim()) ? Boolean.TRUE : Boolean.FALSE);
-                               }
-                             }
-                           }
-                         } 
-                       }
+                        }
+                     break;
                      }
-                 }
+                   }
+                }
+                reasonBase_index++;
+                break;
+                 } 
                }
              }
-           }
+             break;
+               }
+             }
+           }       
          }
+         break;
+          }
+        }
+      }
     
     for (Map.Entry<String, Boolean> entry : results.entries())
     {

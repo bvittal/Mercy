@@ -8,7 +8,6 @@ public class TwilightPojoFactory
     
     if(name.equals(TwilightPojo.COUPON_KEY) ||
        name.equals(TwilightPojo.OPTED_PROMO_KEY)) 
-       //name.equals(TwilightPojo.INCOMPATIBILITIES_FIELDS_KEY))
     {
       obj = new TwilightJsonArray();
       obj.setName(name);

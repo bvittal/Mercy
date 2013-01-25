@@ -15,6 +15,9 @@ import com.searshc.twilight.util.KeyMatcher;
 import com.searshc.twilight.util.ObjectBuilder;
 import com.starmount.ups.sears.SegmentIndex;
 import com.starmount.ups.sears.responses.segmentE8.ResponseSegmentE8;
+import com.starmount.ups.sears.responses.segmentEA.ResponseSegmentEA;
+import com.starmount.ups.sears.responses.segment98.ResponseSegment98;
+
 
 public class UPASResponseFinder
 {
@@ -35,8 +38,8 @@ public class UPASResponseFinder
       
     if (results.size() > 0)
     {
+      SegmentFactory factory = new SegmentFactory();
       final String indicator = this.getIndicator(reqBuffer);
-
       System.out.println("REQUEST RECIEVED    " + byteResponse(reqBuffer));
       
       if (isValidRequest(indicator, reqBuffer))
@@ -56,6 +59,7 @@ public class UPASResponseFinder
             {
               for (byte[] respBuffer : responseObject)
               {
+                factory.getSegment("EA", respBuffer); 
                 return respBuffer;
               }
             }
@@ -68,6 +72,19 @@ public class UPASResponseFinder
             {
               for (byte[] respBuffer : responseObject)
               {
+                try
+                {
+                  List<SegmentIndex> segmentIndexes = parser.parseResponse(respBuffer);
+                  for (SegmentIndex segmentIndex : segmentIndexes)
+                  {
+                    ResponseSegment98 seg98 = segmentIndex.getAsResponseSegment98();
+                    if(seg98.getIndicator().equalsIgnoreCase("98")){
+                        factory.getSegment(seg98.getIndicator(), respBuffer);
+                    }
+                  }
+                }catch(Exception ex){
+                  System.out.println("Error " + ex);
+                }
                 return respBuffer;
               }
             }
@@ -86,6 +103,7 @@ public class UPASResponseFinder
                   List<SegmentIndex> segmentIndexes = parser.parseResponse(respBuffer);
                   for (SegmentIndex segmentIndex : segmentIndexes)
                   {
+                    factory.getSegment(segmentIndex.getIndicatorString(), respBuffer);
                     if (segmentIndex.getIndicatorString().equals("E8"))
                     {
                       ResponseSegmentE8 e8Seg = segmentIndex.getAsResponseSegmentE8();
@@ -118,8 +136,6 @@ public class UPASResponseFinder
               final CouponInquiry2AA7Segment couponReqInq = new CouponInquiry2AA7Segment(reqBuffer);
               final CouponInquiry2AA7Segment couponResInq = new CouponInquiry2AA7Segment(respBuffer);
               coupon = couponReqInq.getCouponNumber();
-              
-              SegmentFactory factory = new SegmentFactory();
               factory.getSegment("2AA7", respBuffer);
               
               System.out.println("Request Coupon number " + coupon);

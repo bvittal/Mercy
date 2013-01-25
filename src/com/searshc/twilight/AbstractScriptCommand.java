@@ -417,9 +417,7 @@ public abstract class AbstractScriptCommand
   {
     Incompatibility incompatibility = new Incompatibility();
     UnappliedOffer unappliedOffer = new UnappliedOffer();
-    AppMessage appMessage = new AppMessage();
     
-    List<String> fieldsList = new ArrayList<String>();
     List<AppMessage> appMessageList = new ArrayList<AppMessage>();
     List<UnappliedOffer> unappliedOfferList = new ArrayList<UnappliedOffer>();
     
@@ -467,6 +465,7 @@ public abstract class AbstractScriptCommand
             while(reasonOfferItr.hasNext())
             {
               TwilightJsonObject reasonTwilightJsonObj = reasonOfferItr.next();
+              AppMessage appMessage = new AppMessage();
               
               if(reasonTwilightJsonObj != null && reasonTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_REASON))
               {
@@ -484,6 +483,7 @@ public abstract class AbstractScriptCommand
                   while(fieldsItr.hasNext())
                   {
                     TwilightJsonObject fieldsTwilightJsonObj = fieldsItr.next();
+                    List<String> fieldsList = new ArrayList<String>();
                     
                     if(fieldsTwilightJsonObj != null && fieldsTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_FIELDS))
                     {
@@ -499,17 +499,17 @@ public abstract class AbstractScriptCommand
                           fieldsList.add(entry.getValue());
                           }
                         }
+                        String[] fieldsArray = new String[fieldsList.size()];
+                        fieldsList.toArray(fieldsArray);
+                        appMessage.setFields(fieldsArray);
                       }
+                      if(appMessage != null)
+                        appMessageList.add(appMessage);
                     }
                   }
                 }
               }
-              
-              String[] fieldsArray = new String[fieldsList.size()];
-              fieldsList.toArray(fieldsArray);
-              appMessage.setFields(fieldsArray);
-              appMessageList.add(appMessage);
-              
+
               AppMessage[] reasonsArray = new AppMessage[appMessageList.size()];
               appMessageList.toArray(reasonsArray);
               unappliedOffer.setReasons(reasonsArray);

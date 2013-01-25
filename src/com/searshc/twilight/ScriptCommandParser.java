@@ -144,6 +144,14 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.COUPON_RESP_INCL_EXCL_KEY); 
         }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_98_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_98_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_RESPONSES))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_RESPONSES); 
+        }
         else if(nextToken.equals(TwilightPojo.COUPON_KEY))
         {
           builder.newObject(TwilightPojo.COUPON_KEY);    
@@ -214,7 +222,8 @@ public class ScriptCommandParser
     if(rsp.equals("200") || rsp.equals("400") || rsp.equals("404") || 
         rsp.equals("500") || rsp.equals("FILE_INQ") || 
         rsp.equals("PLU_INQ") || rsp.equals("PLU_RSP") ||
-        rsp.equals("COUPON_INQ") || rsp.equals("COUPON_RSP"))
+        rsp.equals("COUPON_INQ") || rsp.equals("COUPON_RSP") ||
+        rsp.equals("98"))
       return true;
     else
       return false;
@@ -319,6 +328,20 @@ public class ScriptCommandParser
          this.byteArrayObj = builder;
        }
        System.out.println("Key/Value Pair Request - PLU_RSP " + builder);
+     }
+     
+     /**
+      * Plu Inquiry Response 98
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("98"))
+     {
+       final PluResponseParser pluResponseParser = new PluResponseParser();
+       builder = pluResponseParser.getPluResponse(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
+       System.out.println("Key/Value Pair Request - 98 " + builder);
      }
      
      /**
