@@ -211,9 +211,9 @@ public abstract class AbstractScriptCommand
         if(useDefaults) order.setSearsCard(DEFAULT_SEARS_CARD);
       
       if(map.containsKey(ASSOCIATE_ID))
-        order.setAssociateFlag(map.get(ASSOCIATE_ID));
+        order.setAssociateId(map.get(ASSOCIATE_ID));
       else
-        if(useDefaults) order.setAssociateFlag(DEFAULT_ASSOCIATE_ID);
+        if(useDefaults) order.setAssociateId(DEFAULT_ASSOCIATE_ID);
       
       /** the parameter lists */
       List<TwilightJsonArray> arrayList = obj.getTwilightJsonArray();

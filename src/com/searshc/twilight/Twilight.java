@@ -67,15 +67,10 @@ public class Twilight
       while (scanner.hasNextLine())
       {
         String line = scanner.nextLine();  
-        if (line.startsWith("#"))
+        if (!line.startsWith("#"))
         {
-         //Do nothing
-        } 
-        else 
-        {  
           commands.add(line);
-        }  
-          
+        } 
       }
 
       ScriptCommandParser cmdParser;      
