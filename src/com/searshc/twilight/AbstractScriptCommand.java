@@ -23,6 +23,7 @@ public abstract class AbstractScriptCommand
   public static final String CRAFTSMAN_FLAG = "craftsmanClubFlag";
   public static final String PULSE_FLAG = "pulseFlag";
   public static final String SEARS_CARD = "searsCard";
+  public static final String ASSOCIATE_ID = "associateId";
   
   public static final String ITEM_LIST = "items";
   public static final String ITEM = "item";
@@ -89,6 +90,7 @@ public abstract class AbstractScriptCommand
   private static final String DEFAULT_CRAFTSMAN_FLAG = "0";
   private static final String DEFAULT_PULSE_FLAG = "0";
   private static final String DEFAULT_SEARS_CARD = "0";
+  private static final String DEFAULT_ASSOCIATE_ID = "1234";
   
   private static final String DEFAULT_ITEM_ADJUST_FLAG = "1";
   private static final String DEFAULT_ITEM_ID = "0";
@@ -207,7 +209,12 @@ public abstract class AbstractScriptCommand
         order.setSearsCard(map.get(SEARS_CARD));
       else
         if(useDefaults) order.setSearsCard(DEFAULT_SEARS_CARD);
-
+      
+      if(map.containsKey(ASSOCIATE_ID))
+        order.setAssociateFlag(map.get(ASSOCIATE_ID));
+      else
+        if(useDefaults) order.setAssociateFlag(DEFAULT_ASSOCIATE_ID);
+      
       /** the parameter lists */
       List<TwilightJsonArray> arrayList = obj.getTwilightJsonArray();
       
