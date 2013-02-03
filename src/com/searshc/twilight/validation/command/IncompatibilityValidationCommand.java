@@ -33,13 +33,24 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
        {
          String optedPromo = orderIncomp.getOptedPromo();
          String baseOptedPromo = baseValueIncomp.getOptedPromo();
-         
+
          System.out.println("optedPromo : " + optedPromo);
          System.out.println("baseOptedPromo : " + baseOptedPromo);
          
          if(StringUtils.isNotBlank(optedPromo) && StringUtils.isNotBlank(baseOptedPromo))
          {
            results.put("optedPromo", optedPromo.trim().equalsIgnoreCase(baseOptedPromo.trim()) ? Boolean.TRUE : Boolean.FALSE);
+         }
+         
+         String optedPromoType = orderIncomp.getOptedPromoType();
+         String baseOptedPromoType = baseValueIncomp.getOptedPromoType();
+
+         System.out.println("optedPromoType : " + optedPromoType);
+         System.out.println("baseOptedPromoType : " + baseOptedPromoType);
+         
+         if(StringUtils.isNotBlank(optedPromoType) && StringUtils.isNotBlank(baseOptedPromoType))
+         {
+           results.put("optedPromoType", optedPromoType.trim().equalsIgnoreCase(baseOptedPromoType.trim()) ? Boolean.TRUE : Boolean.FALSE);
          }
          
          UnappliedOffer[] unappliedOffers = orderIncomp.getUnappliedOffers();

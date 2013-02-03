@@ -20,7 +20,17 @@ public interface TwilightPojo
   
   //Response object
   public static final String PLU_RESP_RESPONSES = "pluResponses";
+  public static final String PLU_RESP_EA_KEY = "indicator_EA";
   public static final String PLU_RESP_98_KEY = "indicator_98";
+  public static final String PLU_RESP_E8_KEY = "indicator_E8";
+  public static final String PLU_RESP_E9_KEY = "indicator_E9";
+  public static final String PLU_RESP_EC_KEY = "indicator_EC";
+  public static final String PLU_RESP_95_KEY = "indicator_95";
+  public static final String PLU_RESP_9C_KEY = "indicator_9C";
+  public static final String PLU_RESP_40BA_KEY = "indicator_40BA";
+  public static final String PLU_RESP_60B1_KEY = "indicator_60B1";
+  public static final String PLU_RESP_62B1_KEY = "indicator_62B1";
+  public static final String PLU_RESP_58B1_KEY = "indicator_58B1";
   
   public static final String COUPON_RESP_INCL_EXCLS_KEY = "includeExclude";
   public static final String COUPON_RESP_INCL_EXCL_KEY = "inclExcl";

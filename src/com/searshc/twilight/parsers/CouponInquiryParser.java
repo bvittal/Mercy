@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.service.TwilightConstants;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class CouponInquiryParser
@@ -112,9 +114,9 @@ public class CouponInquiryParser
            segmentLength = Integer.toHexString(Integer.parseInt(segmentLength));
        }
        else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_COUPON_NUMBER))
-         couponNumber = entry.getValue();
+         couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
        else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_STORE_NUMBER))
-         storeNumber = entry.getValue();
+         storeNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
       }
     }
     
@@ -126,11 +128,12 @@ public class CouponInquiryParser
     .append(" ")
     .append(segmentLength)
     .append(" ")
-    .append("00")
-    .append(" ")
     .append(this.byteResponse(couponNumber.getBytes()))
     .append(this.byteResponse(storeNumber.getBytes()));
     
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_2AA7, sb)){
+      return sb;
+    }
     return sb;
   }
   

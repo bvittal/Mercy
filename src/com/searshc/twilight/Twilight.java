@@ -31,11 +31,10 @@ public class Twilight
     Thread serverThread = new Thread(httpServer);
     serverThread.start();
     searchTag(tag);
-    
     synchronized (this) {
       try {
-        System.out.println( "Waiting for 1000 ms to process more request(s) before exitting" );
-        wait(1000);
+        System.out.println( "Waiting for 2000 ms to process more request(s) before exitting" );
+        wait(2000);
         System.out.println( "No new request found. Exitting twilight" );
       } catch (InterruptedException e) {
         Thread.currentThread().isInterrupted();
@@ -60,6 +59,7 @@ public class Twilight
 	private void execute(File file)
 	{
     List<String> commands = new ArrayList<String>();
+    System.out.println("Parsing script file...");
     try
     {
       /** get the list of commands from the script */
@@ -134,7 +134,7 @@ public class Twilight
   	  if(tags.equalsIgnoreCase(prop.getProperty("tag0"))){
           final File dir = new File(prop.getProperty(tags + "_dir_url"));
           final File file = new File(dir.getPath());
-          logger.info("Scanning files in dir : " + dir.getAbsolutePath() + " \nNumber of files found : " + file.listFiles().length);
+          System.out.println("Scanning script files in dir : " + dir.getAbsolutePath() + " \nNumber of files found : " + file.listFiles().length);
               for (File f : file.listFiles()) {
                  if (f.isFile()) {
                      this.execute(new File(f.getPath()));

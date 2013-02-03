@@ -1,5 +1,7 @@
 package com.searshc.twilight.parsers;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -9,8 +11,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import com.searshc.twilight.ScriptCommandParser;
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.TwilightPojo;
+import com.searshc.twilight.service.TwilightConstants;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class PluResponseParser
@@ -18,7 +22,6 @@ public class PluResponseParser
   private static Logger logger = Logger.getLogger(PluResponseParser.class);
   private static Properties prop;
   
-  private static final String INDICATOR = "indicator";
   private static final String SEGMENT_LEVEL = "segmentLevel";
   private static final String SEGMENT_LENGTH = "segmentLength";
   
@@ -75,6 +78,14 @@ public class PluResponseParser
   private static final String DEFAULT_PLU_RESP_MARKDOWN_TYPE_CODE = "pluResp_98_markdownTypeCode";
   private static final String DEFAULT_PLU_RESP_MARKDOWN_AMOUNT_PERCENT = "pluResp_98_markdownAmountPercent";
   private static final String DEFAULT_PLU_RESP_FUTURE_PURCHASE_COUPON_DESC = "pluResp_98_futurePurchaseCouponDesc";
+  
+  //Plu Inquiry Response - EA - parameters
+  private static final String PLU_RESP_PLU_ERROR_TYPE = "pluErrorType";
+  private static final String PLU_RESP_PLU_MESSAGE = "pluMessage";
+  
+  //Plu Inquiry Response - EA - default Values
+  private static final String DEFAULT_PLU_RESP_PLU_ERROR_TYPE = "pluResp_EA_pluErrorType";
+  private static final String DEFAULT_PLU_RESP_PLU_MESSAGE = "pluResp_EA_pluMessage";
   
   //Plu Inquiry Response - E8 - parameters
   private static final String PLU_RESP_PLU_DIVISION_NUMBER = "pluDivisionNumber";
@@ -235,7 +246,6 @@ public class PluResponseParser
   private static final String PLU_RESP_UNUSED_TWO = "unusedTwo";
   private static final String PLU_RESP_RESTOCKING_FEE_PERCENT = "restockingFeePercent";
   private static final String PLU_RESP_CANCELLATION_FEE_PERCENT = "cancellationFeePercent";
-  private static final String PLU_RESP_UNUSED_THREE = "unusedThree";
   
   //Plu Inquiry Response - 40BA - default Values
   private static final String DEFAULT_PLU_RESP_SEGMENT_LENGTH_40BA = "pluResp_40BA_segmentLength";
@@ -261,7 +271,6 @@ public class PluResponseParser
   private static final String DEFAULT_PLU_RESP_UNUSED_TWO = "pluResp_40BA_unusedTwo";
   private static final String DEFAULT_PLU_RESP_RESTOCKING_FEE_PERCENT = "pluResp_40BA_restockingFeePercent";
   private static final String DEFAULT_PLU_RESP_CANCELLATION_FEE_PERCENT = "pluResp_40BA_cancellationFeePercent";
-  private static final String DEFAULT_PLU_RESP_UNUSED_THREE = "pluResp_40BA_unusedThree";
   
   //Plu Inquiry Response - 58B1 - parameters
   private static final String PLU_RESP_INSTALLER_LEAD_TIME_VALUE = "installerLeadTimeValue";
@@ -345,14 +354,134 @@ public class PluResponseParser
         {
           TwilightJsonObject obj = subItr.next();
           
-          if(obj != null && obj.getName().equalsIgnoreCase("indicator_98"))
-          {
-            builder.append(this.processPluResponse98(obj.getParameters()));
+          if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_EA_KEY)){
+            if(this.processPluResponseEA(obj) != null)
+              builder.append(this.processPluResponseEA(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_EA);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_98_KEY)){
+            if(this.processPluResponse98(obj) != null)
+              builder.append(this.processPluResponse98(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_98);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_E8_KEY)){
+            if(this.processPluResponseE8(obj) != null)
+              builder.append(this.processPluResponseE8(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_E8);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_E9_KEY)){
+            if(this.processPluResponseE9(obj) != null)
+              builder.append(this.processPluResponseE9(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_E9);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_EC_KEY)){
+            if(this.processPluResponseEC(obj) != null)
+              builder.append(this.processPluResponseEC(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_EC);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_95_KEY)){
+            if(this.processPluResponse95(obj) != null)
+              builder.append(this.processPluResponse95(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_95);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_9C_KEY)){
+            if(this.processPluResponse9C(obj) != null)
+              builder.append(this.processPluResponse9C(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_9C);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_40BA_KEY)){
+            if(this.processPluResponse40BA(obj) != null)
+              builder.append(this.processPluResponse40BA(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_40BA);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_60B1_KEY)){
+            if(this.processPluResponse60B1(obj) != null)
+              builder.append(this.processPluResponse60B1(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_60B1);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_62B1_KEY)){
+            if(this.processPluResponse62B1(obj) != null)
+              builder.append(this.processPluResponse62B1(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_62B1);
+          }
+          else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_58B1_KEY)){
+            if(this.processPluResponse58B1(obj) != null)
+              builder.append(this.processPluResponse58B1(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_58B1);
           }
         }
       }
     }
     return builder;
+  }
+  
+  
+  private StringBuilder processPluResponseEA(TwilightJsonObject twilightJsonObject)
+  {
+    
+    String indicator = "EA";
+    String pluErrorType = StringUtils.EMPTY;
+    String pluMessage = StringUtils.EMPTY;
+    
+    final Map<String, String> pluResponseEAMap = twilightJsonObject.getParameters();
+    final Map<String, String> modifiableMap = new HashMap<String,String>();
+    final StringBuilder sb = new StringBuilder();
+    
+  if(pluResponseEAMap.size() > 0)
+  {
+    for (Map.Entry<String, String> entry : pluResponseEAMap.entrySet())
+    { 
+      if(!pluResponseEAMap.containsKey(PLU_RESP_PLU_ERROR_TYPE))
+      {
+          modifiableMap.put(PLU_RESP_PLU_ERROR_TYPE, prop.getProperty(DEFAULT_PLU_RESP_PLU_ERROR_TYPE));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+      
+      if(!pluResponseEAMap.containsKey(PLU_RESP_PLU_MESSAGE))
+      {
+          modifiableMap.put(PLU_RESP_PLU_MESSAGE, prop.getProperty(DEFAULT_PLU_RESP_PLU_MESSAGE));
+      }
+      else
+      {
+        modifiableMap.put(entry.getKey(), entry.getValue());
+      }
+    }
+    
+    if(modifiableMap.size() > 0)
+    {
+      for (Map.Entry<String, String> entry : modifiableMap.entrySet())
+      { 
+       if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ERROR_TYPE))
+         pluErrorType = entry.getValue();
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_MESSAGE))
+         pluMessage = entry.getValue();
+      }
+    }
+    
+    sb.append(indicator)
+    .append(" ")
+    .append(this.byteResponse(pluErrorType.getBytes()))
+    .append(this.byteResponse(pluMessage.getBytes()));
+    }
+
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_EA, sb)){
+      return sb;
+    }
+    return null;
   }
   
   private StringBuilder processPluResponseE8(TwilightJsonObject twilightJsonObject)
@@ -514,36 +643,50 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_DIVISION_NUMBER))
-           pluDivisionNumber = entry.getValue();
+           pluDivisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_NUMBER))
-           pluItemNumber = entry.getValue();
+           pluItemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SKU))
-           pluSku = entry.getValue();
+           pluSku = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_LINE_NUMBER))
-           pluLineNumber = entry.getValue();
+           pluLineNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SUBLINE_NUMBER))
-           pluSubLineNumber = entry.getValue();
+           pluSubLineNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SUBLINE_VARIABLE_NUMBER))
-           pluSubLineVariableNumber = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_DESCRIPTION))
-           pluItemDescription = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_REGULAR_PRICE))
-           pluRegularPrice = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE))
-           pluPrice = entry.getValue();
+           pluSubLineVariableNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_DESCRIPTION)){
+           if(StringUtils.isBlank(pluItemDescription) || pluItemDescription.equalsIgnoreCase("null")){
+             pluItemDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_REGULAR_PRICE)){
+           final BigDecimal bigDecimal = new BigDecimal(entry.getValue());
+           BigInteger integer = bigDecimal.unscaledValue();
+           pluRegularPrice = integer.toString();
+           if(StringUtils.isNotBlank(pluRegularPrice)){
+             pluRegularPrice = StringUtils.rightPad(pluRegularPrice, 7,'0');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE)){
+           final BigDecimal bigDecimal = new BigDecimal(entry.getValue());
+           BigInteger integer = bigDecimal.unscaledValue();
+           pluPrice = integer.toString();
+           if(StringUtils.isNotBlank(pluPrice)){
+             pluPrice = StringUtils.rightPad(pluPrice, 7,'0');
+           }
+         }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE_TYPE))
-           pluPriceType = entry.getValue();
+           pluPriceType = StringUtils.rightPad(entry.getValue(), 1,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SOURCE_ORDER_PROCESSING_TIME))
-           sourceOrderProcessingTime = entry.getValue();
+           sourceOrderProcessingTime = StringUtils.rightPad(entry.getValue(), 2,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_BIAS_COUNT))
-           biasCount = entry.getValue();
+           biasCount =  StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_COMMITED_QUANTITY))
-           commitedQuantity = entry.getValue();
+           commitedQuantity =  StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRODUCT_REG_FLAGS))
-           productRegistrationFlags = entry.getValue();
+           productRegistrationFlags =  StringUtils.rightPad(entry.getValue(), 4,'0');
         }
       }
-      
       sb.append(indicator)
       .append(" ")
       .append(this.byteResponse(pluDivisionNumber.getBytes()))
@@ -561,7 +704,10 @@ public class PluResponseParser
       .append(this.byteResponse(commitedQuantity.getBytes()))
       .append(this.byteResponse(productRegistrationFlags.getBytes()));
       
-      return sb;
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_E8, sb)){
+        return sb;
+      }
+      return null;
    }
   
   private StringBuilder processPluResponseE9(TwilightJsonObject twilightJsonObject)
@@ -573,15 +719,15 @@ public class PluResponseParser
       String pluResponseTypeCode = StringUtils.EMPTY;
       
       
-      final Map<String, String> pluInquiryE8Map = twilightJsonObject.getParameters();
+      final Map<String, String> pluInquiryE9Map = twilightJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
       final StringBuilder sb = new StringBuilder();
       
-    if(pluInquiryE8Map.size() > 0)
+    if(pluInquiryE9Map.size() > 0)
     {
-      for (Map.Entry<String, String> entry : pluInquiryE8Map.entrySet())
+      for (Map.Entry<String, String> entry : pluInquiryE9Map.entrySet())
       { 
-        if(!pluInquiryE8Map.containsKey(PLU_RESP_PLU_DIVISION_NUMBER))
+        if(!pluInquiryE9Map.containsKey(PLU_RESP_PLU_DIVISION_NUMBER))
         {
             modifiableMap.put(PLU_RESP_PLU_DIVISION_NUMBER, prop.getProperty(DEFAULT_PLU_RESP_E9_PLU_DIVISION_NUMBER));
         }
@@ -590,7 +736,7 @@ public class PluResponseParser
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
         
-        if(!pluInquiryE8Map.containsKey(PLU_RESP_PLU_ITEM_NUMBER))
+        if(!pluInquiryE9Map.containsKey(PLU_RESP_PLU_ITEM_NUMBER))
         {
             modifiableMap.put(PLU_RESP_PLU_ITEM_NUMBER, prop.getProperty(DEFAULT_PLU_RESP_E9_PLU_ITEM_NUMBER));
         }
@@ -599,7 +745,7 @@ public class PluResponseParser
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
         
-        if(!pluInquiryE8Map.containsKey(PLU_RESP_PLU_SKU))
+        if(!pluInquiryE9Map.containsKey(PLU_RESP_PLU_SKU))
         {
             modifiableMap.put(PLU_RESP_PLU_SKU, prop.getProperty(DEFAULT_PLU_RESP_E9_PLU_SKU));
         }
@@ -608,7 +754,7 @@ public class PluResponseParser
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
         
-        if(!pluInquiryE8Map.containsKey(PLU_RESP_PLU_RESPONSE_TYPE_CODE))
+        if(!pluInquiryE9Map.containsKey(PLU_RESP_PLU_RESPONSE_TYPE_CODE))
         {
             modifiableMap.put(PLU_RESP_PLU_RESPONSE_TYPE_CODE, prop.getProperty(DEFAULT_PLU_RESP_E9_PLU_RESPONSE_TYPE_CODE));
         }
@@ -624,13 +770,13 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_DIVISION_NUMBER))
-           pluDivisionNumber = entry.getValue();
+           pluDivisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_NUMBER))
-           pluItemNumber = entry.getValue();
+           pluItemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SKU))
-           pluSku = entry.getValue();
+           pluSku = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_RESPONSE_TYPE_CODE))
-           pluResponseTypeCode = entry.getValue();
+           pluResponseTypeCode = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
         }
       }
       
@@ -641,11 +787,14 @@ public class PluResponseParser
       .append(this.byteResponse(pluSku.getBytes()))
       .append(this.byteResponse(pluResponseTypeCode.getBytes()));
       
-      return sb;
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_E9, sb)){
+        return sb;
+      }
+      return null;
    }
   
   
-  private StringBuilder processPluResponse98(Map<String,String> pluResponse98Map)
+  private StringBuilder processPluResponse98(TwilightJsonObject twilightJsonObject)
   {
       String indicator = "98";
       String unknown = "02";
@@ -675,6 +824,7 @@ public class PluResponseParser
       String markdownAmountPercent = StringUtils.EMPTY;
       String futurePurchaseCouponDesc = StringUtils.EMPTY;
       
+      final Map<String, String> pluResponse98Map = twilightJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
       final StringBuilder sb = new StringBuilder();
       
@@ -932,13 +1082,13 @@ public class PluResponseParser
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_QUALIFICATION_AMOUNT)){
            minimumQualificationAmount = entry.getValue();
            if(StringUtils.isBlank(minimumQualificationAmount) || minimumQualificationAmount.equalsIgnoreCase("null")){
-             minimumQualificationAmount = StringUtils.rightPad(StringUtils.EMPTY, 7);
+             minimumQualificationAmount = StringUtils.rightPad(StringUtils.EMPTY, 7, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY)){
            maximumQuantity = entry.getValue();
            if(StringUtils.isBlank(maximumQuantity) || maximumQuantity.equalsIgnoreCase("null")){
-             maximumQuantity = StringUtils.rightPad(StringUtils.EMPTY, 3);
+             maximumQuantity = StringUtils.rightPad(StringUtils.EMPTY, 3, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG)){
@@ -1034,25 +1184,25 @@ public class PluResponseParser
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER)){
            couponNumber = entry.getValue();
            if(StringUtils.isBlank(couponNumber) || couponNumber.equalsIgnoreCase("null")){
-             couponNumber = StringUtils.rightPad(StringUtils.EMPTY, 8);
+             couponNumber = StringUtils.rightPad(StringUtils.EMPTY, 8, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_TYPE_CODE)){
            couponTypeCode = entry.getValue();
            if(StringUtils.isBlank(couponTypeCode) || couponTypeCode.equalsIgnoreCase("null")){
-             couponTypeCode = StringUtils.rightPad(StringUtils.EMPTY, 10);
+             couponTypeCode = StringUtils.rightPad(StringUtils.EMPTY, 1);
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_TYPE_CODE)){
            markdownTypeCode = entry.getValue();
            if(StringUtils.isBlank(markdownTypeCode) || markdownTypeCode.equalsIgnoreCase("null")){
-             markdownTypeCode = StringUtils.rightPad(StringUtils.EMPTY, 10);
+             markdownTypeCode = StringUtils.rightPad(StringUtils.EMPTY, 1);
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_AMOUNT_PERCENT)){
            markdownAmountPercent = entry.getValue();
            if(StringUtils.isBlank(markdownAmountPercent) || markdownAmountPercent.equalsIgnoreCase("null")){
-             markdownAmountPercent = StringUtils.rightPad(StringUtils.EMPTY, 5);
+             markdownAmountPercent = StringUtils.rightPad(StringUtils.EMPTY, 5, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_PURCHASE_COUPON_DESC)){
@@ -1093,7 +1243,10 @@ public class PluResponseParser
       .append(this.byteResponse(markdownAmountPercent.getBytes()))
       .append(this.byteResponse(futurePurchaseCouponDesc.getBytes()));
       
-      return sb;
+     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_98, sb)){
+       return sb;
+     }
+     return null;
      }
   
   private StringBuilder processPluResponseEC(TwilightJsonObject twilightJsonObject)
@@ -1165,16 +1318,16 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_ID))
-           pluGroupId = entry.getValue();
+           pluGroupId = StringUtils.rightPad(entry.getValue(), 7, StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_FLAG))
-           pluItemFlag = entry.getValue();
+           pluItemFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_TYPE))
-           pluGroupType = entry.getValue();
+           pluGroupType = StringUtils.rightPad(entry.getValue(), 1, '1');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY))
-           pluGroupQuantity = entry.getValue();
+           pluGroupQuantity = StringUtils.rightPad(entry.getValue(), 3, '0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE))
-           pluGroupPrice = entry.getValue();
-        }
+           pluGroupPrice = StringUtils.rightPad(entry.getValue(), 7, '0');
+         }
       }
       
       sb.append(indicator)
@@ -1184,7 +1337,11 @@ public class PluResponseParser
       .append(this.byteResponse(pluGroupType.getBytes()))
       .append(this.byteResponse(pluGroupQuantity.getBytes()))
       .append(this.byteResponse(pluGroupPrice.getBytes()));
-      return sb;
+      
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_EC, sb)){
+        return sb;
+      }
+      return null;
   }
   
   private StringBuilder processPluResponse95(TwilightJsonObject twilightJsonObject)
@@ -1611,88 +1768,252 @@ public class PluResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
-           segmentLevel = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_ID))
+         if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL)){
+           segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
+           if(StringUtils.isBlank(outletFlag) || outletFlag.equalsIgnoreCase("null")){
+             segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_ID)){
            rebateId = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_EFFECTIVE_DATE))
+           if(StringUtils.isBlank(rebateId) || rebateId.equalsIgnoreCase("null")){
+             rebateId = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_EFFECTIVE_DATE)){
            printEffectiveDate = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_END_DATE))
+           if(StringUtils.isBlank(printEffectiveDate) || printEffectiveDate.equalsIgnoreCase("null")){
+             printEffectiveDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_END_DATE)){
            printEndDate = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REPRINT_END_DATE))
+           if(StringUtils.isBlank(printEndDate) || printEndDate.equalsIgnoreCase("null")){
+             printEndDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REPRINT_END_DATE)){
            reprintEndDate = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MIN_QUALIFICATION_AMT))
+           if(StringUtils.isBlank(reprintEndDate) || reprintEndDate.equalsIgnoreCase("null")){
+             reprintEndDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MIN_QUALIFICATION_AMT)){
            minimumQualificationAmount = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAX_QUANTITY))
+           if(StringUtils.isBlank(minimumQualificationAmount) || minimumQualificationAmount.equalsIgnoreCase("null")){
+             minimumQualificationAmount = StringUtils.rightPad(entry.getValue(), 7,'0');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAX_QUANTITY)){
            maximumQuantity = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UPC_REQUIRED_FLAG))
+           if(StringUtils.isBlank(maximumQuantity) || maximumQuantity.equalsIgnoreCase("null")){
+             maximumQuantity = StringUtils.rightPad(entry.getValue(), 3,'0');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UPC_REQUIRED_FLAG)){
            upcRequiredFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG))
+           if(StringUtils.isBlank(upcRequiredFlag) || upcRequiredFlag.equalsIgnoreCase("null")){
+             upcRequiredFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG)){
            searsChargeFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGULAR_PRICE_FLAG))
+           if(StringUtils.isBlank(searsChargeFlag) || searsChargeFlag.equalsIgnoreCase("null")){
+             searsChargeFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGULAR_PRICE_FLAG)){
            regularPriceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PROMOTION_PRICE_FLAG))
+           if(StringUtils.isBlank(regularPriceFlag) || regularPriceFlag.equalsIgnoreCase("null")){
+             regularPriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PROMOTION_PRICE_FLAG)){
            promotionPriceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CLEARANCE_PRICE_FLAG))
+           if(StringUtils.isBlank(promotionPriceFlag) || promotionPriceFlag.equalsIgnoreCase("null")){
+             promotionPriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CLEARANCE_PRICE_FLAG)){
            clearancePriceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MALL_FLAG))
+           if(StringUtils.isBlank(clearancePriceFlag) || clearancePriceFlag.equalsIgnoreCase("null")){
+             clearancePriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MALL_FLAG)){
            mallFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_HARDWARE_FLAG))
+           if(StringUtils.isBlank(mallFlag) || mallFlag.equalsIgnoreCase("null")){
+             mallFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_HARDWARE_FLAG)){
            hardwareFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THE_GREAT_INDOORS_FLAG))
+           if(StringUtils.isBlank(hardwareFlag) || hardwareFlag.equalsIgnoreCase("null")){
+             hardwareFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THE_GREAT_INDOORS_FLAG)){
            theGreatIndoorsFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_AUTOMOTIVE_FLAG))
+           if(StringUtils.isBlank(theGreatIndoorsFlag) || theGreatIndoorsFlag.equalsIgnoreCase("null")){
+             theGreatIndoorsFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_AUTOMOTIVE_FLAG)){
            automotiveFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OUTLET_FLAG))
+           if(StringUtils.isBlank(automotiveFlag) || automotiveFlag.equalsIgnoreCase("null")){
+             automotiveFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OUTLET_FLAG)){
            outletFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DEALER_FLAG))
+           if(StringUtils.isBlank(outletFlag) || outletFlag.equalsIgnoreCase("null")){
+             outletFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DEALER_FLAG)){
            dealerFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WWW_FLAG))
+           if(StringUtils.isBlank(dealerFlag) || dealerFlag.equalsIgnoreCase("null")){
+             dealerFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WWW_FLAG)){
            wwwFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRODUCT_SERVICE_FLAG))
+           if(StringUtils.isBlank(wwwFlag) || wwwFlag.equalsIgnoreCase("null")){
+             wwwFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRODUCT_SERVICE_FLAG)){
            productServiceFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELIVERY_FLAG))
+           if(StringUtils.isBlank(productServiceFlag) || productServiceFlag.equalsIgnoreCase("null")){
+             productServiceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELIVERY_FLAG)){
            deliveryFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER))
+           if(StringUtils.isBlank(deliveryFlag) || deliveryFlag.equalsIgnoreCase("null")){
+             deliveryFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER)){
            couponNumber = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATED_PROGRAM_NUMBER))
+           if(StringUtils.isBlank(couponNumber) || couponNumber.equalsIgnoreCase("null")){
+             couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATED_PROGRAM_NUMBER)){
            associatedProgramNumber = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_VENDOR_NAME))
+           if(StringUtils.isBlank(associatedProgramNumber) || associatedProgramNumber.equalsIgnoreCase("null")){
+             associatedProgramNumber = StringUtils.rightPad(entry.getValue(), 8, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_VENDOR_NAME)){
            vendorName = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WEEKS_BEFORE_RECV_REBATE))
+           if(StringUtils.isBlank(vendorName) || vendorName.equalsIgnoreCase("null")){
+             vendorName = StringUtils.rightPad(entry.getValue(), 25, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WEEKS_BEFORE_RECV_REBATE)){
            weeksBeforeRecvRebate = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_POSTMARK_DATE_TXT))
+           if(StringUtils.isBlank(weeksBeforeRecvRebate) || weeksBeforeRecvRebate.equalsIgnoreCase("null")){
+             weeksBeforeRecvRebate = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_POSTMARK_DATE_TXT)){
            postMarkDateText = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_NAME))
+           if(StringUtils.isBlank(postMarkDateText) || postMarkDateText.equalsIgnoreCase("null")){
+             postMarkDateText = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_NAME)){
            redemptionCenterName = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS1))
+           if(StringUtils.isBlank(redemptionCenterName) || redemptionCenterName.equalsIgnoreCase("null")){
+             redemptionCenterName = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS1)){
            redemptionCenterAddress1 = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS2))
+           if(StringUtils.isBlank(redemptionCenterAddress1) || redemptionCenterAddress1.equalsIgnoreCase("null")){
+             redemptionCenterAddress1 = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS2)){
            redemptionCenterAddress2 = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_POBOX))
+           if(StringUtils.isBlank(redemptionCenterAddress2) || redemptionCenterAddress2.equalsIgnoreCase("null")){
+             redemptionCenterAddress2 = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_POBOX)){
            redemptionCenterPOBox = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_CITY))
+           if(StringUtils.isBlank(redemptionCenterPOBox) || redemptionCenterPOBox.equalsIgnoreCase("null")){
+             redemptionCenterPOBox = StringUtils.rightPad(entry.getValue(), 6, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_CITY)){
            redemptionCenterCity = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_STATE))
+           if(StringUtils.isBlank(redemptionCenterCity) || redemptionCenterCity.equalsIgnoreCase("null")){
+             redemptionCenterCity = StringUtils.rightPad(entry.getValue(), 25, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_STATE)){
            redemptionCenterState = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ZIP))
+           if(StringUtils.isBlank(redemptionCenterState) || redemptionCenterState.equalsIgnoreCase("null")){
+             redemptionCenterState = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ZIP)){
            redemptionCenterZip = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_PHONE))
+           if(StringUtils.isBlank(redemptionCenterZip) || redemptionCenterZip.equalsIgnoreCase("null")){
+             redemptionCenterZip = StringUtils.leftPad(entry.getValue(), 9, '0');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_PHONE)){
            redemptionCenterPhone = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_HOURS))
+           if(StringUtils.isBlank(redemptionCenterPhone) || redemptionCenterPhone.equalsIgnoreCase("null")){
+             redemptionCenterPhone = StringUtils.rightPad(entry.getValue(), 11, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_HOURS)){
            redemptionCenterHours = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_DESCRIPTION))
+           if(StringUtils.isBlank(redemptionCenterHours) || redemptionCenterHours.equalsIgnoreCase("null")){
+             redemptionCenterHours = StringUtils.rightPad(entry.getValue(), 80, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_DESCRIPTION)){
            redemptionCenterDescription = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_AMOUNT))
+           if(StringUtils.isBlank(redemptionCenterDescription) || redemptionCenterDescription.equalsIgnoreCase("null")){
+             redemptionCenterDescription = StringUtils.rightPad(entry.getValue(), 480, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_AMOUNT)){
            rebateAmount = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_FLAG))
+           if(StringUtils.isBlank(rebateAmount) || rebateAmount.equalsIgnoreCase("null")){
+             rebateAmount = StringUtils.rightPad(entry.getValue(), 5, '0');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_FLAG)){
            installationFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FREE_DELIVERY_ZERO_PERCENT_FLAG))
+           if(StringUtils.isBlank(installationFlag) || installationFlag.equalsIgnoreCase("null")){
+             installationFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FREE_DELIVERY_ZERO_PERCENT_FLAG)){
            freeDeliveryZeroPercentFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_METHOD_CODE))
+           if(StringUtils.isBlank(freeDeliveryZeroPercentFlag) || freeDeliveryZeroPercentFlag.equalsIgnoreCase("null")){
+             freeDeliveryZeroPercentFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_METHOD_CODE)){
            rebateMethodCode = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILLER))
+           if(StringUtils.isBlank(rebateMethodCode) || rebateMethodCode.equalsIgnoreCase("null")){
+             rebateMethodCode = StringUtils.rightPad(entry.getValue(), 1, 'I');
+           }
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILLER)){
            filler = entry.getValue();
+           if(StringUtils.isBlank(filler) || filler.equalsIgnoreCase("null")){
+             filler = StringUtils.rightPad(entry.getValue(), 20, StringUtils.EMPTY);
+            }
+          }
         }
       }
       
@@ -1741,13 +2062,16 @@ public class PluResponseParser
       .append(this.byteResponse(rebateMethodCode.getBytes()))
       .append(this.byteResponse(filler.getBytes()));
       
-      return sb;
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_95, sb)){
+        return sb;
+      }
+      return null;
   }
 
   private StringBuilder processPluResponse9C(TwilightJsonObject twilightJsonObject)
   {
       String indicator = "9C";
-      String segmentLength = StringUtils.EMPTY;
+      String segmentLength = StringUtils.EMPTY; //hardcoded value
       String messageKey = StringUtils.EMPTY;
       String messageTypeCode = StringUtils.EMPTY;
       String messageText = StringUtils.EMPTY;
@@ -1804,24 +2128,31 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH))
-           segmentLength = entry.getValue();
+           segmentLength = StringUtils.rightPad(entry.getValue(), 2,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_KEY))
-           messageKey = entry.getValue();
+           messageKey = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_TYPE_CODE))
-           messageTypeCode = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_TEXT))
-           messageText = entry.getValue();
+           messageTypeCode = StringUtils.rightPad(entry.getValue(), 2,'0');
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_TEXT)){
+           messageText = StringUtils.rightPad(entry.getValue(), 3,'0');
+           if(StringUtils.isBlank(messageText) || messageText.equalsIgnoreCase("null"))
+             messageText = StringUtils.rightPad(StringUtils.EMPTY, 292, StringUtils.EMPTY);
+          }
         }
       }
       
       sb.append(indicator)
       .append(" ")
-      .append(this.byteResponse(segmentLength.getBytes()))
+      .append("2C ")
+      .append("01 ")
       .append(this.byteResponse(messageKey.getBytes()))
       .append(this.byteResponse(messageTypeCode.getBytes()))
       .append(this.byteResponse(messageText.getBytes()));
       
-      return sb;
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_9C, sb)){
+        return sb;
+      }
+      return null;
    }
 
   private StringBuilder processPluResponse40BA(TwilightJsonObject twilightJsonObject)
@@ -1850,7 +2181,6 @@ public class PluResponseParser
       String unusedTwo = StringUtils.EMPTY;
       String restockingFeePercent = StringUtils.EMPTY;
       String cancellationFeePercent = StringUtils.EMPTY;
-      String unusedThree = StringUtils.EMPTY;
       
       final Map<String, String> pluInquiry40BAMap = twilightJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -2066,15 +2396,6 @@ public class PluResponseParser
         {
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
-        
-        if(!pluInquiry40BAMap.containsKey(PLU_RESP_UNUSED_THREE))
-        {
-            modifiableMap.put(PLU_RESP_UNUSED_THREE, prop.getProperty(DEFAULT_PLU_RESP_UNUSED_THREE));
-        }
-        else
-        {
-          modifiableMap.put(entry.getKey(), entry.getValue());
-        }
       }
     }
       
@@ -2083,53 +2404,51 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH))
-           segmentLength = entry.getValue();
+           segmentLength = StringUtils.rightPad(entry.getValue(), 3,'0');
          else if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
-           segmentLevel = entry.getValue();
+           segmentLevel = StringUtils.rightPad(entry.getValue(), 2,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_TAX_STATUS_CODE))
-           taxStatusCode = entry.getValue();
+           taxStatusCode = StringUtils.rightPad(StringUtils.EMPTY, 1,StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILL_FLOOR_ELIGIBLE))
-           fillFloorEligible = entry.getValue();
+           fillFloorEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SKU991_ELIGIBLE))
-           sku991Eligible = entry.getValue();
+           sku991Eligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_ONE))
-           unusedOne = entry.getValue();
+           unusedOne = StringUtils.rightPad(StringUtils.EMPTY, 1,StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_EXCEPTIONAL_VALUE_ITEM))
-           exceptionalValueItem = entry.getValue();
+           exceptionalValueItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PA_REPLACEMENT_ELIGIBLE))
-           paReplacementEligible = entry.getValue();
+           paReplacementEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SIGNAL_ITEM))
-           signalItem = entry.getValue();
+           signalItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_ELIGIBLE))
-           restockingFeeEligible = entry.getValue();
+           restockingFeeEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CANCELLATION_FEE_ELIGIBLE))
-           cancellationFeeEligible = entry.getValue();
+           cancellationFeeEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PREPAID_CARD_ITEM))
-           prepaidCardItem = entry.getValue();
+           prepaidCardItem = StringUtils.rightPad(entry.getValue(), 1,StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CONVERTER_BOX_ITEM))
-           converterBoxItem = entry.getValue();
+           converterBoxItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_IIAS_ELIGIBLE_ITEM))
-           iiasEligibleItem = entry.getValue();
+           iiasEligibleItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_INELIGIBLE))
-           associateDiscountIneligible = entry.getValue();
+           associateDiscountIneligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SUBSCRIPTION_PLAN_ELIGIBLE))
-           subscriptionPlanEligible = entry.getValue();
+           subscriptionPlanEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THIRD_PARTY_ITEM))
-           thirdPartyItem = entry.getValue();
+           thirdPartyItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ALPHALINE_ENTERTAINMENT_ITEM))
-           alphalineEntertainmentItem = entry.getValue();
+           alphalineEntertainmentItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SYWR_REDEMPTION_EXCLUSION))
-           sywrRedemptionExclusion = entry.getValue();
+           sywrRedemptionExclusion = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SYWR_REDEMPTION_AFTER_TAX_FLAG))
-           sywrRedemptionAfterTaxFlag = entry.getValue();
+           sywrRedemptionAfterTaxFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_TWO))
-           unusedTwo = entry.getValue();
+           unusedTwo = StringUtils.rightPad(StringUtils.EMPTY, 2,StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_PERCENT))
-           restockingFeePercent = entry.getValue();
+           restockingFeePercent = StringUtils.rightPad(entry.getValue(), 2,'0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CANCELLATION_FEE_PERCENT))
-           cancellationFeePercent = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_THREE))
-           unusedThree = entry.getValue();
+           cancellationFeePercent = StringUtils.rightPad(entry.getValue(), 2,'0');
         }
       }
       
@@ -2157,10 +2476,12 @@ public class PluResponseParser
       .append(this.byteResponse(sywrRedemptionAfterTaxFlag.getBytes()))
       .append(this.byteResponse(unusedTwo.getBytes()))
       .append(this.byteResponse(restockingFeePercent.getBytes()))
-      .append(this.byteResponse(cancellationFeePercent.getBytes()))
-      .append(this.byteResponse(unusedThree.getBytes()));
+      .append(this.byteResponse(cancellationFeePercent.getBytes()));
       
-      return sb;
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_40BA, sb)){
+        return sb;
+      }
+      return null;
    }
   
   
@@ -2213,11 +2534,11 @@ public class PluResponseParser
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
        if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLER_LEAD_TIME_VALUE))
-         installerLeadTimeValue = entry.getValue();
+         installerLeadTimeValue = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_CUTOFF_TIME))
-         installationCutOffTime = entry.getValue();
+         installationCutOffTime = StringUtils.rightPad(entry.getValue(), 4, StringUtils.EMPTY);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_LONG_ITEM_DESCRIPTION))
-         longItemDescription = entry.getValue();
+         longItemDescription = StringUtils.rightPad(StringUtils.EMPTY, 182, StringUtils.EMPTY);
       }
     }
     
@@ -2228,7 +2549,10 @@ public class PluResponseParser
     .append(this.byteResponse(longItemDescription.getBytes()));
     }
   
-    return sb;
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_58B1, sb)){
+      return sb;
+    }
+  return null;
   }
   
   
@@ -2391,33 +2715,33 @@ public class PluResponseParser
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
        if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
-         segmentLevel = entry.getValue();
+         segmentLevel = StringUtils.rightPad(entry.getValue(), 2,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_TYPE))
-         offerType = entry.getValue();
+         offerType = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_ID))
-         offerId = entry.getValue();
+         offerId = StringUtils.rightPad(entry.getValue(), 10,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FINANCIAL_CODE))
-         financialCode = entry.getValue();
+         financialCode = StringUtils.rightPad(entry.getValue(), 10,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THRESHOLD_DOLLAR_AMOUNT))
-         thresholdDollarAmount = entry.getValue();
+         thresholdDollarAmount = StringUtils.rightPad(entry.getValue(), 5, StringUtils.EMPTY);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_FLAG))
-         associateDiscountFlag = entry.getValue();
+         associateDiscountFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MISCELLANEOUS_REDUCTION_FLAG))
-         miscellaneousReductionsFlag = entry.getValue();
+         miscellaneousReductionsFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTANT_REBATE_FLAG))
-         instantRebateFlag = entry.getValue();
+         instantRebateFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAILIN_REBATE_FLAG))
-         mailInRebateFlag = entry.getValue();
+         mailInRebateFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELAYED_BILLING_END_DATE_INTERVAL))
-         delayedBillingEndDateInterval = entry.getValue();
+         delayedBillingEndDateInterval = StringUtils.rightPad(entry.getValue(), 4,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELAYED_BILLING_END_DATE_DATE))
-         delayedBillingEndDateDate = entry.getValue();
+         delayedBillingEndDateDate = StringUtils.rightPad(entry.getValue(), 10,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE1))
-         registerPromoDescriptionLine1 = entry.getValue();
+         registerPromoDescriptionLine1 = StringUtils.leftPad(StringUtils.EMPTY, 30, StringUtils.EMPTY);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE2))
-         registerPromoDescriptionLine2 = entry.getValue();
+         registerPromoDescriptionLine2 = StringUtils.leftPad(StringUtils.EMPTY, 30, StringUtils.EMPTY);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_NBR_OF_RECEIPT_PROMO_DESC_LINES))
-         nbrOfReceiptPromoDescriptionLines = entry.getValue();
+         nbrOfReceiptPromoDescriptionLines = StringUtils.rightPad(entry.getValue(), 1,'1');
       }
     }
     
@@ -2468,7 +2792,7 @@ public class PluResponseParser
                 for (Map.Entry<String, String> entry : promoDescLinesModifiableMap.entrySet())
                 { 
                   if(entry.getKey().equalsIgnoreCase(PLU_RESP_RECEIPT_PROMO_DESC_LINE))
-                    receiptPromoDescriptionLine = entry.getValue();
+                    receiptPromoDescriptionLine = StringUtils.leftPad(StringUtils.EMPTY, 40, StringUtils.EMPTY);
                 }
               }
             sb.append(this.byteResponse(receiptPromoDescriptionLine.getBytes()));
@@ -2476,12 +2800,14 @@ public class PluResponseParser
           }
         }
       
-      return sb;
+      if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_60B1, sb)){
+        return sb;
+      }
+      return null;
       }
   
   private StringBuilder processPluResponse62B1(TwilightJsonObject twilightJsonObject)
   {
-    
     String indicator = "62 B1";
     String segmentLevel = StringUtils.EMPTY;
     String restrictionType = StringUtils.EMPTY;
@@ -2548,15 +2874,15 @@ public class PluResponseParser
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
        if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
-         segmentLevel = entry.getValue();
+         segmentLevel = StringUtils.rightPad(entry.getValue(), 2, '0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTRICTION_TYPE))
-         restrictionType = entry.getValue();
+         restrictionType = StringUtils.rightPad(entry.getValue(), 1, '1');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_AGE_VALUE))
-         minimumAgeValue = entry.getValue();
+         minimumAgeValue = StringUtils.rightPad(entry.getValue(), 3, '0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY_VALUE))
-         maximumQuantityValue = entry.getValue();
+         maximumQuantityValue = StringUtils.rightPad(entry.getValue(), 3, '0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ITEM_MATCH_INDICATOR))
-         itemMatchIndicator = entry.getValue();
+         itemMatchIndicator = StringUtils.rightPad(entry.getValue(), 2, '0');
       }
     }
     
@@ -2568,8 +2894,11 @@ public class PluResponseParser
     .append(this.byteResponse(maximumQuantityValue.getBytes()))
     .append(this.byteResponse(itemMatchIndicator.getBytes()));
     }
-  
-    return sb;
+    
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_62B1, sb)){
+      return sb;
+    }
+    return null;
   }
   
   private String byteResponse(byte[] buffer)

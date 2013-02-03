@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.*;
 import com.searshc.twilight.exceptions.MalformedScriptException;
 import com.searshc.twilight.service.Segment;
 import com.searshc.twilight.service.SegmentFactory;
+import com.searshc.twilight.service.TwilightConstants;
 import com.searshc.twilight.util.ObjectBuilder;
 import com.searshc.twilight.validation.OrderResponseValidator;
 import com.upas.sears.service.domain.OrderResponse;
@@ -142,8 +143,27 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
       else
       { 
         if(StringUtils.isNotBlank(this.getMethod()) && !this.getMethod().equals("200"))
-        {   
-          ObjectBuilder.setObjects(this.getMethod(), byteArrayConverter());
+        { 
+          String indicator = this.getMethod();
+          byte [] buffer = byteArrayConverter();
+          
+          if(StringUtils.isNotBlank(indicator) && 
+              indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_PMP)){
+              if(buffer != null){
+                ObjectBuilder.setFileInqObjects(indicator, buffer);
+              }
+          }else if(StringUtils.isNotBlank(indicator) && 
+              indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_MP0)){
+            if(buffer != null){
+              ObjectBuilder.setFileInqObjects(indicator, buffer);
+            }
+          }else if(StringUtils.isNotBlank(indicator) && 
+              indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_D00)){
+            if(buffer != null){
+              ObjectBuilder.setFileInqObjects(indicator, buffer);
+            }
+          }else if(buffer != null)
+            ObjectBuilder.setObjects(buffer);
         }
         else
         {

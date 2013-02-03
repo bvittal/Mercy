@@ -1,247 +1,202 @@
 package com.searshc.twilight.service;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.Multimap;
 import com.searshc.twilight.segments.CouponInquiry2AA7Segment;
 import com.searshc.twilight.segments.PluInquiryD8Segment;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.KeyMatcher;
 import com.searshc.twilight.util.ObjectBuilder;
 import com.starmount.ups.sears.SegmentIndex;
-import com.starmount.ups.sears.responses.segmentE8.ResponseSegmentE8;
-import com.starmount.ups.sears.responses.segmentEA.ResponseSegmentEA;
-import com.starmount.ups.sears.responses.segment98.ResponseSegment98;
 
 
 public class UPASResponseFinder
 {
   private static Logger logger = Logger.getLogger(UPASResponseFinder.class);
-
-  private static final String REQUEST_INDICATOR_COUPON_INQ = "COUPON_INQ";
-  private static final String REQUEST_INDICATOR_PLU_INQ = "PLU_INQ";
-  private static final String REQUEST_INDICATOR_FILE_INQ = "FILE_INQ";
-
-  private final Multimap<String, byte[]> results = ObjectBuilder.getObjects();
   private final UpasResponseParser parser = new UpasResponseParser();
+  private final List<byte[]> results = ObjectBuilder.getObjects();
+  private final Map<String, byte[]> fileInquiryMap = ObjectBuilder.getFileInqObjects();
+  private final SegmentFactory factory = new SegmentFactory();
   
   public byte[] findResponse(byte[] reqBuffer)
   {
-    String coupon = StringUtils.EMPTY;
-    String pluItemNumber = StringUtils.EMPTY;
-    boolean match = Boolean.FALSE;
-      
-    if (results.size() > 0)
-    {
-      SegmentFactory factory = new SegmentFactory();
-      final String indicator = this.getIndicator(reqBuffer);
-      System.out.println("REQUEST RECIEVED    " + byteResponse(reqBuffer));
-      
-      if (isValidRequest(indicator, reqBuffer))
-      {
-        if (indicator.equals(REQUEST_INDICATOR_PLU_INQ))
-        {
-          final PluInquiryD8Segment pluReqInq = new PluInquiryD8Segment(reqBuffer);
-          String pluSKU = pluReqInq.getPLUSKU();
-          String pluDivisionNumber = pluReqInq.getPLUDivisionNumber();
-          pluItemNumber = pluReqInq.getPLUItemNumber();
-
-          if (pluSKU.equals("000") && pluDivisionNumber.equals("998")
-              && pluItemNumber.equals("99999"))
-          {
-            Collection<byte[]> responseObject = results.get("EA");
-            if (responseObject != null)
-            {
-              for (byte[] respBuffer : responseObject)
-              {
-                factory.getSegment("EA", respBuffer); 
-                return respBuffer;
-              }
-            }
-          }
-          else if (pluSKU.equals("000") && pluDivisionNumber.equals("099")
-              && pluItemNumber.equals("99999"))
-          {
-            Collection<byte[]> responseObject = results.get("98");
-            if (responseObject != null)
-            {
-              for (byte[] respBuffer : responseObject)
-              {
-                try
-                {
-                  List<SegmentIndex> segmentIndexes = parser.parseResponse(respBuffer);
-                  for (SegmentIndex segmentIndex : segmentIndexes)
-                  {
-                    ResponseSegment98 seg98 = segmentIndex.getAsResponseSegment98();
-                    if(seg98.getIndicator().equalsIgnoreCase("98")){
-                        factory.getSegment(seg98.getIndicator(), respBuffer);
-                    }
-                  }
-                }catch(Exception ex){
-                  System.out.println("Error " + ex);
-                }
-                return respBuffer;
-              }
-            }
-          }
-          else
-          {
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            Collection<byte[]> responseObject = results.get("PLU_RSP");
-            
-            if (responseObject != null)
-            {
-              for (byte[] respBuffer : responseObject)
-              {
-                try
-                {
-                  List<SegmentIndex> segmentIndexes = parser.parseResponse(respBuffer);
-                  for (SegmentIndex segmentIndex : segmentIndexes)
-                  {
-                    factory.getSegment(segmentIndex.getIndicatorString(), respBuffer);
-                    if (segmentIndex.getIndicatorString().equals("E8"))
-                    {
-                      ResponseSegmentE8 e8Seg = segmentIndex.getAsResponseSegmentE8();
-                      
-                      if (e8Seg.getPLUItemNumber().equals(pluItemNumber))
-                      {
-                        System.out.println("Matching plu Item number found : " + pluItemNumber);
-                        os.write(respBuffer);
-                      }
-                    }
-                  }
-                }
-                catch (Exception e)
-                {
-                  System.err.println("Error in parsing response in script - " + e.getMessage());
-                  break;
-                }
-              }
-            }
-            return os.toByteArray();
-          }
+    final PluInquiryD8Segment pluReqInq = new PluInquiryD8Segment(reqBuffer);
+    String pluItemNumber = pluReqInq.getPLUItemNumber();
+    String pluSKU = pluReqInq.getPLUSKU();
+    String pluDivisionNumber = pluReqInq.getPLUDivisionNumber();
+    String d3respIndicator = StringUtils.EMPTY;
+    if(reqBuffer != null){
+      if (String.format("%02X", reqBuffer[0]).contains(TwilightConstants.INDICATOR_D3)){
+        if (keyMatch("ÓPMP?????", byteToChar(reqBuffer))){
+          d3respIndicator = TwilightConstants.INDICATOR_PMP;
+          System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
-        else if (indicator.equals(REQUEST_INDICATOR_COUPON_INQ))
-        {
-          Collection<byte[]> responseObject = results.get("COUPON_RSP");
-          if (responseObject != null)
-          {
-            for (byte[] respBuffer : responseObject)
-            {
-              final CouponInquiry2AA7Segment couponReqInq = new CouponInquiry2AA7Segment(reqBuffer);
-              final CouponInquiry2AA7Segment couponResInq = new CouponInquiry2AA7Segment(respBuffer);
-              coupon = couponReqInq.getCouponNumber();
-              factory.getSegment("2AA7", respBuffer);
-              
-              System.out.println("Request Coupon number " + coupon);
-              if (coupon.equals(couponResInq.getCouponNumber()))
-              {
-                System.out.println("Matching coupon number found " + coupon);
-                return respBuffer;
-              }
-              else
-              {
-                System.out.println("No Matching Coupon Found ");
-              }
+        else if (keyMatch("ÓMP0000", byteToChar(reqBuffer))){
+          d3respIndicator = TwilightConstants.INDICATOR_MP0;
+          System.out.println("Request recieved for file inquiry: " + d3respIndicator);
+        }
+        else if (keyMatch("ÓD00000", byteToChar(reqBuffer))){
+          d3respIndicator = TwilightConstants.INDICATOR_D00;
+          System.out.println("Request recieved for file inquiry: " + d3respIndicator);
+        }
+          return fileInquiryResponse(d3respIndicator);
+      }else if (String.format("%02X", reqBuffer[0]).contains(TwilightConstants.INDICATOR_D8)){
+        if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
+            System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
+          if (pluSKU.equals("000") && pluDivisionNumber.equals("998") && pluItemNumber.equals("99999")){
+            return pluInquiryEAResponse(TwilightConstants.INDICATOR_EA);
+          }else 
+            if (pluSKU.equals("000") && pluDivisionNumber.equals("099") && pluItemNumber.equals("99999")){
+              System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
+            return pluInquiry98Response(TwilightConstants.INDICATOR_98);
+          }else{
+            if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
+              System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
+            return pluInquiryResponse(pluItemNumber);
             }
           }
         }
-        else if (indicator.equals(REQUEST_INDICATOR_FILE_INQ))
-        {
-          String d3respIndicator = StringUtils.EMPTY;
-          if (keyMatch("ÓPMP?????", byteToChar(reqBuffer))) d3respIndicator = "PMP";
-          else if (keyMatch("ÓMP0000", byteToChar(reqBuffer))) d3respIndicator = "MP0";
-          else if (keyMatch("ÓD00000", byteToChar(reqBuffer))) d3respIndicator = "D00";
-
-          Collection<byte[]> responseObject = results.get(d3respIndicator);
-          if (responseObject != null)
-          {
-            for (byte[] respBuffer : responseObject)
-            {
-              return respBuffer;
+      }else if (String.format("%02X%02X", reqBuffer[0], reqBuffer[1]).contains(TwilightConstants.INDICATOR_2AA7)){
+          final CouponInquiry2AA7Segment segment = new CouponInquiry2AA7Segment(reqBuffer);
+          String couponNumber = segment.getCouponNumber();
+          System.out.println("Request recieved for coupon number: " + couponNumber);
+            if(StringUtils.isNotBlank(couponNumber)){
+              return couponInquiryResponse(couponNumber);
             }
           }
         }
-      }
-      else
-      { 
-        System.err.println("Request corrupted or not found in the script");
-        /**
-         * if(indicator.equalsIgnoreCase(REQUEST_INDICATOR_COUPON_INQ))
-         * System.err.println(
-         * "Request corrupted or not found in the script for Coupon Inquiry (Coupon) : "
-         * + coupon + " please correct your script"); else
-         * if(indicator.equalsIgnoreCase(REQUEST_INDICATOR_COUPON_INQ))
-         * System.err.println(
-         * "Request corrupted or not found in the script for Plu Item Inquiry (Plu Item): "
-         * + pluItemNumber + " please correct your script");
-         */
+    return null;
+  }
+  
+  private byte[] fileInquiryResponse(String indicator){
+    byte [] fileInqResp = null;
+    if(fileInquiryMap != null){
+      if(StringUtils.isNotBlank(indicator)){
+        fileInqResp = fileInquiryMap.get(indicator);
       }
     }
+    return fileInqResp;
+  }
+  
+  private byte[] pluInquiryResponse(String itemNumber){
+    StringBuilder builder = new StringBuilder();
+    if(results.size() > 0){
+      Iterator<byte[]> itr = results.iterator();
+        while(itr.hasNext()){
+            byte buf[] = itr.next();
+            if(buf != null){
+              if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_E8))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_E9))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_EC))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_95))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_9C))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_40BA))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_58B1))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_60B1))
+                builder.append(byteResponse(buf));
+              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_62B1))
+                builder.append(byteResponse(buf));
+              }
+            }
+          }
+      if(validateResponse(DecoderUtils.buildResponse(builder))){
+        return DecoderUtils.buildResponse(builder);
+      }else 
+        return null;
+    }
+  
+  private byte[] pluInquiryEAResponse(String indicator){
+    if(results.size() > 0){
+      Iterator<byte[]> itr = results.iterator();
+        while(itr.hasNext()){
+            byte buf[] = itr.next();
+            if(buf != null){
+              if (String.format("%02X", buf[0]).contains(indicator)){
+                if(validateResponse(buf))
+                  return buf;
+              }
+            }
+         }
+      }
+    return null;
+  }
+  
+  private byte[] pluInquiry98Response(String indicator){
+    if(results.size() > 0){
+      Iterator<byte[]> itr = results.iterator();
+        while(itr.hasNext()){
+            byte buf[] = itr.next();
+            if(buf != null){
+              if (String.format("%02X", buf[0]).contains(indicator)){
+                if(validateResponse(buf))
+                  return buf;
+              }
+            }
+         }
+      }
+    return null;
+  }
+  
+  private byte[] couponInquiryResponse(String requestCoupon){
+    if(results.size() > 0){
+      Iterator<byte[]> itr = results.iterator();
+        while(itr.hasNext()){
+            byte buf[] = itr.next();
+            if(buf != null){
+              if (String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_2AB7)){
+                final CouponInquiry2AA7Segment segment = new CouponInquiry2AA7Segment(buf);
+                String responseCoupon = segment.getCouponNumber();
+                if(StringUtils.isNotBlank(responseCoupon) && responseCoupon.equalsIgnoreCase(requestCoupon)){
+                  if(validateResponse(buf))
+                    return buf;
+                }
+              }
+            }
+         }
+      }
     return null;
   }
 
-  private String byteResponse(byte[] buffer)
-  {
+  private boolean keyMatch(String key, char[] inquiry){
+    KeyMatcher matcher = new KeyMatcher(key, inquiry);
+    return matcher.isMatch();
+  }
+  
+  private boolean validateResponse(byte[] buf){
+    try{
+      List<SegmentIndex> segIndexes = parser.parseResponse(buf); //just to check response is correct
+      if(segIndexes.size() > 0)
+        return Boolean.TRUE;
+    }catch(Exception ex){
+      System.out.println("Exception " + ex);
+    }
+    return Boolean.FALSE;
+  }
+  
+  private String byteResponse(byte[] buffer){
     StringBuilder sb = new StringBuilder();
-
-    for (byte b : buffer)
-    {
+    for (byte b : buffer){
       sb.append(String.format("%02x", b).toUpperCase());
       sb.append(" ");
     }
     return sb.toString();
   }
 
-  public boolean isValidRequest(String indicator, byte[] request)
-  {
-    Collection<byte[]> responseObject = results.get(indicator);
-    if (responseObject != null)
-    {
-      for (byte[] respBuffer : responseObject)
-      {
-        if (Arrays.equals(request, respBuffer)) return Boolean.TRUE;
-      }
-    }
-    return Boolean.FALSE;
-  }
-
-  private String getIndicator(byte[] buffer)
-  {
-    String indicator = StringUtils.EMPTY;
-    StringBuilder sb = new StringBuilder();
-
-    for (byte b : buffer)
-    {
-      sb.append(String.format("%02x", b).toUpperCase());
-      sb.append(" ");
-    }
-    String str = sb.toString();
-    logger.info("HTTP Request : " + str);
-
-    if (str.contains("D3")) indicator = "FILE_INQ";
-    else if (str.contains("D8")) indicator = "PLU_INQ";
-    else if (str.replace(" ", "").contains("2AA7")) indicator = "COUPON_INQ";
-
-    return indicator;
-  }
-
-  private boolean keyMatch(String key, char[] inquiry)
-  {
-    KeyMatcher matcher = new KeyMatcher(key, inquiry);
-    return matcher.isMatch();
-  }
-
-  private char[] byteToChar(byte[] bytes)
-  {
+  private char[] byteToChar(byte[] bytes){
     char[] buffer = new char[bytes.length];
-    for (int i = 0; i < buffer.length; i++)
-    {
+    for (int i = 0; i < buffer.length; i++){
       int unsignedByte = bytes[i] & 0xFF;
       char c = (char) unsignedByte;
       buffer[i] = c;

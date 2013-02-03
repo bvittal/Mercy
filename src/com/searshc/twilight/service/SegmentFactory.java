@@ -5,7 +5,7 @@ public class SegmentFactory
   public Segment getSegment(String indicator, byte [] buffer){
     Segment segment = null;
     
-    if (indicator.equals("PLU_INQ"))
+    if (indicator.equals("D8"))
       segment = new ResponseSegD8Validation(buffer);
     else if (indicator.contains("EA"))
       segment = new ResponseSegEAValidation(buffer);

@@ -11,6 +11,7 @@ import com.searshc.twilight.parsers.CouponResponseParser;
 import com.searshc.twilight.parsers.FileInquiryParser;
 import com.searshc.twilight.parsers.PluInquiryParser;
 import com.searshc.twilight.parsers.PluResponseParser;
+import com.searshc.twilight.service.TwilightConstants;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class ScriptCommandParser
@@ -39,12 +40,30 @@ public class ScriptCommandParser
   public void parse(String commandLines)
   {  
     JsonObjectBuilder builder = new JsonObjectBuilder();
-    String[] validIndicators = {"D3", "E3", "D8", "E8", "98", "EA", "2AA7", "2AB7"};
+    String[] validIndicators = {
+        TwilightConstants.INDICATOR_95,
+        TwilightConstants.INDICATOR_98,
+        TwilightConstants.INDICATOR_9C,
+        TwilightConstants.INDICATOR_D3,
+        TwilightConstants.INDICATOR_D8,
+        TwilightConstants.INDICATOR_E3,
+        TwilightConstants.INDICATOR_E8,
+        TwilightConstants.INDICATOR_E9,
+        TwilightConstants.INDICATOR_EA,
+        TwilightConstants.INDICATOR_EC,
+        TwilightConstants.INDICATOR_2AA7,
+        TwilightConstants.INDICATOR_2AB7,
+        TwilightConstants.INDICATOR_40BA,
+        TwilightConstants.INDICATOR_58B1,
+        TwilightConstants.INDICATOR_60B1,
+        TwilightConstants.INDICATOR_62B1
+    };
+    
     Stack<String> stack = new Stack<String>();
     String token;
     String key, val;
     StringTokenizer t1;
-    
+
     StringTokenizer tok1 = new StringTokenizer(commandLines, " ");
     this.action = tok1.nextToken();
     StringTokenizer tok2 = new StringTokenizer(tok1.nextToken(),"(");
@@ -144,9 +163,49 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.COUPON_RESP_INCL_EXCL_KEY); 
         }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_EA_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_EA_KEY); 
+        }
         else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_98_KEY))
         {
           builder.newObject(TwilightPojo.PLU_RESP_98_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_E8_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_E8_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_E9_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_E9_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_EC_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_EC_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_95_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_95_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_9C_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_9C_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_40BA_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_40BA_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_60B1_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_60B1_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_62B1_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_62B1_KEY); 
+        }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_58B1_KEY))
+        {
+          builder.newObject(TwilightPojo.PLU_RESP_58B1_KEY); 
         }
         else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_RESPONSES))
         {
@@ -212,7 +271,7 @@ public class ScriptCommandParser
         {
           sb.append(commandLines.substring(startingIndex + 1, endingIndex));
         }
-          System.out.println("ByteArray Request " + sb);
+          //System.out.println("ByteArray Request " + sb);
           this.byteArrayObj = sb;
        }
     }
@@ -222,8 +281,7 @@ public class ScriptCommandParser
     if(rsp.equals("200") || rsp.equals("400") || rsp.equals("404") || 
         rsp.equals("500") || rsp.equals("FILE_INQ") || 
         rsp.equals("PLU_INQ") || rsp.equals("PLU_RSP") ||
-        rsp.equals("COUPON_INQ") || rsp.equals("COUPON_RSP") ||
-        rsp.equals("98"))
+        rsp.equals("COUPON_INQ") || rsp.equals("COUPON_RSP"))
       return true;
     else
       return false;
@@ -272,7 +330,6 @@ public class ScriptCommandParser
   { 
     StringBuilder builder = new StringBuilder();
     final String commandType = twilightJsonObject.getName();
-    System.out.println("Twilight Object Name " + commandType);
     
       /**
       * File Inquiry D3
@@ -285,7 +342,7 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       System.out.println("Key/Value Pair Request - FILE_INQ " + builder);
+       //System.out.println("Key/Value Pair Request - FILE_INQ " + builder);
      }
      
      /**
@@ -299,7 +356,7 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       System.out.println("Key/Value Pair Request - PLU_INQ " + builder);
+       //System.out.println("Key/Value Pair Request - PLU_INQ " + builder);
      }
      
      /**
@@ -313,7 +370,7 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       System.out.println("Key/Value Pair Request - COUPON_INQ " + builder);
+       //System.out.println("Key/Value Pair Request - COUPON_INQ " + builder);
      }
      
      /**
@@ -327,21 +384,7 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       System.out.println("Key/Value Pair Request - PLU_RSP " + builder);
-     }
-     
-     /**
-      * Plu Inquiry Response 98
-      */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("98"))
-     {
-       final PluResponseParser pluResponseParser = new PluResponseParser();
-       builder = pluResponseParser.getPluResponse(twilightJsonObject);
-       if(builder != null)
-       {
-         this.byteArrayObj = builder;
-       }
-       System.out.println("Key/Value Pair Request - 98 " + builder);
+       //System.out.println("Key/Value Pair Request - PLU_RSP " + builder);
      }
      
      /**
@@ -355,7 +398,7 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       System.out.println("Key/Value Pair Request - COUPON_RSP " + builder);
+       //System.out.println("Key/Value Pair Request - COUPON_RSP " + builder);
      }
    }
  }

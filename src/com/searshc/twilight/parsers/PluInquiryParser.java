@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.service.TwilightConstants;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class PluInquiryParser
@@ -116,17 +118,17 @@ public class PluInquiryParser
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
        if(entry.getKey().equalsIgnoreCase(PLU_INQ_DIVISION))
-         division = entry.getValue();
+         division = StringUtils.rightPad(entry.getValue(), 3,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_INQ_ITEM_NUMBER))
-         itemNumber = entry.getValue();
+         itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_INQ_SKU))
-         sku = entry.getValue();
+         sku = StringUtils.rightPad(entry.getValue(), 3,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_INQ_TYPE))
        {
          inqType= entry.getValue();       
          if(StringUtils.isBlank(inqType) || inqType.equalsIgnoreCase("null"))
          {
-           inqType = StringUtils.rightPad(StringUtils.EMPTY, 1);
+           inqType = StringUtils.rightPad(StringUtils.EMPTY, 1, StringUtils.EMPTY);
          }
        }
        else if(entry.getKey().equalsIgnoreCase(PLU_INQ_SEGMENT_LEVEL))
@@ -148,6 +150,9 @@ public class PluInquiryParser
     .append(" ")
     .append("00");
     
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_D8, sb)){
+      return sb;
+    }
     return sb;
   }
   

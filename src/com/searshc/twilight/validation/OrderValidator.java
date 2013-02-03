@@ -24,7 +24,7 @@ public class OrderValidator extends Order implements ResponseValidator
     super.setAssociateId(associateId);
   }
   
-  public void setCouponCodes(String[] couponCodes)
+  public void setCouponCodes(Coupon[] couponCodes)
   {
     super.setCouponCodes(couponCodes);
   }

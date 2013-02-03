@@ -69,6 +69,7 @@ public abstract class AbstractScriptCommand
   public static final String INCOMPATIBILITY_REASON = "reason";
   public static final String INCOMPATIBILITY_FIELDS = "fields";
   public static final String INCOMPATIBILITY_OPTED_PROMO = "incompOptedPromo";
+  public static final String INCOMPATIBILITY_OPTED_PROMO_TYPE = "incompOptedPromoType";
   public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS_OFFER_ID = "incompOfferId";
   public static final String INCOMPATIBILITY_UNAPPLIED_OFFERS_REASON_CODE = "incompReasonCode";
   public static final String INCOMPATIBILITY_REASON_FIELD = "incompField";
@@ -127,7 +128,7 @@ public abstract class AbstractScriptCommand
   /** the methods */
   public abstract void execute();
   public abstract boolean isRequest();
-  
+
   protected void toOrderResponse(TwilightJsonObject obj)
   {
     /** need to account for messages also */
@@ -224,7 +225,18 @@ public abstract class AbstractScriptCommand
         
         if(name.equals(TwilightJsonArray.COUPON_KEY))
         {
-          order.setCouponCodes(arrayList.get(i).getStringArray());
+          List<Coupon> couponList = new ArrayList<Coupon>();
+          Coupon coupon = new Coupon();
+          String [] couponSet = arrayList.get(i).getStringArray();
+          if(couponSet != null){
+            for(int y=0; y<couponSet.length; y++){
+              coupon.setCode(couponSet[y]);
+              }
+          }
+          couponList.add(coupon);
+          Coupon[] couponArray = new Coupon[couponList.size()];
+          couponList.toArray(couponArray);
+          order.setCouponCodes(couponArray);
         }
         else if(name.equals(TwilightJsonArray.OPTED_PROMO_KEY))
         {
@@ -436,6 +448,8 @@ public abstract class AbstractScriptCommand
       {
         if(entry.getKey().equals(INCOMPATIBILITY_OPTED_PROMO))
           incompatibility.setOptedPromo(entry.getValue());
+        else if(entry.getKey().equals(INCOMPATIBILITY_OPTED_PROMO_TYPE))
+          incompatibility.setOptedPromoType(entry.getValue());
       }
       
       Iterator<TwilightJsonObject> unappliedOffersItr = incompatibilityObj.getTwilightJsonObject().iterator();

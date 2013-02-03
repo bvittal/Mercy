@@ -10,7 +10,7 @@ public class SywrNumberValidationCommand extends
   @Override
   public boolean passes(Order order)
   {
-    String str = order.getSywrNumber();
+    String str = order.getSearsCard();
     
     if(str != null && str.equals(baseValue))
       return true;

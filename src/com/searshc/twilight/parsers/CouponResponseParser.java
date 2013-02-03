@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.service.TwilightConstants;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class CouponResponseParser
@@ -428,23 +430,23 @@ public class CouponResponseParser
            segmentLength = firstByte + " " + secondByte;
          }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SEGMENT_LEVEL))
-           segmentLevel = entry.getValue();
+           segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_NUMBER))
-           couponNumber = entry.getValue();
+           couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_TYPE))
-           type = entry.getValue();
+           type = StringUtils.rightPad(entry.getValue(), 1);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_START_DATE))
-           startDate = entry.getValue();
+           startDate = StringUtils.rightPad(entry.getValue(), 10);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_START_TIME))
-           startTime = entry.getValue();
+           startTime = StringUtils.rightPad(entry.getValue(), 8);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_END_DATE))
-           endDate = entry.getValue();
+           endDate = StringUtils.rightPad(entry.getValue(), 10);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_END_TIME))
-           endTime = entry.getValue();
+           endTime = StringUtils.rightPad(entry.getValue(), 8);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_TYPE))
-           reductionType = entry.getValue();
+           reductionType = StringUtils.rightPad(entry.getValue(), 1);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_AMOUNT))
-           reductionAmount = entry.getValue();
+           reductionAmount = StringUtils.rightPad(entry.getValue(), 8,'0');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_FLAG))
          {
            reductionFlag = entry.getValue();
@@ -460,52 +462,46 @@ public class CouponResponseParser
            retailFormat = firstByte + " " + secondByte;
          }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUNT_COUPON))
-           countCoupon = entry.getValue();
+           countCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_TRANSACTION))
-           oneCouponPerTransaction = entry.getValue();
+           oneCouponPerTransaction = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_ITEM))
-           oneCouponPerItem = entry.getValue();
+           oneCouponPerItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SINGLE_USE_COUPON))
-           singleUseCoupon = entry.getValue();
+           singleUseCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INITIAL_PURCHASE_THRESHOLD))
-           initialPurchaseThreshold = entry.getValue();
+           initialPurchaseThreshold = StringUtils.rightPad(entry.getValue(), 5,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SIGNAL_ITEM))
-           signalItem = entry.getValue();
+           signalItem = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_PRICE_MATCH))
-           priceMatch = entry.getValue();
+           priceMatch = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_GREAT_VALUE))
-           greatValue = entry.getValue();
+           greatValue = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_MARKETING_CODE))
          {
            marketingCode = entry.getValue();
            if(StringUtils.isBlank(marketingCode) || marketingCode.equalsIgnoreCase("null"))
-             marketingCode = StringUtils.rightPad(StringUtils.EMPTY, 24); //Char(24)  Alphanumeric/special character. Leading spaces displayed. 
+             marketingCode = StringUtils.rightPad(StringUtils.EMPTY, 24); 
          }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ITEM_LEVEL_COUPON))
-           itemLevelCoupon = entry.getValue();
+           itemLevelCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_MANAGER_APPROVAL_FLAG))
-           managerApprovalFlag = entry.getValue();
+           managerApprovalFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_FRIENDS_AND_FAMILY_COUPON))
-           friendsAndFamilyCoupon = entry.getValue();
+           friendsAndFamilyCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_DISCOUNT_WITH_SEARS_CARD_COUPON))
-           discountWithSearsCardCoupon = entry.getValue();
+           discountWithSearsCardCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_VALID_WITH_ZERO_PERCENT_FINANCING))
-           validWithZeroPercentFinancing = entry.getValue();
+           validWithZeroPercentFinancing = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REGULAR_PRICE_COUPON))
-           regularPriceCoupon = entry.getValue();
+           regularPriceCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_NBR_OF_INCL_EXCL))
-           nbrOfInclExcl = entry.getValue();
+           nbrOfInclExcl = StringUtils.rightPad(entry.getValue(), 3);
         }
       }
       
-      int length = BASE_LENGTH + (INC_EXCL_LENGTH * Integer.parseInt(nbrOfInclExcl));
-      //int length = BASE_LENGTH + (INC_EXCL_LENGTH * 3);
-      //String len = Integer.toHexString(length);
-      
       sb.append(indicator)
       .append(" ")
-      //This logic needs to be revisited once Patrick will be back from holidays
-      //.append("51 01 ")
       .append(segmentLength)
       .append(" ")
       .append(this.byteResponse(segmentLevel.getBytes()))
@@ -517,12 +513,8 @@ public class CouponResponseParser
       .append(this.byteResponse(endTime.getBytes()))
       .append(this.byteResponse(reductionType.getBytes()))
       .append(this.byteResponse(reductionAmount.getBytes()))
-      //.append(this.byteResponse(reductionFlag.getBytes())) //reductionFlag=0111000000100000
-      //.append("70 20 ")
       .append(reductionFlag)
       .append(" ")
-      //.append(this.byteResponse(retailFormat.getBytes())) //retailFormat=1000000000100000
-      //.append("80 20 ")
       .append(retailFormat)
       .append(" ")
       .append(this.byteResponse(countCoupon.getBytes()))
@@ -541,11 +533,8 @@ public class CouponResponseParser
       .append(this.byteResponse(validWithZeroPercentFinancing.getBytes()))
       .append(this.byteResponse(regularPriceCoupon.getBytes()))
       .append(this.byteResponse(nbrOfInclExcl.getBytes()));
-      
-      System.out.println("Main Byte Buffer " + sb);
     }
         
-      
         for(TwilightJsonObject inclExclObj : twilightJsonObject.getTwilightJsonObject())
         {
           final Iterator<TwilightJsonObject> inclExclItr = inclExclObj.getTwilightJsonObject().iterator();
@@ -629,25 +618,25 @@ public class CouponResponseParser
                   for (Map.Entry<String, String> entry : inclExclModifiableMap.entrySet())
                   { 
                     if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SEQ_NUMBER))
-                      sequenceNumber = entry.getValue();
+                      sequenceNumber = StringUtils.rightPad(entry.getValue(), 3);
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_FLAG))
                     {
                       incExcFlag = entry.getValue();
-                      if(StringUtils.isNotBlank(incExcFlag) && incExcFlag.equalsIgnoreCase("true"))
+                      if(StringUtils.isNotBlank(incExcFlag) && incExcFlag.equalsIgnoreCase("I"))
                         incExcFlag = "I";
                       else
                         incExcFlag = "E";
                     }
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_DIVISION_NUMBER))
-                      divisionNumber = entry.getValue();
+                      divisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_LINE_NUMBER))
-                      lineNumber = entry.getValue();
+                      lineNumber = StringUtils.rightPad(entry.getValue(), 2,'0');
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SUB_LINE_NUMBER))
-                      subLineNumber = entry.getValue();
+                      subLineNumber = StringUtils.rightPad(entry.getValue(), 2,'0');
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SUB_LINE_VARIABLE))
-                      subLineVariable = entry.getValue();
+                      subLineVariable = StringUtils.rightPad(entry.getValue(), 3,'0');
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_ITEM_NUMBER))
-                      itemNumber = entry.getValue();
+                      itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
                     }
                   }
               
@@ -660,8 +649,11 @@ public class CouponResponseParser
                 .append(this.byteResponse(itemNumber.getBytes()));
                 }
               }
-        System.out.println("Coupon Response " + sb);
-        return sb;
+        
+        if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_2AB7, sb)){
+          return sb;
+        }
+        return null;
      }
   
   private String byteResponse(byte[] buffer)

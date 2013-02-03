@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -74,14 +72,6 @@ class EchoHandler implements HttpHandler
         OutputStream os = null;     
         InputStream is = t.getRequestBody();
         Headers headers = t.getRequestHeaders();
-        /**
-        for (String name : headers.keySet()) {
-          List<String> values = headers.get(name);
-          for (String value : values) {
-              System.out.println(name + ": " + value);
-          }
-        }*/
-        
         
         byte[] requestBuffer = new byte[is.available()];
         is.read(requestBuffer);
@@ -91,32 +81,25 @@ class EchoHandler implements HttpHandler
         byte[] buffer = new byte[requestBuffer.length - endPosition];
         buffer = Arrays.copyOfRange(requestBuffer, endPosition, requestBuffer.length);
         byte[] inquryResp = finder.findResponse(buffer);
-        System.out.println("RESPONSE SENT     " + byteResponse(inquryResp));
-        int respLength = createXMLResponseHeader().length + inquryResp.length;
         
-        System.out.println("HTTP Response length : " + respLength);
-        System.out.println("HTTP Response : " + new String(inquryResp));
+        if(inquryResp != null){
+          System.out.println("RESPONSE SENT     " + byteResponse(inquryResp));
+          int respLength = createXMLResponseHeader().length + inquryResp.length;
+          
+          System.out.println("HTTP Response length : " + respLength);
+          System.out.println("HTTP Response : " + new String(inquryResp));
+          
+          outputStream.write(createXMLResponseHeader());
+          outputStream.write(inquryResp);
         
-        outputStream.write(createXMLResponseHeader());
-        outputStream.write(inquryResp);
-        byte [] responseObject = outputStream.toByteArray();
-        /**
-        if(responseObject != null){
-          try
-          {
-            parser.parseResponse(responseObject);
-          }
-          catch (Exception e)
-          {
-            e.printStackTrace();
-          }
-        }*/
+          byte [] responseObject = outputStream.toByteArray();
         
           t.sendResponseHeaders(HTTP_OK, respLength);
           os = t.getResponseBody();
           os.write(responseObject);
           os.close();
           t.close();
+        }
       }
     
     private int findXMLHeaderEnd(byte[] bytes) {

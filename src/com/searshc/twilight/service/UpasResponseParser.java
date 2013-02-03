@@ -62,10 +62,10 @@ import com.searshc.twilight.segments.PluInquiryD8Segment;
 public class UpasResponseParser{
 
   private static Logger logger = Logger.getLogger(UpasResponseParser.class);
+  private final SegmentFactory factory = new SegmentFactory();
   
-  
-  public List<SegmentIndex> parseResponse(byte[] buf) throws Exception
-  {   
+  public List<SegmentIndex> parseResponse(byte[] buf) throws Exception{
+    
       final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       outputStream.write(createXMLResponseHeader());
       outputStream.write(buf);
@@ -77,12 +77,12 @@ public class UpasResponseParser{
               .build();
       
       List<SegmentIndex> segmentIndexes = parser.getSegmentList();
-      /**
       for (SegmentIndex segmentIndex : segmentIndexes) {
+        factory.getSegment(segmentIndex.getIndicatorString(), segmentIndex.getBuffer());
         System.out.println("Segment " + segmentIndex.getIndicatorString() + "\t at position " 
             + segmentIndex.getPosition() + " length of\t " 
             + segmentIndex.getLength());
-      }*/
+      }
       return segmentIndexes;
   }
   
@@ -161,5 +161,5 @@ public class UpasResponseParser{
     String s =
             "<POSRESP><type>NR45</type><unitNumber>00000</unitNumber><id></id><returnCode>0</returnCode><responseDescription>success</responseDescription></POSRESP>";
     return s.getBytes();
-}
+  }
 }
