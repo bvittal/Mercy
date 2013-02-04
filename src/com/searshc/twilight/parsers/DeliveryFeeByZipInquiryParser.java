@@ -24,10 +24,10 @@ public class DeliveryFeeByZipInquiryParser
   private static final String DELIVERY_FEE_BY_ZIP_INQ_ZIP_CODE = "zipCode";
   
   //Coupon Inquiry - 70A4 - default Values
-  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_CLIENT_ID = "deliveryFeeByZipInq_segmentLevel";
-  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_USER_ID = "deliveryFeeByZipInq_segmentLength";
-  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_PASSWORD = "deliveryFeeByZipInq_couponNumber";
-  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_SERIVICE_INDICATOR = "deliveryFeeByZipInq_storeNumber";
+  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_CLIENT_ID = "deliveryFeeByZipInq_clientId";
+  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_USER_ID = "deliveryFeeByZipInq_userId";
+  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_PASSWORD = "deliveryFeeByZipInq_password";
+  private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_SERIVICE_INDICATOR = "deliveryFeeByZipInq_serviceIndicator";
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_ZIP_CODE = "deliveryFeeByZipInq_zipCode";
   
   public DeliveryFeeByZipInquiryParser()
@@ -49,7 +49,7 @@ public class DeliveryFeeByZipInquiryParser
   
   private StringBuilder processDeliveryFeeByZipInquiry70A4(TwilightJsonObject twilightJsonObject)
   {
-    String indicator = "2A A7";
+    String indicator = "70 A4";
     String clientId = StringUtils.EMPTY;
     String userId = StringUtils.EMPTY;
     String password = StringUtils.EMPTY;
@@ -129,9 +129,9 @@ public class DeliveryFeeByZipInquiryParser
     
     sb.append(indicator)
     .append(" ")
-    .append(clientId.substring(0,2))
+    .append(this.byteResponse(clientId.getBytes()))
     .append(" ")
-    .append(userId.substring(2,4))
+    .append(this.byteResponse(userId.getBytes()))
     .append(" ")
     .append(password)
     .append(" ")

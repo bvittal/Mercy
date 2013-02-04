@@ -69,7 +69,7 @@ public class DeliveryFeeByZipResponseParser
   
   private StringBuilder processCouponResponse70B4(TwilightJsonObject twilightJsonObject)
   {
-      String indicator = "2A B7";
+      String indicator = "70 B4";
       String responseCode = StringUtils.EMPTY;
       String deliveryType = StringUtils.EMPTY;
       String baseDeliveryCharge = StringUtils.EMPTY;
