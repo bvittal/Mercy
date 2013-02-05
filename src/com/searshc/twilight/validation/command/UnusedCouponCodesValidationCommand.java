@@ -1,5 +1,6 @@
 package com.searshc.twilight.validation.command;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,36 +19,39 @@ public class UnusedCouponCodesValidationCommand extends AbstractStringValidation
   {
     Multimap<String, Boolean> results = ArrayListMultimap.create();   
     List<CoupounCode> couponList = order.getUnusedCouponCodes();
-    int base_index = 0;
+    boolean flag = Boolean.FALSE;
     
-    if(couponList != null && baseValueforUnusedCoupons != null)
+    if(couponList.size() > 0 && baseValueforUnusedCoupons.size() > 0)
     {
-      for(CoupounCode couponCode : couponList)
-      {
-        for (int index = base_index; index <  baseValueforUnusedCoupons.size();)
-        {
-          String couponNumber[] = couponCode.getCodes();
-          String baseCouponNumber[] = baseValueforUnusedCoupons.get(index).getCodes();
+      Iterator<CoupounCode> couponItr = couponList.iterator();
+      Iterator<CoupounCode> baseCouponItr = baseValueforUnusedCoupons.iterator();
+      
+      while(couponItr.hasNext()){
+        CoupounCode code = couponItr.next();
+        String couponNumber[] = code.getCodes();
+        while(baseCouponItr.hasNext()){
+          CoupounCode baseCode = baseCouponItr.next();
+          String baseCouponNumber[] = baseCode.getCodes();
           if(couponNumber.length > 0 && baseCouponNumber.length > 0){
-          for(int i=0; i<couponNumber.length; i++){
-            for(int j=i; j<baseCouponNumber.length; j++){
-            if(StringUtils.isNotBlank(couponNumber[i]) && StringUtils.isNotBlank(baseCouponNumber[j]) && couponNumber[i].equalsIgnoreCase(baseCouponNumber[j]))
-            {
-            String reasonCode = couponCode.getReason();
-            String baseReasonCode = baseValueforUnusedCoupons.get(index).getReason();
-              if(StringUtils.isNotBlank(reasonCode) && StringUtils.isNotBlank(baseReasonCode))
-                results.put(couponNumber[i], reasonCode.equalsIgnoreCase(baseReasonCode) ? Boolean.TRUE : Boolean.FALSE);
-              }else{
-                System.err.println("No matching unused coupon found in the script to validate\n");
-              }
+            for(int i=0; i<couponNumber.length; i++){
+              for(int j=0; j<baseCouponNumber.length; j++){
+                if(StringUtils.isNotBlank(couponNumber[i]) && StringUtils.isNotBlank(baseCouponNumber[j]) 
+                    && couponNumber[i].equalsIgnoreCase(baseCouponNumber[j])){
+                  String reasonCode = code.getReason();
+                  String baseReasonCode = baseCode.getReason();
+                  if(StringUtils.isNotBlank(reasonCode) && StringUtils.isNotBlank(baseReasonCode)){
+                    results.put(couponNumber[i], reasonCode.equalsIgnoreCase(baseReasonCode) ? Boolean.TRUE : Boolean.FALSE);
+                    flag = Boolean.TRUE;
                   }
                 }
               }
-              base_index++;
-              break;
             }
           }
+          if(flag == Boolean.TRUE)
+            break;
         }
+      }
+    }
     
     for (Map.Entry<String, Boolean> entry : results.entries())
     {
