@@ -6,12 +6,14 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
 import com.searshc.twilight.segments.Segment2AA7LengthCalculator;
+import com.searshc.twilight.segments.Segment70A4LengthCalculator;
 import com.searshc.twilight.service.TwilightConstants;
 import com.starmount.ups.sears.responses.segment2AB7.Segment2AB7LengthCalculator;
 import com.starmount.ups.sears.responses.segment40BA.Segment40BALengthCalculator;
 import com.starmount.ups.sears.responses.segment58B1.Segment58B1LengthCalculator;
 import com.starmount.ups.sears.responses.segment60B1.Segment60B1LengthCalculator;
 import com.starmount.ups.sears.responses.segment62B1.Segment62B1LengthCalculator;
+import com.starmount.ups.sears.responses.segment70B4.Segment70B4LengthCalculator;
 import com.starmount.ups.sears.responses.segment95.Segment95LengthCalculator;
 import com.starmount.ups.sears.responses.segment98.Segment98LengthCalculator;
 import com.starmount.ups.sears.responses.segment9C.Segment9CLengthCalculator;
@@ -114,6 +116,18 @@ public class DecoderUtils
       }
       else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_2AA7)){
         Segment2AA7LengthCalculator calc = new Segment2AA7LengthCalculator(indicator, ByteBuffer.wrap(buffer));
+        segmentlength = calc.getLength();
+        if(buffer.length == segmentlength)
+          return Boolean.TRUE;
+      }
+      else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_70B4)){
+        Segment70B4LengthCalculator calc = new Segment70B4LengthCalculator(indicator, ByteBuffer.wrap(buffer));
+        segmentlength = calc.getLength();
+        if(buffer.length == segmentlength)
+          return Boolean.TRUE;
+      }
+      else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_70A4)){
+        Segment70A4LengthCalculator calc = new Segment70A4LengthCalculator(indicator, ByteBuffer.wrap(buffer));
         segmentlength = calc.getLength();
         if(buffer.length == segmentlength)
           return Boolean.TRUE;
