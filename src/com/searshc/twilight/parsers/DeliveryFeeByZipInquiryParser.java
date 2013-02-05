@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.service.TwilightConstants;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class DeliveryFeeByZipInquiryParser
@@ -16,14 +18,14 @@ public class DeliveryFeeByZipInquiryParser
   private static Logger logger = Logger.getLogger(DeliveryFeeByZipInquiryParser.class);
   private static Properties prop;
   
-  //Coupon Inquiry - 70A4 - parameters
+  //Delivery Fee By Zip Inquiry - 70A4 - parameters
   private static final String DELIVERY_FEE_BY_ZIP_INQ_CLIENT_ID = "clientId";
   private static final String DELIVERY_FEE_BY_ZIP_INQ_USER_ID = "userId";
   private static final String DELIVERY_FEE_BY_ZIP_INQ_PASSWORD = "password";
   private static final String DELIVERY_FEE_BY_ZIP_INQ_SERIVICE_INDICATOR = "serviceIndicator";
   private static final String DELIVERY_FEE_BY_ZIP_INQ_ZIP_CODE = "zipCode";
   
-  //Coupon Inquiry - 70A4 - default Values
+  //Delivery Fee By Zip Inquiry - 70A4 - default Values
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_CLIENT_ID = "deliveryFeeByZipInq_clientId";
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_USER_ID = "deliveryFeeByZipInq_userId";
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_INQ_PASSWORD = "deliveryFeeByZipInq_password";
@@ -129,16 +131,15 @@ public class DeliveryFeeByZipInquiryParser
     
     sb.append(indicator)
     .append(" ")
-    .append(this.byteResponse(clientId.getBytes()))
-    .append(" ")
-    .append(this.byteResponse(userId.getBytes()))
-    .append(" ")
-    .append(password)
-    .append(" ")
-    .append(serviceIndicator)
-    .append(" ")
-    .append(zipCode);    
+    .append(this.byteResponse(clientId.getBytes()))    
+    .append(this.byteResponse(userId.getBytes()))    
+    .append(this.byteResponse(password.getBytes()))   
+    .append(this.byteResponse(serviceIndicator.getBytes()))   
+    .append(this.byteResponse(zipCode.getBytes()));    
     
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_70A4, sb)){
+      return sb;
+    }
     return sb;
   }
   

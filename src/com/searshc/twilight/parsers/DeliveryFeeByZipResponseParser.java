@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.service.TwilightConstants;
+import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
 public class DeliveryFeeByZipResponseParser
@@ -20,7 +22,7 @@ public class DeliveryFeeByZipResponseParser
   private final int BASE_LENGTH = 109;
   private final int INC_EXCL_LENGTH = 19;
   
-  //Coupon Inquiry Response - 70B4 - parameters
+  //Delivery Fee By Zip Response - 70B4 - parameters
   private static final String DELIVERY_FEE_BY_ZIP_RESP_RESPONSE_CODE = "responseCode";
   private static final String DELIVERY_FEE_BY_ZIP_RESP_DELIVERY_TYPE = "deliveryType";
   private static final String DELIVERY_FEE_BY_ZIP_RESP_BASE_DELIVERY_CHARGE = "baseDeliveryCharge";
@@ -35,7 +37,7 @@ public class DeliveryFeeByZipResponseParser
   private static final String DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_FEE_AMOUNT = "eveningPremiumFeeAmount";
   
   
-  //Coupon Inquiry Response - 70B4 - default Values
+  //Delivery Fee By Zip Response - 70B4 - default Values
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_RESP_RESPONSE_CODE = "deliveryFeeByZipResp_70B4_responseCode";
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_RESP_DELIVERY_TYPE = "deliveryFeeByZipResp_70B4_deliveryType";
   private static final String DEFAULT_DELIVERY_FEE_BY_ZIP_RESP_BASE_DELIVERY_CHARGE = "deliveryFeeByZipResp_70B4_baseDeliveryCharge";
@@ -263,16 +265,16 @@ public class DeliveryFeeByZipResponseParser
       .append(this.byteResponse(eveningPremiumWindowFlag.getBytes()))
       .append(this.byteResponse(morningPremiumWindowDescription.getBytes()))
       .append(this.byteResponse(eveningPremiumWindowDescription.getBytes()))
-      .append(this.byteResponse(morningPremiumFeeAmount.getBytes())) //morningPremiumFeeAmount=0111000000100000
-      .append(this.byteResponse(eveningPremiumFeeAmount.getBytes())); //eveningPremiumFeeAmount=1000000000100000
-
+      .append(this.byteResponse(morningPremiumFeeAmount.getBytes())) 
+      .append(this.byteResponse(eveningPremiumFeeAmount.getBytes()));    
       
-      System.out.println("Main Byte Buffer " + sb);
     }
         
       
         
-        System.out.println("Coupon Response " + sb);
+    if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_70B4, sb)){
+      return sb;
+    }
         return sb;
      }
   
