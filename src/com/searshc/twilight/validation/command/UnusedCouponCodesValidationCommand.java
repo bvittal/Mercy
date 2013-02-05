@@ -18,27 +18,33 @@ public class UnusedCouponCodesValidationCommand extends AbstractStringValidation
   {
     Multimap<String, Boolean> results = ArrayListMultimap.create();   
     List<CoupounCode> couponList = order.getUnusedCouponCodes();
-    int index = 0;
+    int base_index = 0;
     
     if(couponList != null && baseValueforUnusedCoupons != null)
     {
       for(CoupounCode couponCode : couponList)
       {
-        for(CoupounCode baseCouponCode : baseValueforUnusedCoupons)
+        for (int index = base_index; index <  baseValueforUnusedCoupons.size();)
         {
-          String couponNumber = couponCode.getCodes()[index];
-          String baseCouponNumber = baseCouponCode.getCodes()[index];
-            if(StringUtils.isNotBlank(couponNumber) && StringUtils.isNotBlank(baseCouponNumber) && couponNumber.equalsIgnoreCase(baseCouponNumber))
+          String couponNumber[] = couponCode.getCodes();
+          String baseCouponNumber[] = baseValueforUnusedCoupons.get(index).getCodes();
+          if(couponNumber.length > 0 && baseCouponNumber.length > 0){
+          for(int i=0; i<couponNumber.length; i++){
+            for(int j=i; j<baseCouponNumber.length; j++){
+            if(StringUtils.isNotBlank(couponNumber[i]) && StringUtils.isNotBlank(baseCouponNumber[j]) && couponNumber[i].equalsIgnoreCase(baseCouponNumber[j]))
             {
             String reasonCode = couponCode.getReason();
-            String baseReasonCode = baseCouponCode.getReason();
+            String baseReasonCode = baseValueforUnusedCoupons.get(index).getReason();
               if(StringUtils.isNotBlank(reasonCode) && StringUtils.isNotBlank(baseReasonCode))
-                results.put(couponNumber, reasonCode.equalsIgnoreCase(baseReasonCode) ? Boolean.TRUE : Boolean.FALSE);
+                results.put(couponNumber[i], reasonCode.equalsIgnoreCase(baseReasonCode) ? Boolean.TRUE : Boolean.FALSE);
               }else{
-                System.err.println("No matching unused coupon found in script to validate\n");
+                System.err.println("No matching unused coupon found in the script to validate\n");
               }
-            index++;
-            break;
+                  }
+                }
+              }
+              base_index++;
+              break;
             }
           }
         }

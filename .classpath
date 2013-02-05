@@ -18,5 +18,9 @@
 	<classpathentry kind="lib" path="lib/guava-11.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.8.3.jar"/>
 	<classpathentry kind="lib" path="lib/sears-pricing-universal-1.3.8.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-4.5.1.jar" sourcepath="/Users/amishr8/.m2/repository/net/sf/jasperreports/jasperreports/4.5.1/jasperreports-4.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-digester-1.7.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
