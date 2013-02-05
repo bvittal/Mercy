@@ -30,6 +30,8 @@ public class TwilightConstants
   public static final String INDICATOR_2AB7 = "2AB7";
   public static final String INDICATOR_70A4 = "70A4";
   public static final String INDICATOR_70B4 = "70B4";
+  public static final String INDICATOR_72A2 = "72A2";
+  public static final String INDICATOR_72B2 = "72B2";
   
   
 }
