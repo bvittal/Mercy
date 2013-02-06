@@ -42,23 +42,23 @@ public class DeliveryPricingInquiryParser
   
   
   //Delivery Pricing Inquiry - 72A2 - default Values
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_CLIENT_ID = "deliveryPricingInq_clientId";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_USER_ID = "deliveryPricingInq_userId";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_PASSWORD = "deliveryPricingInq_password";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_SERIVICE_INDICATOR = "deliveryPricingInq_serviceIndicator";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_ZIP_CODE = "deliveryPricingInq_zipCode";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_MESSAGE_VERSION = "deliveryPricingInq_messageVersion";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_LINKED_SALESCHECK_FLAG = "deliveryPricingInq_linkedSalescheckFlag";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_DELIVERY_DATE = "deliveryPricingInq_deliveryDate";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUMBER_OF_ITEMS = "deliveryPricingInq_numberOfItems";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_CLIENT_ID = "deliveryPricingInq_72A2_clientId";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_USER_ID = "deliveryPricingInq_72A2_userId";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_PASSWORD = "deliveryPricingInq_72A2_password";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_SERIVICE_INDICATOR = "deliveryPricingInq_72A2_serviceIndicator";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_ZIP_CODE = "deliveryPricingInq_72A2_zipCode";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_MESSAGE_VERSION = "deliveryPricingInq_72A2_messageVersion";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_LINKED_SALESCHECK_FLAG = "deliveryPricingInq_72A2_linkedSalescheckFlag";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_DELIVERY_DATE = "deliveryPricingInq_72A2_deliveryDate";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUMBER_OF_ITEMS = "deliveryPricingInq_72A2_numberOfItems";
   
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_DIVISION = "deliveryPricingInq_division";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_LINE = "deliveryPricingInq_line";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE = "deliveryPricingInq_subline";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE_VAR = "deliveryPricingInq_sublineVar";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_NUMBER = "deliveryPricingInq_itemNumber";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_SETUP_OPTION_SELECTED = "deliveryPricingInq_itemSetupOptionSelected";
-  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_QUANTITY = "deliveryPricingInq_quantity";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_DIVISION = "deliveryPricingInq_72A2_division";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_LINE = "deliveryPricingInq_72A2_line";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE = "deliveryPricingInq_72A2_subline";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE_VAR = "deliveryPricingInq_72A2_sublineVar";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_NUMBER = "deliveryPricingInq_72A2_itemNumber";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_SETUP_OPTION_SELECTED = "deliveryPricingInq_72A2_itemSetupOptionSelected";
+  private static final String DEFAULT_DELIVERY_PRICING_INQ_NUM_OF_ITMS_QUANTITY = "deliveryPricingInq_72A2_quantity";
   
   public DeliveryPricingInquiryParser()
   {
