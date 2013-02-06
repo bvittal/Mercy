@@ -98,4 +98,16 @@ public abstract class PropertyLoader
         return loadProperties (name,
             Thread.currentThread ().getContextClassLoader ());
     }
+    
+    public static InputStream fileLoader(String fileName){
+      InputStream inputStream = null;
+      String path = System.getProperty("user.dir");  
+      String url = path + "/resources/templates/" + fileName;
+      try{
+        inputStream = new FileInputStream(url);
+      }catch(Exception ex){
+        System.out.println("Exception " + ex);
+      }
+      return inputStream;
+    }
 } // End of class
