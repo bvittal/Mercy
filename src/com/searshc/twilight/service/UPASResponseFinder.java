@@ -20,7 +20,7 @@ public class UPASResponseFinder
   private static Logger logger = Logger.getLogger(UPASResponseFinder.class);
   private final UpasResponseParser parser = new UpasResponseParser();
   private final List<byte[]> results = ObjectBuilder.getObjects();
-  private final Map<String, byte[]> fileInquiryMap = ObjectBuilder.getFileInqObjects();
+  private final Map<String, byte[]> inquiryMap = ObjectBuilder.getInqObjects();
   private final SegmentFactory factory = new SegmentFactory();
   
   public byte[] findResponse(byte[] reqBuffer)
@@ -47,8 +47,8 @@ public class UPASResponseFinder
           return fileInquiryResponse(d3respIndicator);
       }else if (String.format("%02X", reqBuffer[0]).contains(TwilightConstants.INDICATOR_D8)){
         if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
-            System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
           if (pluSKU.equals("000") && pluDivisionNumber.equals("998") && pluItemNumber.equals("99999")){
+            System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
             return pluInquiryEAResponse(TwilightConstants.INDICATOR_EA);
           }else 
             if (pluSKU.equals("000") && pluDivisionNumber.equals("099") && pluItemNumber.equals("99999")){
@@ -57,15 +57,15 @@ public class UPASResponseFinder
           }else{
             if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
               System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
-            return pluInquiryResponse(pluItemNumber);
+            return pluInquiryResponse(pluDivisionNumber + pluItemNumber + pluSKU);
             }
           }
         }
       }else if (String.format("%02X%02X", reqBuffer[0], reqBuffer[1]).contains(TwilightConstants.INDICATOR_2AA7)){
           final CouponInquiry2AA7Segment segment = new CouponInquiry2AA7Segment(reqBuffer);
           String couponNumber = segment.getCouponNumber();
-          System.out.println("Request recieved for coupon number: " + couponNumber);
             if(StringUtils.isNotBlank(couponNumber)){
+              System.out.println("Request recieved for coupon number: " + couponNumber);
               return couponInquiryResponse(couponNumber);
             }
           }
@@ -75,47 +75,67 @@ public class UPASResponseFinder
   
   private byte[] fileInquiryResponse(String indicator){
     byte [] fileInqResp = null;
-    if(fileInquiryMap != null){
+    if(inquiryMap != null){
       if(StringUtils.isNotBlank(indicator)){
-        fileInqResp = fileInquiryMap.get(indicator);
+        fileInqResp = inquiryMap.get(indicator);
       }
     }
     return fileInqResp;
   }
   
   private byte[] pluInquiryResponse(String itemNumber){
-    StringBuilder builder = new StringBuilder();
-    if(results.size() > 0){
-      Iterator<byte[]> itr = results.iterator();
-        while(itr.hasNext()){
-            byte buf[] = itr.next();
-            if(buf != null){
-              if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_E8))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_E9))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_EC))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_95))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X", buf[0]).contains(TwilightConstants.INDICATOR_9C))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_40BA))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_58B1))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_60B1))
-                builder.append(byteResponse(buf));
-              else if(String.format("%02X%02X", buf[0], buf[1]).contains(TwilightConstants.INDICATOR_62B1))
-                builder.append(byteResponse(buf));
-              }
-            }
+    if(inquiryMap != null){
+      for (Map.Entry<String, byte[]> entry : inquiryMap.entrySet()){
+        if(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1.equalsIgnoreCase(entry.getKey()))
+          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
+            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
           }
-      if(validateResponse(DecoderUtils.buildResponse(builder))){
-        return DecoderUtils.buildResponse(builder);
-      }else 
-        return null;
+        else if(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I2.equalsIgnoreCase(entry.getKey()))
+          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
+            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
+          }
+        else if(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3.equalsIgnoreCase(entry.getKey()))
+          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
+            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
+          }
+        else if(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4.equalsIgnoreCase(entry.getKey()))
+          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
+            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
+          }
+        else if(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5.equalsIgnoreCase(entry.getKey()))
+          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
+            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
+          }
+       }
     }
+   return null;
+ }
+  
+  private byte[] getPluResponseFromMap(String key, String itemNumber){
+    if(inquiryMap != null){
+      byte [] pluInq = inquiryMap.get(key);
+      if(pluInq != null){
+        PluInquiryD8Segment seg = new PluInquiryD8Segment(pluInq);
+        if(seg != null && StringUtils.isNotBlank(seg.getPLUDivisionNumber()) && 
+            StringUtils.isNotBlank(seg.getPLUItemNumber()) && 
+              StringUtils.isNotBlank(seg.getPLUSKU())){
+          String baseItemNumber = seg.getPLUDivisionNumber()+seg.getPLUItemNumber()+seg.getPLUSKU();
+          if(itemNumber.equalsIgnoreCase(baseItemNumber))
+            if(key.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1))
+              return inquiryMap.get(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1);
+            else if(key.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I2))
+              return inquiryMap.get(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R2);
+            else if(key.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3))
+              return inquiryMap.get(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R3);
+            else if(key.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4))
+              return inquiryMap.get(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4);
+            else if(key.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5))
+              return inquiryMap.get(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5);
+          }
+        }
+      }
+    return null;
+  }
   
   private byte[] pluInquiryEAResponse(String indicator){
     if(results.size() > 0){

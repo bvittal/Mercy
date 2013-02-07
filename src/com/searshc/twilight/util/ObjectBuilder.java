@@ -13,7 +13,7 @@ import com.google.common.collect.Multimap;
 public class ObjectBuilder
 { 
   private static List<byte[]> scriptObjectList = new ArrayList<byte[]>();
-  private static Map<String,byte[]> fileInquiryObjectMap = new HashMap<String,byte[]>();
+  private static Map<String,byte[]> inquiryObjectMap = new HashMap<String,byte[]>();
   
   public static List<byte[]> getObjects()
   {
@@ -27,15 +27,15 @@ public class ObjectBuilder
     }
   }
 
-  public static Map<String,byte[]> getFileInqObjects()
+  public static Map<String,byte[]> getInqObjects()
   {
-    return fileInquiryObjectMap;
+    return inquiryObjectMap;
   }
 
-  public static void setFileInqObjects(String indicator, byte [] buf)
+  public static void setInqObjects(String indicator, byte [] buf)
   {
     if(StringUtils.isNotBlank(indicator) && buf != null){
-      fileInquiryObjectMap.put(indicator, buf);
+      inquiryObjectMap.put(indicator, buf);
     }
   }
 }

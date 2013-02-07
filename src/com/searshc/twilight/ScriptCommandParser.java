@@ -102,7 +102,7 @@ public class ScriptCommandParser
         if(token.equals("(") || token.equals(","))
         {
           String nextToken = tok.nextToken();
-          //System.out.println(nextToken);
+          //System.out.println("nextToken : " + nextToken);
         if(nextToken.equals(TwilightPojo.ITEMS_KEY))
         {
           builder.newObject(TwilightPojo.ITEMS_KEY);
@@ -207,9 +207,9 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.PLU_RESP_58B1_KEY); 
         }
-        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESP_RESPONSES))
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESPONSES_KEY))
         {
-          builder.newObject(TwilightPojo.PLU_RESP_RESPONSES); 
+          builder.newObject(TwilightPojo.PLU_RESPONSES_KEY); 
         }
         else if(nextToken.equals(TwilightPojo.COUPON_KEY))
         {
@@ -279,9 +279,14 @@ public class ScriptCommandParser
   private boolean isValidResponse(String rsp)
   {
     if(rsp.equals("200") || rsp.equals("400") || rsp.equals("404") || 
-        rsp.equals("500") || rsp.equals("FILE_INQ") || 
-        rsp.equals("PLU_INQ") || rsp.equals("PLU_RSP") ||
-        rsp.equals("COUPON_INQ") || rsp.equals("COUPON_RSP"))
+        rsp.equals("500") || rsp.equals(TwilightConstants.REQUEST_INDICATOR_FILE_INQ) || 
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP) ||
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_COUPON_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_COUPON_RESP) ||
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1) || rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I2) ||
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3) || rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4) || 
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1) ||
+        rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R2) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R3) ||
+        rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5))
       return true;
     else
       return false;
@@ -334,7 +339,7 @@ public class ScriptCommandParser
       /**
       * File Inquiry D3
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("FILE_INQ"))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_FILE_INQ))
      {
        final FileInquiryParser fileInquiryParser = new FileInquiryParser();
        builder = fileInquiryParser.getFileInquiry(twilightJsonObject);
@@ -348,7 +353,12 @@ public class ScriptCommandParser
      /**
       * Plu Inquiry D8
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("PLU_INQ"))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ)
+         || commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1) 
+         || commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I2) 
+         || commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3) 
+         || commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4) 
+         || commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5))
      {
        final PluInquiryParser pluInquiryParser = new PluInquiryParser();
        builder = pluInquiryParser.getPluInquiry(twilightJsonObject);
@@ -362,7 +372,7 @@ public class ScriptCommandParser
      /**
       * Coupon Inquiry 2AA7
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("COUPON_INQ"))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_COUPON_INQ))
      {
        final CouponInquiryParser couponInquiryParser = new CouponInquiryParser();
        builder = couponInquiryParser.getCouponInquiry(twilightJsonObject);
@@ -376,7 +386,12 @@ public class ScriptCommandParser
      /**
       * Plu Inquiry Response E8
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("PLU_RSP"))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP)
+         || commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1)
+         || commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R2)
+         || commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R3)
+         || commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4)
+         || commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5))
      {
        final PluResponseParser pluResponseParser = new PluResponseParser();
        builder = pluResponseParser.getPluResponse(twilightJsonObject);

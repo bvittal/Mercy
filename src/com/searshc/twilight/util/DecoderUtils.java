@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 
 import com.searshc.twilight.segments.Segment2AA7LengthCalculator;
 import com.searshc.twilight.segments.Segment70A4LengthCalculator;
+import com.searshc.twilight.segments.SegmentD8LengthCalculator;
 import com.searshc.twilight.service.TwilightConstants;
 import com.starmount.ups.sears.responses.segment2AB7.Segment2AB7LengthCalculator;
 import com.starmount.ups.sears.responses.segment40BA.Segment40BALengthCalculator;
@@ -36,7 +37,13 @@ public class DecoderUtils
     int segmentlength = 0;
     if(builder != null){
       byte buffer[] = buildResponse(builder);
-      if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_E3)){
+      if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_D8)){
+        SegmentD8LengthCalculator calc = new SegmentD8LengthCalculator(indicator, ByteBuffer.wrap(buffer));
+        segmentlength = calc.getLength();
+        if(buffer.length == segmentlength)
+          return Boolean.TRUE;
+      }
+      else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_E3)){
         SegmentE3LengthCalculator calc = new SegmentE3LengthCalculator(indicator, ByteBuffer.wrap(buffer));
         segmentlength = calc.getLength();
         if(buffer.length == segmentlength)
