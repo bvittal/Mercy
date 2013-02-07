@@ -432,20 +432,17 @@ public abstract class AbstractScriptCommand
   
   
 
-  private Incompatibility getIncompatibilities(TwilightJsonObject incompatibilityObj)
-  {
+  private Incompatibility getIncompatibilities(TwilightJsonObject incompatibilityObj){
     Incompatibility incompatibility = new Incompatibility();
     UnappliedOffer unappliedOffer = new UnappliedOffer();
     
     List<AppMessage> appMessageList = new ArrayList<AppMessage>();
     List<UnappliedOffer> unappliedOfferList = new ArrayList<UnappliedOffer>();
     
-    if(incompatibilityObj != null && incompatibilityObj.getName().equalsIgnoreCase(SUB_BASE_INCOMPATIBILITY))
-    {
+    if(incompatibilityObj != null && incompatibilityObj.getName().equalsIgnoreCase(SUB_BASE_INCOMPATIBILITY)){
       HashMap<String,String> optedPromoMap = incompatibilityObj.getParameters();
-    
-      for (Map.Entry<String, String> entry : optedPromoMap.entrySet())
-      {
+      
+      for (Map.Entry<String, String> entry : optedPromoMap.entrySet()){
         if(entry.getKey().equals(INCOMPATIBILITY_OPTED_PROMO))
           incompatibility.setOptedPromo(entry.getValue());
         else if(entry.getKey().equals(INCOMPATIBILITY_OPTED_PROMO_TYPE))
@@ -453,84 +450,66 @@ public abstract class AbstractScriptCommand
       }
       
       Iterator<TwilightJsonObject> unappliedOffersItr = incompatibilityObj.getTwilightJsonObject().iterator();
-      
-      while(unappliedOffersItr.hasNext())
-      {
+      while(unappliedOffersItr.hasNext()){
         TwilightJsonObject unappliedOfferObj = unappliedOffersItr.next();
-          
         Iterator<TwilightJsonObject> unappliedOfferItr = unappliedOfferObj.getTwilightJsonObject().iterator();
 
-        while(unappliedOfferItr.hasNext())
-        {
+        while(unappliedOfferItr.hasNext()){
           TwilightJsonObject unappliedOffersTwilightJsonObj = unappliedOfferItr.next();
-          
-          if(unappliedOffersTwilightJsonObj != null && unappliedOffersTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_UNAPPLIED_OFFERS))
-          {
-            HashMap<String,String> unappliedOffersMap = unappliedOffersTwilightJsonObj.getParameters();
-            
-            for (Map.Entry<String, String> entry : unappliedOffersMap.entrySet())
-            {
+          if(unappliedOffersTwilightJsonObj != null && 
+              unappliedOffersTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_UNAPPLIED_OFFERS)){
+              HashMap<String,String> unappliedOffersMap = unappliedOffersTwilightJsonObj.getParameters();
+        
+            for (Map.Entry<String, String> entry : unappliedOffersMap.entrySet()){
               if(entry.getKey().equals(INCOMPATIBILITY_UNAPPLIED_OFFERS_OFFER_ID))
                 unappliedOffer.setOfferId(entry.getValue());
-              }
-            }
+          }
+       }
           
-          Iterator<TwilightJsonObject> subUnappliedOfferItr = unappliedOffersTwilightJsonObj.getTwilightJsonObject().iterator();
+        Iterator<TwilightJsonObject> subUnappliedOfferItr = unappliedOffersTwilightJsonObj.getTwilightJsonObject().iterator();
+        while(subUnappliedOfferItr.hasNext()){
+          TwilightJsonObject reasonsTwilightJsonObj = subUnappliedOfferItr.next();
+          Iterator<TwilightJsonObject> reasonOfferItr = reasonsTwilightJsonObj.getTwilightJsonObject().iterator();
           
-          while(subUnappliedOfferItr.hasNext())
-          {
-            TwilightJsonObject reasonsTwilightJsonObj = subUnappliedOfferItr.next();
+          while(reasonOfferItr.hasNext()){
+            TwilightJsonObject reasonTwilightJsonObj = reasonOfferItr.next();
+            AppMessage appMessage = new AppMessage();
             
-            Iterator<TwilightJsonObject> reasonOfferItr = reasonsTwilightJsonObj.getTwilightJsonObject().iterator();
-            
-            while(reasonOfferItr.hasNext())
-            {
-              TwilightJsonObject reasonTwilightJsonObj = reasonOfferItr.next();
-              AppMessage appMessage = new AppMessage();
-              
-              if(reasonTwilightJsonObj != null && reasonTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_REASON))
-              {
-                HashMap<String,String> reasonsOffersMap = reasonTwilightJsonObj.getParameters();
-                
-                for (Map.Entry<String, String> entry : reasonsOffersMap.entrySet())
-                {
+            if(reasonTwilightJsonObj != null && reasonTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_REASON)){
+              HashMap<String,String> reasonsOffersMap = reasonTwilightJsonObj.getParameters();
+                for (Map.Entry<String, String> entry : reasonsOffersMap.entrySet()){
                   if(entry.getKey().equals(INCOMPATIBILITY_UNAPPLIED_OFFERS_REASON_CODE))
-                    appMessage.setCode(entry.getValue());
-                    }
-                  }
+                  appMessage.setCode(entry.getValue());
+             }
+         }
               
-                Iterator<TwilightJsonObject> fieldsItr = reasonTwilightJsonObj.getTwilightJsonObject().iterator();
+            Iterator<TwilightJsonObject> fieldsItr = reasonTwilightJsonObj.getTwilightJsonObject().iterator();
+            while(fieldsItr.hasNext()){
+                TwilightJsonObject fieldsTwilightJsonObj = fieldsItr.next();
+                List<String> fieldsList = new ArrayList<String>();
                 
-                  while(fieldsItr.hasNext())
-                  {
-                    TwilightJsonObject fieldsTwilightJsonObj = fieldsItr.next();
-                    List<String> fieldsList = new ArrayList<String>();
-                    
-                    if(fieldsTwilightJsonObj != null && fieldsTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_FIELDS))
-                    {
-                      HashMap<String,String> fieldsMap = fieldsTwilightJsonObj.getParameters();
-                      
-                      for (Map.Entry<String, String> entry : fieldsMap.entrySet())
-                      {
-                        if(entry.getKey().equals(INCOMPATIBILITY_REASON_FIELD))
-                          fieldsList.add(entry.getValue());
-                        else if(entry.getKey().equals(INCOMPATIBILITY_REASON_PROMO_CODES))
-                          fieldsList.add(entry.getValue());
-                        else if(entry.getKey().equals(INCOMPATIBILITY_REASON_COUPON_CODES))
-                          fieldsList.add(entry.getValue());
-                          }
-                        }
-                        String[] fieldsArray = new String[fieldsList.size()];
-                        fieldsList.toArray(fieldsArray);
-                        appMessage.setFields(fieldsArray);
+                if(fieldsTwilightJsonObj != null && fieldsTwilightJsonObj.getName().equalsIgnoreCase(INCOMPATIBILITY_FIELDS)){
+                  HashMap<String,String> fieldsMap = fieldsTwilightJsonObj.getParameters();
+                  
+                  for (Map.Entry<String, String> entry : fieldsMap.entrySet()){
+                    if(entry.getKey().equals(INCOMPATIBILITY_REASON_FIELD))
+                      fieldsList.add(entry.getValue());
+                    else if(entry.getKey().equals(INCOMPATIBILITY_REASON_PROMO_CODES))
+                      fieldsList.add(entry.getValue());
+                    else if(entry.getKey().equals(INCOMPATIBILITY_REASON_COUPON_CODES))
+                      fieldsList.add(entry.getValue());
                       }
-                      if(appMessage != null)
-                        appMessageList.add(appMessage);
                     }
+                    String[] fieldsArray = new String[fieldsList.size()];
+                    fieldsList.toArray(fieldsArray);
+                    appMessage.setFields(fieldsArray);
                   }
+                  if(appMessage != null)
+                    appMessageList.add(appMessage);
                 }
               }
-
+            }
+          }
               AppMessage[] reasonsArray = new AppMessage[appMessageList.size()];
               appMessageList.toArray(reasonsArray);
               unappliedOffer.setReasons(reasonsArray);

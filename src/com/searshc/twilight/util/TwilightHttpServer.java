@@ -38,7 +38,7 @@ public final class TwilightHttpServer
           server.start();
           bound = Boolean.TRUE;
           System.out.println("Server started at : " + endPoint.getAddress() + ":" + endPoint.getPort());
-        }
+    }
     
     public boolean checkServerState(){
       return bound;
@@ -66,7 +66,6 @@ class EchoHandler implements HttpHandler
     public void handle(HttpExchange t) throws IOException {
         
         final UPASResponseFinder finder = new UPASResponseFinder();
-        final UpasResponseParser parser = new UpasResponseParser();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         
         OutputStream os = null;     
@@ -83,7 +82,7 @@ class EchoHandler implements HttpHandler
         byte[] inquryResp = finder.findResponse(buffer);
         
         if(inquryResp != null){
-          System.out.println("RESPONSE SENT     " + byteResponse(inquryResp));
+          System.out.println("RESPONSE SENT : " + byteResponse(inquryResp));
           int respLength = createXMLResponseHeader().length + inquryResp.length;
           
           System.out.println("HTTP Response length : " + respLength);
