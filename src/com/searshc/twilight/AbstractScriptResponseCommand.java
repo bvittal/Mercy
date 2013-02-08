@@ -4,17 +4,16 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 import org.codehaus.jackson.map.*;
-
-import com.searshc.twilight.exceptions.MalformedScriptException;
-import com.searshc.twilight.service.Segment;
-import com.searshc.twilight.service.SegmentFactory;
+import com.searshc.twilight.reports.beans.DataBean;
 import com.searshc.twilight.service.TwilightConstants;
 import com.searshc.twilight.util.ObjectBuilder;
 import com.searshc.twilight.validation.OrderResponseValidator;
@@ -28,10 +27,11 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
   protected HashMap<String,String> cmdParameters;
   protected TwilightJsonObject jasonObj; // the script command in JSON format
   protected StringBuilder byteArrayObj; // the script values
-  protected ObjectMapper mapper = new ObjectMapper();
-  private final SegmentFactory segFactory = new SegmentFactory();
-
+  private final ObjectMapper mapper = new ObjectMapper();
+  private DataBean dataBean = new DataBean();
+  private static List<DataBean> dataBeanList = new ArrayList<DataBean>();
   abstract public String getMethod();
+  int i = 0;
   
   public AbstractScriptResponseCommand(Object obj)
   {
@@ -49,7 +49,11 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
     // TODO Auto-generated method stub
     return false;
   }
-
+  
+  public static List<DataBean> getReportData(){
+    return dataBeanList;
+  }
+  
   public void setResponse(HttpResponse response)
   {
     this.response = response;
@@ -83,22 +87,19 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
     return ctypeString.substring(0, ctypeString.indexOf(";"));
   }
   
-  public void execute()
+  public void execute(String scenario)
   { 
     String recvdMethod = StringUtils.EMPTY;
-    
     try
     {
       if(response != null){
         recvdMethod = Integer.toString(response.getStatusLine().getStatusCode());
       }
       
-      if(StringUtils.isNotBlank(recvdMethod) && this.getMethod().equals(recvdMethod))
-      {
+      if(StringUtils.isNotBlank(recvdMethod) && this.getMethod().equals(recvdMethod)){
         System.out.println("Recieved " + recvdMethod + " " + response.getStatusLine().getReasonPhrase());
         
-        if(this.getContentType(response).equals("application/json"))
-        {
+        if(this.getContentType(response).equals("application/json")){
         
           String rsp = getHttpResponse(response.getEntity().getContent());
           System.out.println("Actual response recieved : " + rsp);
@@ -107,31 +108,33 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
           /** now convert OrderResponse to JSON and then JSON to OrderResponseValidator */
           this.toOrderResponse(jasonObj);
           OrderResponseValidator orderRespValidator = mapper.readValue(mapper.writeValueAsString(orderResponse), com.searshc.twilight.validation.OrderResponseValidator.class);
-          
-          if(orderRespValidator.isValid(orderResp))
-          {
-            /** passed */
-            System.out.println("********* TEST PASS **********");
-            logger.info("********* TEST PASS **********");
-            logger.info("\nProcessing next batch in script");
-            recvdMethod = StringUtils.EMPTY;
-            response = null;
-            ObjectBuilder.getObjects().clear();
-          }
-          else
-          {
-            /** failed */
-            System.err.println("########## TEST FAILED ###########");
-            logger.info("########## TEST FAILED ###########");
-            logger.info("\nProcessing next batch in script");
-            recvdMethod = StringUtils.EMPTY;
-            response = null;
-            ObjectBuilder.getObjects().clear();
-          }
-          //ResponseValidator validator = new ResponseValidator(cmdParameters, orderResp);
-          //validator.validate();
-          //String errors = validator.getErrorMessageString();
-          //System.err.println(errors);
+            
+            if(orderRespValidator.isValid(orderResp))
+            {
+              dataBean.setScenarioType(scenario);
+              dataBean.setTestResults("PASS");
+              dataBeanList.add(dataBean);
+              System.out.println("********* TEST PASS **********");
+              logger.info("********* TEST PASS **********");
+              logger.info("\nProcessing next batch in script");
+              recvdMethod = StringUtils.EMPTY;
+              response = null;
+              ObjectBuilder.getObjects().clear();
+              ObjectBuilder.getInqObjects().clear();
+            }
+            else
+            {
+              dataBean.setScenarioType(scenario);
+              dataBean.setTestResults("FAIL");
+              dataBeanList.add(dataBean);
+              System.err.println("########## TEST FAILED ###########");
+              logger.info("########## TEST FAILED ###########");
+              logger.info("\nProcessing next batch in script");
+              recvdMethod = StringUtils.EMPTY;
+              response = null;
+              ObjectBuilder.getObjects().clear();
+              ObjectBuilder.getInqObjects().clear();
+           }
         }
         else
         {

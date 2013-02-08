@@ -126,7 +126,7 @@ public abstract class AbstractScriptCommand
   public final String BASE_URL = "http://" + HOST + ":" + PORT + "/upas/" + VERSION + "/";
   
   /** the methods */
-  public abstract void execute();
+  public abstract void execute(String scenario);
   public abstract boolean isRequest();
 
   protected void toOrderResponse(TwilightJsonObject obj)

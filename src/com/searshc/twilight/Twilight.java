@@ -3,9 +3,14 @@ package com.searshc.twilight;
 import java.util.*;
 import java.io.*;
 
+import net.sf.jasperreports.engine.JRException;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import com.searshc.twilight.reports.beans.DataBean;
+import com.searshc.twilight.reports.engine.Reporter;
 import com.searshc.twilight.util.PropertyLoader;
 import com.searshc.twilight.util.TwilightHttpServer;
 
@@ -13,7 +18,7 @@ public class Twilight
 {  
   private static Logger logger = Logger.getLogger(Twilight.class);
   private static Properties prop;
-  //private static final ClassLoader classLoader = Twilight.class.getClassLoader();
+  private String scenarioType = StringUtils.EMPTY;
   
   static{
     try{
@@ -24,10 +29,11 @@ public class Twilight
     }
   }
   
-  public Twilight(String tag)
+  public Twilight(String tag, String testReportName)
   {
     logger.info("Twilight engine started");
     final HttpServerThread httpServer = new HttpServerThread();
+    final Reporter reporter = new Reporter();
     Thread serverThread = new Thread(httpServer);
     serverThread.start();
     searchTag(tag);
@@ -35,14 +41,32 @@ public class Twilight
       try {
         System.out.println( "Waiting for 2000 ms to process more request(s) before exitting" );
         wait(2000);
-        System.out.println( "No new request found. Exitting twilight" );
+        System.out.println( "No new request found. Generating test results report, please wait..." ); 
+        final List<DataBean> dataBeanList = AbstractScriptResponseCommand.getReportData();
+          if(dataBeanList.size() > 0){
+            reporter.generateReport(dataBeanList, testReportName);
+          }
       } catch (InterruptedException e) {
         Thread.currentThread().isInterrupted();
+      } catch (JRException ex){
+        System.out.println("Error generating jasper report " + ex);
       }
-      System.out.println( "Shutting down main thread." );
+      System.out.println( "Report generated successfully, shutting down main thread." );
       System.exit(0);
     }
   }
+  
+  private String getScenarioType(String commandLine){
+    String scenarioType = StringUtils.EMPTY;
+    int startingIndex = commandLine.indexOf('(');
+      if (startingIndex != -1){
+      int endingIndex = commandLine.indexOf(')', startingIndex);
+        if (endingIndex != -1){
+          scenarioType = commandLine.substring(startingIndex + 1, endingIndex);
+        }
+      }
+      return scenarioType;
+    }
   
 	/**
 	 * @param args
@@ -50,7 +74,8 @@ public class Twilight
 	public static void main(String[] args)
 	{ 
 	  String tag = args[0];
-	  new Twilight(tag);
+	  String reportName = args[1]; 
+	  new Twilight(tag,reportName);
 	  final HttpServerThread httpServer = new HttpServerThread();
 	  Thread serverThread = new Thread(httpServer);
 	  serverThread.start();
@@ -66,16 +91,23 @@ public class Twilight
       Scanner scanner = new Scanner(file);
       while (scanner.hasNextLine())
       {
-        String line = scanner.nextLine();  
-        if (!line.startsWith("#"))
-        {
+        String line = scanner.nextLine(); 
+        System.out.println(line);
+        if (!line.startsWith("#")){
           commands.add(line);
-        } 
+        }else{
+          if(StringUtils.isNotBlank(line)){
+            scenarioType = this.getScenarioType(line);
+            if(StringUtils.isNotBlank(scenarioType))
+              commands.add("#:"+scenarioType);
+          }
+        }
       }
 
       ScriptCommandParser cmdParser;      
       String action, method;
       AbstractScriptRequestCommand lastCommand = null;
+      String scenario = StringUtils.EMPTY;
       
       /** execute each line of the script one-by-one */
       for(int i=0; i<commands.size(); i++)
@@ -84,15 +116,21 @@ public class Twilight
         cmdParser = new ScriptCommandParser(commands.get(i));
         action = cmdParser.getAction();
         method = cmdParser.getMethod();
+        if(StringUtils.isBlank(action) && StringUtils.isBlank(method)){
+          scenario = cmdParser.getScenario();
+        }
         Object obj = null;
           
-        if(method.equals("adjustprice") && action.equals("POST") || action.equals("RECV")){
-          obj = cmdParser.getJsonObject();
+        if(StringUtils.isNotBlank(action) && StringUtils.isNotBlank(method)){
+          if(method.equals("adjustprice") && action.equals("POST") || action.equals("RECV")){
+            obj = cmdParser.getJsonObject();
         }
         else{
+          if(StringUtils.isNotBlank(scenario)){
             obj = cmdParser.getByteArrayObject();
+          }
         }
-
+     
         /** now generate the command object and execute it */
         ScriptCommandFactory scFactory = new ScriptCommandFactory();
         AbstractScriptCommand sc = scFactory.getCommand(method, action, obj);
@@ -101,7 +139,7 @@ public class Twilight
         {
           if(sc.isRequest())
           {
-            sc.execute();
+            sc.execute(scenario);
             lastCommand = (AbstractScriptRequestCommand)sc; // keep track of the last command so we can handle the response
           }
           else
@@ -110,7 +148,7 @@ public class Twilight
             if(lastCommand != null){
               responseCmd.setResponse(lastCommand.getResponse());
             }
-            responseCmd.execute();  // execution of a response is validation
+            responseCmd.execute(scenario);  // execution of a response is validation
             if(lastCommand != null){
               lastCommand.cleanup();  // clean up resources used by last command
             }
@@ -121,6 +159,7 @@ public class Twilight
           logger.error("Unrecognized command in script");
         }
       }
+     }
     }
     catch (Exception e)
     {

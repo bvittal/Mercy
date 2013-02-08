@@ -7,18 +7,18 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="lineItemId" class="java.lang.String">
-		<fieldDescription><![CDATA[lineItemId]]></fieldDescription>
+	<field name="scenarioType" class="java.lang.String">
+		<fieldDescription><![CDATA[scenarioType]]></fieldDescription>
 	</field>
-	<field name="quantity" class="java.lang.String">
-		<fieldDescription><![CDATA[quantity]]></fieldDescription>
+	<field name="testResults" class="java.lang.String">
+		<fieldDescription><![CDATA[testResults]]></fieldDescription>
 	</field>
 	<group name="dummy">
 		<groupExpression><![CDATA["dummy"]]></groupExpression>
 		<groupHeader>
 			<band height="23">
 				<staticText>
-					<reportElement mode="Opaque" x="0" y="5" width="535" height="15" backcolor="#70A9A9"/>
+					<reportElement mode="Opaque" x="0" y="5" width="535" height="15" backcolor="#F5D0A9"/>
 					<box>
 						<bottomPen lineWidth="1.0" lineColor="#CCCCCC"/>
 					</box>
@@ -26,16 +26,16 @@
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="136" y="5" width="150" height="15"/>
+					<reportElement x="36" y="5" width="250" height="15"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
-					<text><![CDATA[lineItemId]]></text>
+					<text><![CDATA[Scenario Type]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="286" y="5" width="128" height="15"/>
 					<textElement textAlignment="Center" verticalAlignment="Middle"/>
-					<text><![CDATA[quantity]]></text>
+					<text><![CDATA[Test Results]]></text>
 				</staticText>
 			</band>
 		</groupHeader>
@@ -43,7 +43,7 @@
 	<detail>
 		<band height="16">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>
+				<reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#A9D0F5"/>
 				<box>
 					<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
 				</box>
@@ -51,14 +51,14 @@
 				<text><![CDATA[]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="136" y="0" width="150" height="15"/>
+				<reportElement x="36" y="0" width="250" height="15"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{lineItemId}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{scenarioType}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="286" y="0" width="128" height="15"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{quantity}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{testResults}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
