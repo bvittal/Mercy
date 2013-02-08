@@ -108,13 +108,9 @@ public class DeliveryPricingResponseParser
            numberOfDeliveryCharges = entry.getValue();                
          
         }
-      }
-        
-      
+      }      
       sb.append(indicator)
-      .append(" ")
-      //This logic needs to be revisited once Patrick will be back from holidays
-      //.append("51 01 ")    
+      .append(" ")       
       .append(this.byteResponse(messageVersion.getBytes()))
       .append(this.byteResponse(numberOfDeliveryCharges.getBytes()));    
       
@@ -182,10 +178,10 @@ public class DeliveryPricingResponseParser
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_MISC_ACC_NUM_FOR_THIS_DELIVERY_CHRG))
                   miscAccNumForThisDeliveryChrg = StringUtils.rightPad(entry.getValue(), 6,'0');
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_AMOUNT))
-                  deliveryChargeAmount = StringUtils.rightPad(entry.getValue(), 7,'0');
+                  deliveryChargeAmount = StringUtils.rightPad(entry.getValue(), 7,'0');                               
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION))
-                  deliveryChargeDescription = StringUtils.leftPad(entry.getValue(), 12,'0');         
-                
+                  if(StringUtils.isBlank(deliveryChargeDescription) || deliveryChargeDescription.equalsIgnoreCase("null"))
+                    deliveryChargeDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY); 
                 }
               }
           

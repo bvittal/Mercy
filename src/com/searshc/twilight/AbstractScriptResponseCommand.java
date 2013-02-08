@@ -150,19 +150,32 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
           if(StringUtils.isNotBlank(indicator) && 
               indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_PMP)){
               if(buffer != null){
-                ObjectBuilder.setFileInqObjects(indicator, buffer);
+                ObjectBuilder.setInqObjects(indicator, buffer);
               }
           }else if(StringUtils.isNotBlank(indicator) && 
               indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_MP0)){
             if(buffer != null){
-              ObjectBuilder.setFileInqObjects(indicator, buffer);
+              ObjectBuilder.setInqObjects(indicator, buffer);
             }
           }else if(StringUtils.isNotBlank(indicator) && 
               indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_D00)){
             if(buffer != null){
-              ObjectBuilder.setFileInqObjects(indicator, buffer);
+              ObjectBuilder.setInqObjects(indicator, buffer);
             }
-          }else if(buffer != null)
+          }else if(buffer != null && this.getMethod().equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1) || 
+              this.getMethod().equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1) || 
+              this.getMethod().equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I2) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R2) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R3) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4) ||
+              this.getMethod().equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5)){
+              ObjectBuilder.setInqObjects(this.getMethod(), buffer);
+          }
+          else if(buffer != null)
             ObjectBuilder.setObjects(buffer);
         }
         else
