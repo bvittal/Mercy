@@ -14,7 +14,7 @@ public class AdjustPriceCommand extends AbstractScriptRequestCommand
   }
   
   @Override
-  public void execute()
+  public void execute(String scenario)
   {
     try
     {

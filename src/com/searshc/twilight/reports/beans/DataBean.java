@@ -2,26 +2,23 @@ package com.searshc.twilight.reports.beans;
 
 public class DataBean {
   
-  private String quantity;
-  private String lineItemId;
+  private String scenarioType;
+  private String testResults;
   
-  public String getQuantity()
+  public String getScenarioType()
   {
-    return quantity;
+    return scenarioType;
   }
-  
-  public void setQuantity(String quantity)
+  public void setScenarioType(String scenarioType)
   {
-    this.quantity = quantity;
+    this.scenarioType = scenarioType;
   }
-  
-  public String getLineItemId()
+  public String getTestResults()
   {
-    return lineItemId;
+    return testResults;
   }
-  
-  public void setLineItemId(String lineItemId)
+  public void setTestResults(String testResults)
   {
-    this.lineItemId = lineItemId;
+    this.testResults = testResults;
   }
-  }
+}

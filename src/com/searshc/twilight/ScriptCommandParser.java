@@ -24,7 +24,8 @@ public class ScriptCommandParser
   private StringBuilder byteArrayObj;
   private String action;
   private String method;
- 
+  private String scenario;
+  
   public ScriptCommandParser(String commandLine)
   { 
       try{
@@ -59,6 +60,10 @@ public class ScriptCommandParser
         TwilightConstants.INDICATOR_62B1
     };
     
+    if(commandLines.contains("#:")){
+        this.scenario = commandLines;
+    }
+    else{
     Stack<String> stack = new Stack<String>();
     String token;
     String key, val;
@@ -258,6 +263,7 @@ public class ScriptCommandParser
       else
         this.parseStringReqRespObject(builder.getJsonObject());
     }
+   }
   }
   
   private void parseByteArrayObject(String commandLines)
@@ -319,6 +325,11 @@ public class ScriptCommandParser
   public String getAction()
   {
     return this.action;
+  }
+  
+  public String getScenario()
+  {
+    return this.scenario;
   }
   
   public HashMap<String,String> getCartParameters()
