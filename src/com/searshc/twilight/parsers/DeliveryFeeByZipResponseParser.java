@@ -207,55 +207,41 @@ public class DeliveryFeeByZipResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_RESPONSE_CODE))
-         {
-           responseCode = entry.getValue();
-           String firstByte = responseCode.substring(0,2);
-           String secondByte = responseCode.substring(2,4);
-           responseCode = firstByte + " " + secondByte;
-         }
+         if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_RESPONSE_CODE))        
+           responseCode = entry.getValue();         
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_DELIVERY_TYPE))
            deliveryType = entry.getValue();
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_BASE_DELIVERY_CHARGE))
-           baseDeliveryCharge = entry.getValue();
+           baseDeliveryCharge = StringUtils.rightPad(entry.getValue(), 6,'0');         
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_ADDITIONAL_PIECE_CHARGE))
-           additionalPieceCharge = entry.getValue();
+           additionalPieceCharge = StringUtils.rightPad(entry.getValue(), 6,'0');
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_WEEKEND_UP_CHARGE))
-           weekendUpCharge = entry.getValue();
+           weekendUpCharge = StringUtils.rightPad(entry.getValue(), 6,'0');
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_HAUL_AWAY_CHARGE))
-           haulAwayCharge = entry.getValue();
+           haulAwayCharge = StringUtils.rightPad(entry.getValue(), 6,'0');
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_FLAG))
-           morningPremiumWindowFlag = entry.getValue();
+           morningPremiumWindowFlag = StringUtils.rightPad(entry.getValue(), 1,'N');         
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_FLAG))
-           eveningPremiumWindowFlag = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_DESCRIPTION))
-           morningPremiumWindowDescription = entry.getValue();
-         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_DESCRIPTION))
-           eveningPremiumWindowDescription = entry.getValue();
+           eveningPremiumWindowFlag = StringUtils.rightPad(entry.getValue(), 1,'N');        
+         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_DESCRIPTION)){
+           if(StringUtils.isBlank(morningPremiumWindowDescription) || morningPremiumWindowDescription.equalsIgnoreCase("null"))
+             morningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY);          
+         }         
+         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_DESCRIPTION)){
+         if(StringUtils.isBlank(eveningPremiumWindowDescription) || eveningPremiumWindowDescription.equalsIgnoreCase("null"))
+           eveningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY);         
+        }     
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_FEE_AMOUNT))
-         {
-           morningPremiumFeeAmount = entry.getValue();
-           String firstByte = morningPremiumFeeAmount.substring(0,2);
-           String secondByte = morningPremiumFeeAmount.substring(2,4);
-           morningPremiumFeeAmount = firstByte + " " + secondByte;
-         }
+           morningPremiumFeeAmount = StringUtils.rightPad(entry.getValue(), 6,'0');          
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_FEE_AMOUNT))
-         {
-           eveningPremiumFeeAmount = entry.getValue();
-           String firstByte = eveningPremiumFeeAmount.substring(0,2);
-           String secondByte = eveningPremiumFeeAmount.substring(2,4);
-           eveningPremiumFeeAmount = firstByte + " " + secondByte;
-         }
-         
+           eveningPremiumFeeAmount = StringUtils.rightPad(entry.getValue(), 6,'0');         
         }
       }
         
       
       sb.append(indicator)
-      .append(" ")
-      //This logic needs to be revisited once Patrick will be back from holidays
-      //.append("51 01 ")
-      .append(responseCode)
+      .append(" ")      
+      .append(this.byteResponse(responseCode.getBytes()))
       .append(this.byteResponse(deliveryType.getBytes()))
       .append(this.byteResponse(baseDeliveryCharge.getBytes()))
       .append(this.byteResponse(additionalPieceCharge.getBytes()))
