@@ -44,14 +44,15 @@ public class Twilight
         System.out.println( "No new request found. Generating test results report, please wait..." ); 
         final List<DataBean> dataBeanList = AbstractScriptResponseCommand.getReportData();
           if(dataBeanList.size() > 0){
-            reporter.generateReport(dataBeanList, testReportName);
+            String url = reporter.generateReport(dataBeanList, testReportName);
+            System.out.println( "Report generated successfully at :" + url);
           }
       } catch (InterruptedException e) {
         Thread.currentThread().isInterrupted();
       } catch (JRException ex){
         System.out.println("Error generating jasper report " + ex);
       }
-      System.out.println( "Report generated successfully, shutting down main thread." );
+      System.out.println( "Shutting down main thread." );
       System.exit(0);
     }
   }
@@ -183,7 +184,7 @@ public class Twilight
         }
 	      catch(Exception ex)
 	      {
-          logger.error("Error " + ex);
+          System.out.println ("Error " + ex);
         }
 	    }
 	  }

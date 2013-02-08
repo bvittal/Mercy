@@ -33,7 +33,7 @@ public class Reporter{
     }
   }
 
-  public void generateReport(List<DataBean> dataBeanList, String testReportName) throws JRException{
+  public String generateReport(List<DataBean> dataBeanList, String testReportName) throws JRException{
       String reportUrl = prop.getProperty("reportsDir")+testReportName+".pdf";
       if(dataBeanList.size() > 0){
         JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(dataBeanList);
@@ -46,5 +46,6 @@ public class Reporter{
             JasperExportManager.exportReportToPdfFile(jasperPrint, reportUrl); 
           }
         }
+      return reportUrl;
       }
     }

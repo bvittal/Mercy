@@ -26,15 +26,15 @@
 					<text><![CDATA[]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="36" y="5" width="250" height="15"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
+					<reportElement x="5" y="5" width="500" height="15"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
 					<text><![CDATA[Scenario Type]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="286" y="5" width="128" height="15"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<reportElement x="450" y="5" width="50" height="15"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle"/>
 					<text><![CDATA[Test Results]]></text>
 				</staticText>
 			</band>
@@ -51,13 +51,13 @@
 				<text><![CDATA[]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="36" y="0" width="250" height="15"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<reportElement x="5" y="0" width="500" height="15"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{scenarioType}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="286" y="0" width="128" height="15"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<reportElement x="450" y="0" width="50" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{testResults}]]></textFieldExpression>
 			</textField>
 		</band>
