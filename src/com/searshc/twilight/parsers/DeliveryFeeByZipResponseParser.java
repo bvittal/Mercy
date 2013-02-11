@@ -232,9 +232,9 @@ public class DeliveryFeeByZipResponseParser
            eveningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY);         
         }     
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_FEE_AMOUNT))
-           morningPremiumFeeAmount = StringUtils.rightPad(entry.getValue(), 6,'0');          
+           morningPremiumFeeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 6,'0');         
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_FEE_AMOUNT))
-           eveningPremiumFeeAmount = StringUtils.rightPad(entry.getValue(), 6,'0');         
+           eveningPremiumFeeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 6,'0');        
         }
       }
         
