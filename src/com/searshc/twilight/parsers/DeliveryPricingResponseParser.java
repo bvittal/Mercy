@@ -179,9 +179,11 @@ public class DeliveryPricingResponseParser
                   miscAccNumForThisDeliveryChrg = StringUtils.rightPad(entry.getValue(), 6,'0');
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_AMOUNT))
                   deliveryChargeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');                               
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION))
+                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION)){
+                  deliveryChargeDescription = entry.getValue();
                   if(StringUtils.isBlank(deliveryChargeDescription) || deliveryChargeDescription.equalsIgnoreCase("null"))
-                    deliveryChargeDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY); 
+                    deliveryChargeDescription = StringUtils.leftPad(entry.getValue(), 12,StringUtils.EMPTY); 
+                }                
                 }
               }
           
