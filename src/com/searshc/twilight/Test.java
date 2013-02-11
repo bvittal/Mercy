@@ -34,8 +34,8 @@ public class Test
     
     pluDivisionNumber = StringUtils.rightPad(pluDivisionNumber, 3,'0');
     pluItemDescription = StringUtils.leftPad(pluItemDescription, 25, StringUtils.EMPTY);
-    pluRegularPrice = StringUtils.rightPad(pluRegularPrice, 7,'0');
-    pluPrice = StringUtils.rightPad(pluRegularPrice, 7,'0');
+    pluRegularPrice = StringUtils.rightPad(pluRegularPrice.replace(".", ""), 7,'0');
+    pluPrice = StringUtils.rightPad(pluPrice.replace(".", ""), 7,'0');
     sourceOrderProcessingTime = StringUtils.rightPad(sourceOrderProcessingTime, 2, "0");
     pluPriceType = StringUtils.rightPad(pluPriceType, 1, "0");
     productRegistrationFlags = StringUtils.rightPad(productRegistrationFlags, 4, "0");
@@ -87,13 +87,6 @@ public class Test
       sb.append(" ");
     }
     return sb.toString();
-  }
-  
-  public static BigInteger covertBigDecimalToBigInteger(String val){
-    BigDecimal test = new BigDecimal(val);
-    BigInteger theInt = test.unscaledValue();
-    //byte[] arr = theInt.toByteArray();
-    return theInt;
   }
 
   /**
