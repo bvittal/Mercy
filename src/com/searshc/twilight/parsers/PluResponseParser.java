@@ -660,20 +660,10 @@ public class PluResponseParser
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_REGULAR_PRICE)){
-           final BigDecimal bigDecimal = new BigDecimal(entry.getValue());
-           BigInteger integer = bigDecimal.unscaledValue();
-           pluRegularPrice = integer.toString();
-           if(StringUtils.isNotBlank(pluRegularPrice)){
-             pluRegularPrice = StringUtils.rightPad(pluRegularPrice, 7,'0');
-           }
+             pluRegularPrice = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE)){
-           final BigDecimal bigDecimal = new BigDecimal(entry.getValue());
-           BigInteger integer = bigDecimal.unscaledValue();
-           pluPrice = integer.toString();
-           if(StringUtils.isNotBlank(pluPrice)){
-             pluPrice = StringUtils.rightPad(pluPrice, 7,'0');
-           }
+             pluPrice = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE_TYPE))
            pluPriceType = StringUtils.rightPad(entry.getValue(), 1,'0');
@@ -1326,7 +1316,7 @@ public class PluResponseParser
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY))
            pluGroupQuantity = StringUtils.rightPad(entry.getValue(), 3, '0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE))
-           pluGroupPrice = StringUtils.rightPad(entry.getValue(), 7, '0');
+           pluGroupPrice = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');
          }
       }
       
