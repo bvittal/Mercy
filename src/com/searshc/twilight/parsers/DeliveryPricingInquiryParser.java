@@ -334,7 +334,7 @@ public class DeliveryPricingInquiryParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_72A2, sb)){
       return sb;
     }
-    return sb;
+    return null;
   }
   
   private String byteResponse(byte[] buffer)

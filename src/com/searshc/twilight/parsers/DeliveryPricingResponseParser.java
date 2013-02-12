@@ -179,10 +179,9 @@ public class DeliveryPricingResponseParser
                   miscAccNumForThisDeliveryChrg = StringUtils.rightPad(entry.getValue(), 6,'0');
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_AMOUNT))
                   deliveryChargeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');                               
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION)){
-                  deliveryChargeDescription = entry.getValue();
+                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION)){                  
                   if(StringUtils.isBlank(deliveryChargeDescription) || deliveryChargeDescription.equalsIgnoreCase("null"))
-                    deliveryChargeDescription = StringUtils.leftPad(entry.getValue(), 12,StringUtils.EMPTY); 
+                    deliveryChargeDescription = StringUtils.leftPad(StringUtils.EMPTY, 12,StringUtils.EMPTY); 
                 }                
                 }
               }
@@ -198,7 +197,7 @@ public class DeliveryPricingResponseParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_72B2, sb)){
       return sb;
     }
-        return sb;
+        return null;
      }
   
   private String byteResponse(byte[] buffer)

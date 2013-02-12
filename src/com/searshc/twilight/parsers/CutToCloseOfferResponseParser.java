@@ -231,7 +231,7 @@ public class CutToCloseOfferResponseParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_12B1, sb)){
       return sb;
     }
-    return sb;
+    return null;
   }
   
   private String byteResponse(byte[] buffer)

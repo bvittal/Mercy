@@ -161,7 +161,7 @@ public class InstantDeliveryOfferInquiryParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_11A6, sb)){
       return sb;
     }
-    return sb;
+    return null;
   }
   
   private String byteResponse(byte[] buffer)

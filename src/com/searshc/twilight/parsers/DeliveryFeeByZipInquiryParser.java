@@ -140,7 +140,7 @@ public class DeliveryFeeByZipInquiryParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_70A4, sb)){
       return sb;
     }
-    return sb;
+    return null;
   }
   
   private String byteResponse(byte[] buffer)
