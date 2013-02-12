@@ -21,7 +21,6 @@ public class UPASResponseFinder
   private final UpasResponseParser parser = new UpasResponseParser();
   private final List<byte[]> results = ObjectBuilder.getObjects();
   private final Map<String, byte[]> inquiryMap = ObjectBuilder.getInqObjects();
-  private final SegmentFactory factory = new SegmentFactory();
   
   public byte[] findResponse(byte[] reqBuffer)
   {
@@ -54,11 +53,10 @@ public class UPASResponseFinder
             if (pluSKU.equals("000") && pluDivisionNumber.equals("099") && pluItemNumber.equals("99999")){
               System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
             return pluInquiry98Response(TwilightConstants.INDICATOR_98);
-          }else{
+          }else
             if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
               System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
             return pluInquiryResponse(pluDivisionNumber + pluItemNumber + pluSKU);
-            }
           }
         }
       }else if (String.format("%02X%02X", reqBuffer[0], reqBuffer[1]).contains(TwilightConstants.INDICATOR_2AA7)){

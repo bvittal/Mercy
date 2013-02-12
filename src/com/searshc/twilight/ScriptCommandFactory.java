@@ -119,6 +119,38 @@ public class ScriptCommandFactory
         return null;
     }
     
+    if(method.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4))
+    {
+      if(action.equals(TwilightConstants.ACTION_ISP_REQUEST))
+        return new HttpPLU_INQ4Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4))
+    {
+      if(action.equals(TwilightConstants.ACTION_ISP_RESPONSE))
+        return new HttpPLU_RSP4Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5))
+    {
+      if(action.equals(TwilightConstants.ACTION_ISP_REQUEST))
+        return new HttpPLU_INQ5Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5))
+    {
+      if(action.equals(TwilightConstants.ACTION_ISP_RESPONSE))
+        return new HttpPLU_RSP5Command(byteArrayObj);
+      else
+        return null;
+    }
+    
     //2AA7 Coupon Inquiry
     if(method.equals(TwilightConstants.REQUEST_INDICATOR_COUPON_INQ))
     {

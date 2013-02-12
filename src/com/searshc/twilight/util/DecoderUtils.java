@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.searshc.twilight.segments.Segment12A1LengthCalculator;
 import com.searshc.twilight.segments.Segment2AA7LengthCalculator;
 import com.searshc.twilight.segments.Segment70A4LengthCalculator;
@@ -185,11 +187,11 @@ public class DecoderUtils
   
   public static byte[] buildResponse(StringBuilder sb) {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    for (int i = 0; i < sb.length(); i += 3) {
-        String s = sb.substring(i, i + 2);
-        int unsignedByte = Integer.parseInt(s, 16);
+      for (int i = 0; i < sb.length(); i += 3) {
+        String str = sb.substring(i, i + 2);
+        int unsignedByte = Integer.parseInt(str, 16);
         os.write(unsignedByte);
-    }
+      }
     return os.toByteArray();
   }
 }

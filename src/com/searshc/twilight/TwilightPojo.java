@@ -18,6 +18,8 @@ public interface TwilightPojo
   public static final String INCOMPATIBILITIES_REASON_KEY = "reason";
   public static final String INCOMPATIBILITIES_FIELDS_KEY = "fields";
   public static final String PLU_RESPONSES_KEY = "resp";
+  public static final String PROMO_DESC_KEY = "promoDesc";
+  public static final String DESC_KEY = "desc";
   
   //Response object
   public static final String PLU_RESP_EA_KEY = "indicator_EA";

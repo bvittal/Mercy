@@ -446,7 +446,7 @@ public class CouponResponseParser
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_TYPE))
            reductionType = StringUtils.rightPad(entry.getValue(), 1);
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_AMOUNT))
-           reductionAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 8,'0');
+           reductionAmount = StringUtils.leftPad(entry.getValue().replace(".", ""), 8,'0');
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_FLAG))
          {
            reductionFlag = entry.getValue();

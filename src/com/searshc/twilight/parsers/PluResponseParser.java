@@ -291,7 +291,7 @@ public class PluResponseParser
   private static final String PLU_RESP_INSTANT_REBATE_FLAG = "instantRebateFlag";
   private static final String PLU_RESP_MAILIN_REBATE_FLAG = "mailInRebateFlag";
   private static final String PLU_RESP_DELAYED_BILLING_END_DATE_INTERVAL =  "delayedBillingEndDateInterval";
-  private static final String PLU_RESP_DELAYED_BILLING_END_DATE_DATE = "delayedBillingEndDateDate";
+  private static final String PLU_RESP_DELAYED_BILLING_END_DATE_DATE = "delayedBillingEndDate";
   private static final String PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE1 = "registerPromoDescriptionLine1";
   private static final String PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE2 = "registerPromoDescriptionLine2";
   private static final String PLU_RESP_NBR_OF_RECEIPT_PROMO_DESC_LINES = "nbrOfReceiptPromoDescriptionLines";
@@ -308,7 +308,7 @@ public class PluResponseParser
   private static final String DEFAULT_PLU_RESP_INSTANT_REBATE_FLAG = "pluResp_60B1_instantRebateFlag";
   private static final String DEFAULT_PLU_RESP_MAILIN_REBATE_FLAG = "pluResp_60B1_mailInRebateFlag";
   private static final String DEFAULT_PLU_RESP_DELAYED_BILLING_END_DATE_INTERVAL =  "pluResp_60B1_delayedBillingEndDateInterval";
-  private static final String DEFAULT_PLU_RESP_DELAYED_BILLING_END_DATE_DATE = "pluResp_60B1_delayedBillingEndDateDate";
+  private static final String DEFAULT_PLU_RESP_DELAYED_BILLING_END_DATE_DATE = "pluResp_60B1_delayedBillingEndDate";
   private static final String DEFAULT_PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE1 = "pluResp_60B1_registerPromoDescriptionLine1";
   private static final String DEFAULT_PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE2 = "pluResp_60B1_registerPromoDescriptionLine2";
   private static final String DEFAULT_PLU_RESP_NBR_OF_RECEIPT_PROMO_DESC_LINES = "pluResp_60B1_nbrOfReceiptPromoDescriptionLines";
@@ -660,10 +660,10 @@ public class PluResponseParser
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_REGULAR_PRICE)){
-             pluRegularPrice = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');
+             pluRegularPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE)){
-             pluPrice = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');
+             pluPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE_TYPE))
            pluPriceType = StringUtils.rightPad(entry.getValue(), 1,'0');
@@ -1308,17 +1308,20 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_ID))
-           pluGroupId = StringUtils.rightPad(entry.getValue(), 7, StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_FLAG))
-           pluItemFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_TYPE))
-           pluGroupType = StringUtils.rightPad(entry.getValue(), 1, '1');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY))
-           pluGroupQuantity = StringUtils.rightPad(entry.getValue(), 3, '0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE))
-           pluGroupPrice = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');
+             pluGroupId = StringUtils.leftPad(entry.getValue(), 7, StringUtils.EMPTY);
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_FLAG)){
+             pluItemFlag = entry.getValue();
+           if(pluItemFlag.equalsIgnoreCase("null"))
+             pluItemFlag = StringUtils.rightPad(StringUtils.EMPTY, 1, StringUtils.EMPTY);
          }
-      }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_TYPE))
+             pluGroupType = StringUtils.rightPad(entry.getValue(), 1, '1');
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY))
+             pluGroupQuantity = StringUtils.rightPad(entry.getValue(), 3, '0');
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE))
+             pluGroupPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');
+         }
+       }
       
       sb.append(indicator)
       .append(" ")
@@ -2559,7 +2562,7 @@ public class PluResponseParser
     String instantRebateFlag = StringUtils.EMPTY;
     String mailInRebateFlag = StringUtils.EMPTY;
     String delayedBillingEndDateInterval = StringUtils.EMPTY;
-    String delayedBillingEndDateDate = StringUtils.EMPTY;
+    String delayedBillingEndDate = StringUtils.EMPTY;
     String registerPromoDescriptionLine1 = StringUtils.EMPTY;
     String registerPromoDescriptionLine2 = StringUtils.EMPTY;
     String nbrOfReceiptPromoDescriptionLines = StringUtils.EMPTY;
@@ -2709,11 +2712,11 @@ public class PluResponseParser
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_TYPE))
          offerType = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_ID))
-         offerId = StringUtils.rightPad(entry.getValue(), 10,'0');
+         offerId = StringUtils.leftPad(entry.getValue(), 10,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FINANCIAL_CODE))
          financialCode = StringUtils.rightPad(entry.getValue(), 10,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THRESHOLD_DOLLAR_AMOUNT))
-         thresholdDollarAmount = StringUtils.rightPad(entry.getValue(), 5, StringUtils.EMPTY);
+         thresholdDollarAmount = StringUtils.leftPad(entry.getValue().replace(".",""), 5);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_FLAG))
          associateDiscountFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MISCELLANEOUS_REDUCTION_FLAG))
@@ -2722,10 +2725,18 @@ public class PluResponseParser
          instantRebateFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAILIN_REBATE_FLAG))
          mailInRebateFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELAYED_BILLING_END_DATE_INTERVAL))
-         delayedBillingEndDateInterval = StringUtils.rightPad(entry.getValue(), 4,'0');
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELAYED_BILLING_END_DATE_INTERVAL)){
+         delayedBillingEndDateInterval = entry.getValue();
+         if(delayedBillingEndDateInterval.equalsIgnoreCase("null"))
+           delayedBillingEndDateInterval = StringUtils.rightPad(StringUtils.EMPTY, 4, '0');
+         else
+           delayedBillingEndDateInterval = StringUtils.rightPad(delayedBillingEndDateInterval, 4, '0');
+       }
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELAYED_BILLING_END_DATE_DATE))
-         delayedBillingEndDateDate = StringUtils.rightPad(entry.getValue(), 10,'0');
+         if(StringUtils.isBlank(entry.getValue()) || entry.getValue().equalsIgnoreCase("null"))
+           delayedBillingEndDate = StringUtils.rightPad(StringUtils.EMPTY, 10);
+         else
+           delayedBillingEndDate = StringUtils.rightPad(entry.getValue(), 10, '0');
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE1))
          registerPromoDescriptionLine1 = StringUtils.leftPad(StringUtils.EMPTY, 30, StringUtils.EMPTY);
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE2))
@@ -2747,7 +2758,7 @@ public class PluResponseParser
     .append(this.byteResponse(instantRebateFlag.getBytes()))
     .append(this.byteResponse(mailInRebateFlag.getBytes()))
     .append(this.byteResponse(delayedBillingEndDateInterval.getBytes()))
-    .append(this.byteResponse(delayedBillingEndDateDate.getBytes()))
+    .append(this.byteResponse(delayedBillingEndDate.getBytes()))
     .append(this.byteResponse(registerPromoDescriptionLine1.getBytes()))
     .append(this.byteResponse(registerPromoDescriptionLine2.getBytes()))
     .append(this.byteResponse(nbrOfReceiptPromoDescriptionLines.getBytes()));

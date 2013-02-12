@@ -1,7 +1,7 @@
 package com.searshc.twilight.util;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,6 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import com.searshc.twilight.service.UPASResponseFinder;
-import com.searshc.twilight.service.UpasResponseParser;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -76,6 +75,8 @@ class EchoHandler implements HttpHandler
         is.read(requestBuffer);
         is.close();
         
+        int respLength = 0;
+        byte [] responseObject = null;
         int endPosition = findXMLHeaderEnd(requestBuffer);
         byte[] buffer = new byte[requestBuffer.length - endPosition];
         buffer = Arrays.copyOfRange(requestBuffer, endPosition, requestBuffer.length);
@@ -83,22 +84,25 @@ class EchoHandler implements HttpHandler
         
         if(inquryResp != null){
           System.out.println("RESPONSE SENT : " + byteResponse(inquryResp));
-          int respLength = createXMLResponseHeader().length + inquryResp.length;
-          
+          respLength = createXMLResponseHeader().length + inquryResp.length;
           System.out.println("HTTP Response length : " + respLength);
           System.out.println("HTTP Response : " + new String(inquryResp));
-          
           outputStream.write(createXMLResponseHeader());
           outputStream.write(inquryResp);
-        
-          byte [] responseObject = outputStream.toByteArray();
-        
+          responseObject = outputStream.toByteArray();
+          //System.out.println("Response Object " + new String(responseObject));
           t.sendResponseHeaders(HTTP_OK, respLength);
-          os = t.getResponseBody();
-          os.write(responseObject);
-          os.close();
-          t.close();
+        }else{
+          System.out.println("Response not found !!");
+          outputStream.write(createXMLResponseHeader());
+          outputStream.write("Response not found".getBytes());
+          responseObject = outputStream.toByteArray();
+          t.sendResponseHeaders(HTTP_NO_CONTENT, respLength);
         }
+        os = t.getResponseBody();
+        os.write(responseObject);
+        os.close();
+        t.close();
       }
     
     private int findXMLHeaderEnd(byte[] bytes) {
