@@ -194,9 +194,9 @@ public class InstantDeliveryOfferResponseParser
                 if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_RESP_OFFR_CNT_COUPON_NUMBER))
                   couponNumber = StringUtils.rightPad(entry.getValue(), 3);                
                 else if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_RESP_OFFR_CNT_DELVRY_FEE_REDUCE_AMT))
-                  delvryFeeReduceAmt = StringUtils.rightPad(entry.getValue(), 8,'0'); 
+                  delvryFeeReduceAmt = StringUtils.rightPad(entry.getValue().replace(".", ""), 8,'0'); 
                 else if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_RESP_OFFR_CNT_HAUL_AWY_FEE_REDUCE_AMT))
-                  haulAwyFeeReduceAmt = StringUtils.rightPad(entry.getValue(), 8,'0');                
+                  haulAwyFeeReduceAmt = StringUtils.rightPad(entry.getValue().replace(".", ""), 8,'0');                
                 else if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_RESP_OFFR_CNT_ZERO_PERCNT_FIN_ELGBL))
                   zeroPercntFinElgbl = StringUtils.rightPad(entry.getValue(), 1,'N'); 
                 else if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_RESP_OFFR_CNT_VALID_WTH_FRNDS_AND_FAM_CPNS))
