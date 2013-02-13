@@ -223,15 +223,13 @@ public class DeliveryFeeByZipResponseParser
            morningPremiumWindowFlag = StringUtils.rightPad(entry.getValue(), 1,'N');         
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_FLAG))
            eveningPremiumWindowFlag = StringUtils.rightPad(entry.getValue(), 1,'N');        
-         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_DESCRIPTION)){
-           morningPremiumWindowDescription = entry.getValue();
+         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_DESCRIPTION)){           
            if(StringUtils.isBlank(morningPremiumWindowDescription) || morningPremiumWindowDescription.equalsIgnoreCase("null"))
-             morningPremiumWindowDescription = StringUtils.leftPad(entry.getValue(), 30,StringUtils.EMPTY);          
+             morningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 30,StringUtils.EMPTY);          
          }         
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_DESCRIPTION)){
-           eveningPremiumWindowDescription = entry.getValue();
            if(StringUtils.isBlank(eveningPremiumWindowDescription) || eveningPremiumWindowDescription.equalsIgnoreCase("null"))
-           eveningPremiumWindowDescription = StringUtils.leftPad(entry.getValue(), 30,StringUtils.EMPTY);         
+           eveningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 30,StringUtils.EMPTY);         
         }     
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_FEE_AMOUNT))
            morningPremiumFeeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 6,'0');         
