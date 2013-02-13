@@ -5,12 +5,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
+import com.searshc.twilight.segments.Segment11A6LengthCalculator;
 import com.searshc.twilight.segments.Segment12A1LengthCalculator;
 import com.searshc.twilight.segments.Segment2AA7LengthCalculator;
 import com.searshc.twilight.segments.Segment70A4LengthCalculator;
 import com.searshc.twilight.segments.Segment72A2LengthCalculator;
 import com.searshc.twilight.segments.SegmentD8LengthCalculator;
 import com.searshc.twilight.service.TwilightConstants;
+import com.starmount.ups.sears.responses.segment11B6.Segment11B6LengthCalculator;
 import com.starmount.ups.sears.responses.segment12B1.Segment12B1LengthCalculator;
 import com.starmount.ups.sears.responses.segment2AB7.Segment2AB7LengthCalculator;
 import com.starmount.ups.sears.responses.segment40BA.Segment40BALengthCalculator;
@@ -155,8 +157,8 @@ public class DecoderUtils
         if(buffer.length == segmentlength)
           return Boolean.TRUE;         
      }
-      else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_12B1)){
-        Segment12B1LengthCalculator calc = new Segment12B1LengthCalculator(indicator, ByteBuffer.wrap(buffer));
+      else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_12A1)){
+        Segment12A1LengthCalculator calc = new Segment12A1LengthCalculator(indicator, ByteBuffer.wrap(buffer));
         segmentlength = calc.getLength();
         if(buffer.length == segmentlength)
           return Boolean.TRUE;   
@@ -167,14 +169,14 @@ public class DecoderUtils
       if(buffer.length == segmentlength)
         return Boolean.TRUE;    
     }
-    else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_12A1)){
-      Segment12A1LengthCalculator calc = new Segment12A1LengthCalculator(indicator, ByteBuffer.wrap(buffer));
+    else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_11A6)){
+      Segment11A6LengthCalculator calc = new Segment11A6LengthCalculator(indicator, ByteBuffer.wrap(buffer));
       segmentlength = calc.getLength();
       if(buffer.length == segmentlength)
         return Boolean.TRUE;   
     } 
-    else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_12B1)){
-    Segment12B1LengthCalculator calc = new Segment12B1LengthCalculator(indicator, ByteBuffer.wrap(buffer));
+    else if(indicator.equalsIgnoreCase(TwilightConstants.INDICATOR_11B6)){
+    Segment11B6LengthCalculator calc = new Segment11B6LengthCalculator(indicator, ByteBuffer.wrap(buffer));
     segmentlength = calc.getLength();
     if(buffer.length == segmentlength)
       return Boolean.TRUE;        
