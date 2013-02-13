@@ -66,7 +66,6 @@ public class CutToCloseOfferResponseParser
     String indicator = "12 B1";
     String segmentLevel = StringUtils.EMPTY;
     String offerCount = StringUtils.EMPTY;
-    
     String couponNumber= StringUtils.EMPTY;
     String delvryFeeReduceAmt= StringUtils.EMPTY;
     String haulAwyFeeReduceAmt= StringUtils.EMPTY;
@@ -234,12 +233,9 @@ public class CutToCloseOfferResponseParser
     return sb;
   }
   
-  private String byteResponse(byte[] buffer)
-  {
+  private String byteResponse(byte[] buffer){
     StringBuilder sb = new StringBuilder();
-
-    for (byte b : buffer)
-    {
+    for (byte b : buffer){
       sb.append(String.format("%02x", b).toUpperCase());
       sb.append(" ");
     }

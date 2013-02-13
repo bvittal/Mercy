@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.searshc.twilight.segments.Segment12A1LengthCalculator;
 import com.searshc.twilight.segments.Segment2AA7LengthCalculator;
 import com.searshc.twilight.segments.Segment70A4LengthCalculator;

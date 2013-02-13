@@ -22,7 +22,6 @@ public class CutToCloseOfferInquiryParser
   //Cut To Close Offer Inquiry - 12A1 - parameters
   private static final String CUT_TO_CLOSE_OFFER_INQ_SEGMENT_LEVEL = "segmentLevel";
   private static final String CUT_TO_CLOSE_OFFER_INQ_ITEM_COUNT = "itemCount";
-  
   private static final String CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_DIVISION = "division";
   private static final String CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_ITEM_NUMBER = "itemNumber";
   
@@ -30,7 +29,6 @@ public class CutToCloseOfferInquiryParser
   //Cut To Close Offer Inquiry - 12A1 - default Values  
   private static final String DEFAULT_CUT_TO_CLOSE_OFFER_INQ_SEGMENT_LEVEL = "cutToCloseOfferInq_12A1_segmentLevel";
   private static final String DEFAULT_CUT_TO_CLOSE_OFFER_INQ_ITEM_COUNT = "cutToCloseOfferInq_12A1_itemCount";
-  
   private static final String DEFAULT_CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_DIVISION = "cutToCloseOfferInq_12A1_division";
   private static final String DEFAULT_CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_ITEM_NUMBER = "cutToCloseOfferInq_12A1_itemNumber";
   
@@ -102,9 +100,9 @@ public class CutToCloseOfferInquiryParser
     }
     
     sb.append(indicator)
-    .append(" ")
-    .append(this.byteResponse(segmentLevel.getBytes()))    
-    .append(this.byteResponse(itemCount.getBytes()));    
+      .append(" ")
+      .append(this.byteResponse(segmentLevel.getBytes()))    
+      .append(this.byteResponse(itemCount.getBytes()));    
     
     
     
@@ -141,22 +139,21 @@ public class CutToCloseOfferInquiryParser
             }
           }
         
-            if(numOfItmModifiableMap.size() > 0)
-            {
-              for (Map.Entry<String, String> entry : numOfItmModifiableMap.entrySet())
-              { 
-                if(entry.getKey().equalsIgnoreCase(CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_DIVISION))
-                  division = StringUtils.rightPad(entry.getValue(), 3);                
-                else if(entry.getKey().equalsIgnoreCase(CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_ITEM_NUMBER))
-                  itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0'); 
-             
-                }
+          if(numOfItmModifiableMap.size() > 0)
+          {
+            for (Map.Entry<String, String> entry : numOfItmModifiableMap.entrySet())
+            { 
+              if(entry.getKey().equalsIgnoreCase(CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_DIVISION))
+                division = StringUtils.rightPad(entry.getValue(), 3);                
+              else if(entry.getKey().equalsIgnoreCase(CUT_TO_CLOSE_OFFER_INQ_ITM_COUNT_ITEM_NUMBER))
+                itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0'); 
+           
               }
-          
-          sb.append(this.byteResponse(division.getBytes()))
-            .append(this.byteResponse(itemNumber.getBytes()));
             }
+        sb.append(this.byteResponse(division.getBytes()))
+          .append(this.byteResponse(itemNumber.getBytes()));
           }
+        }
     
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_12A1, sb)){
       return sb;
@@ -164,12 +161,9 @@ public class CutToCloseOfferInquiryParser
     return sb;
   }
   
-  private String byteResponse(byte[] buffer)
-  {
+  private String byteResponse(byte[] buffer){
     StringBuilder sb = new StringBuilder();
-
-    for (byte b : buffer)
-    {
+    for (byte b : buffer){
       sb.append(String.format("%02x", b).toUpperCase());
       sb.append(" ");
     }

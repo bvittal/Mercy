@@ -8,6 +8,8 @@ import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.parsers.CouponInquiryParser;
 import com.searshc.twilight.parsers.CouponResponseParser;
+import com.searshc.twilight.parsers.CutToCloseOfferInquiryParser;
+import com.searshc.twilight.parsers.CutToCloseOfferResponseParser;
 import com.searshc.twilight.parsers.FileInquiryParser;
 import com.searshc.twilight.parsers.PluInquiryParser;
 import com.searshc.twilight.parsers.PluResponseParser;
@@ -57,7 +59,9 @@ public class ScriptCommandParser
         TwilightConstants.INDICATOR_40BA,
         TwilightConstants.INDICATOR_58B1,
         TwilightConstants.INDICATOR_60B1,
-        TwilightConstants.INDICATOR_62B1
+        TwilightConstants.INDICATOR_62B1,
+        TwilightConstants.INDICATOR_12A1,
+        TwilightConstants.INDICATOR_12B1
     };
     
     if(commandLines.contains("#:")){
@@ -120,9 +124,17 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.ADJUSTMENTS_KEY); 
         }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.ADJUSTMENT_KEY))
+        {
+          builder.newObject(TwilightPojo.ADJUSTMENT_KEY); 
+        }
         else if(action.equals("RECV") && nextToken.equals(TwilightPojo.DCADJUSTMENTS_KEY))
         {
           builder.newObject(TwilightPojo.DCADJUSTMENTS_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(TwilightPojo.DCADJUSTMENT_KEY))
+        {
+          builder.newObject(TwilightPojo.DCADJUSTMENT_KEY); 
         }
         else if(action.equals("RECV") && nextToken.equals(TwilightPojo.UNUSED_COUPON_CODES))
         {
@@ -296,6 +308,7 @@ public class ScriptCommandParser
         rsp.equals("500") || rsp.equals(TwilightConstants.REQUEST_INDICATOR_FILE_INQ) || 
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP) ||
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_COUPON_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_COUPON_RESP) ||
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_C2C_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_C2C_RESP) ||
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I1) || rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I2) ||
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3) || rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4) || 
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1) ||
@@ -366,7 +379,6 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       //System.out.println("Key/Value Pair Request - FILE_INQ " + builder);
      }
      
      /**
@@ -385,7 +397,6 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       //System.out.println("Key/Value Pair Request - PLU_INQ " + builder);
      }
      
      /**
@@ -399,7 +410,19 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       //System.out.println("Key/Value Pair Request - COUPON_INQ " + builder);
+     }
+     
+     /**
+      * CutToCloseOffer Inquiry 12A1
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_C2C_INQ))
+     {
+       final CutToCloseOfferInquiryParser cutToCloseOfferInquiryParser = new CutToCloseOfferInquiryParser();
+       builder = cutToCloseOfferInquiryParser.getCutToCloseOfferInquiry(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
      }
      
      /**
@@ -418,13 +441,12 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       //System.out.println("Key/Value Pair Request - PLU_RSP " + builder);
      }
      
      /**
       * Coupon Inquiry Response 2AB7
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("COUPON_RSP"))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_COUPON_RESP))
      {
        final CouponResponseParser couponResponseParser = new CouponResponseParser();
        builder = couponResponseParser.getCouponResponse(twilightJsonObject);
@@ -432,7 +454,19 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-       //System.out.println("Key/Value Pair Request - COUPON_RSP " + builder);
+     }
+     
+     /**
+      * CutToCloseOffer Inquiry Response 12B1
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_C2C_RESP))
+     {
+       final CutToCloseOfferResponseParser cutToCloseOfferResponseParser = new CutToCloseOfferResponseParser();
+       builder = cutToCloseOfferResponseParser.getCutToCloseOfferResponse(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
      }
    }
  }

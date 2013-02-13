@@ -2902,12 +2902,9 @@ public class PluResponseParser
     return null;
   }
   
-  private String byteResponse(byte[] buffer)
-  {
+  private String byteResponse(byte[] buffer){
     StringBuilder sb = new StringBuilder();
-
-    for (byte b : buffer)
-    {
+    for (byte b : buffer){
       sb.append(String.format("%02x", b).toUpperCase());
       sb.append(" ");
     }

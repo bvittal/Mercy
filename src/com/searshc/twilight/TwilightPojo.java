@@ -5,7 +5,9 @@ public interface TwilightPojo
   public static final String ITEMS_KEY = "items";
   public static final String ITEM_KEY = "item";
   public static final String ADJUSTMENTS_KEY = "adjustments";
+  public static final String ADJUSTMENT_KEY = "adjustment";
   public static final String DCADJUSTMENTS_KEY = "dcAdjustments";
+  public static final String DCADJUSTMENT_KEY = "dcAdjustment";
   public static final String UNUSED_COUPON_CODES = "unusedCouponCodes";
   public static final String UNUSED_COUPON_KEY = "couponCode";
   public static final String COUPON_KEY = "couponCodes";
