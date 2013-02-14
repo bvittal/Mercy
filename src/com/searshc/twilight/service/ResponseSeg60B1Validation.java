@@ -42,7 +42,7 @@ public class ResponseSeg60B1Validation implements Segment
           logger.info("Delayed Billing End Date                   : " + segment.getDelayedBillingEndDate());
           logger.info("Register Promo Description Line 1          : " + segment.getRegisterPromoDescLine1());
           logger.info("Register Promo Description Line 2          : " + segment.getRegisterPromoDescLine2());
-          logger.info("No. of Register Promo Descriptions Lines   : " + segment.getRegisterPromoDescLine2());
+          logger.info("No. of Register Promo Descriptions Lines   : " + segment.getNumberReceiptPromoDescLines());
           logger.info("Register Promo Description Lines           : " + segment.getReceiptPromoDescLines());
 
           assertEquals("60B1", segment.getIndicator());

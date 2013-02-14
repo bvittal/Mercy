@@ -178,9 +178,9 @@ public class DeliveryPricingResponseParser
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_MISC_ACC_NUM_FOR_THIS_DELIVERY_CHRG))
                   miscAccNumForThisDeliveryChrg = StringUtils.rightPad(entry.getValue(), 6,'0');
                 else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_AMOUNT))
-                  deliveryChargeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0');                               
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION)){                  
-                  if(StringUtils.isBlank(deliveryChargeDescription) || deliveryChargeDescription.equalsIgnoreCase("null"))
+                  deliveryChargeAmount = StringUtils.rightPad(entry.getValue().replace(".", ""), 7,'0'); 
+                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_RESP_DELIVERY_CHARGE_DESCRIPTION)){
+                    if(StringUtils.isBlank(deliveryChargeDescription) || deliveryChargeDescription.equalsIgnoreCase("null"))
                     deliveryChargeDescription = StringUtils.leftPad(StringUtils.EMPTY, 12,StringUtils.EMPTY); 
                 }                
                 }

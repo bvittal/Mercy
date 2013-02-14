@@ -226,8 +226,8 @@ public class DeliveryFeeByZipResponseParser
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_DESCRIPTION)){           
            if(StringUtils.isBlank(morningPremiumWindowDescription) || morningPremiumWindowDescription.equalsIgnoreCase("null"))
              morningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 30,StringUtils.EMPTY);          
-         }         
-         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_DESCRIPTION)){           
+         }        
+         else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_DESCRIPTION)){
            if(StringUtils.isBlank(eveningPremiumWindowDescription) || eveningPremiumWindowDescription.equalsIgnoreCase("null"))
            eveningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 30,StringUtils.EMPTY);         
         }     
