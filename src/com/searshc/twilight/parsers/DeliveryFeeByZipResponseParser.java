@@ -61,15 +61,15 @@ public class DeliveryFeeByZipResponseParser
     }
   }
   
-  public StringBuilder getCouponResponse(TwilightJsonObject twilightJsonObject)
+  public StringBuilder getDeliveryFeeByZipResponse(TwilightJsonObject twilightJsonObject)
   {
     StringBuilder builder = new StringBuilder();
-    builder = this.processCouponResponse70B4(twilightJsonObject);
+    builder = this.processDeliveryFeeByZipResponse70B4(twilightJsonObject);
     logger.info(builder);
     return builder;
   }
   
-  private StringBuilder processCouponResponse70B4(TwilightJsonObject twilightJsonObject)
+  private StringBuilder processDeliveryFeeByZipResponse70B4(TwilightJsonObject twilightJsonObject)
   {
       String indicator = "70 B4";
       String responseCode = StringUtils.EMPTY;
