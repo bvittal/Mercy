@@ -36,6 +36,8 @@ public interface TwilightPojo
   public static final String PLU_RESP_62B1_KEY = "indicator_62B1";
   public static final String PLU_RESP_58B1_KEY = "indicator_58B1";
   
+  public static final String COUPON_RESP_2AB7_KEY = "indicator_2AB7";
+  
   public static final String COUPON_RESP_INCL_EXCLS_KEY = "includeExclude";
   public static final String COUPON_RESP_INCL_EXCL_KEY = "inclExcl";
   

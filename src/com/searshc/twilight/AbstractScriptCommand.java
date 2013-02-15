@@ -278,16 +278,20 @@ public abstract class AbstractScriptCommand
           TwilightJsonObject adjustmentObj = itr.next();
           if (adjustmentObj != null)
         {
-          HashMap<String, String> adjustmentMap = adjustmentObj.getParameters();
-
-          if (adjustmentMap != null)
+          Iterator<TwilightJsonObject> baseAdjustmentItr =  adjustmentObj.getTwilightJsonObject().iterator();
+          
+          while(baseAdjustmentItr.hasNext()){ 
+            HashMap<String, String> adjustmentMap = baseAdjustmentItr.next().getParameters();
+            
+          if (adjustmentMap.size() > 0)
           {
-            if (adjustmentObj.getName().equalsIgnoreCase(BASE_ADJUSTMENTS))
+            if (adjustmentObj.getName().equalsIgnoreCase(TwilightPojo.ADJUSTMENTS_KEY))
             {
               adjustments.add(this.getAdjustments(adjustmentMap));
               item.setAdjustments(adjustments);
             }
-          else if (adjustmentObj.getName().equalsIgnoreCase(BASE_DC_ADJUSTMENTS))
+            
+          else if (adjustmentObj.getName().equalsIgnoreCase(TwilightPojo.DCADJUSTMENTS_KEY))
           {
             dcAdjustments.add(this.getAdjustments(adjustmentMap));
             item.setDcAdjustments(dcAdjustments);
@@ -295,7 +299,7 @@ public abstract class AbstractScriptCommand
             }
           }
         }
-          
+      }
           if(items.containsKey(ITEM_ID))
             item.setLineItemId(items.get(ITEM_ID));
           else

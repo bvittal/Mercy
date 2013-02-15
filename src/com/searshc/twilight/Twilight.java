@@ -59,9 +59,9 @@ public class Twilight
   
   private String getScenarioType(String commandLine){
     String scenarioType = StringUtils.EMPTY;
-    int startingIndex = commandLine.indexOf('(');
+    int startingIndex = commandLine.indexOf('[');
       if (startingIndex != -1){
-      int endingIndex = commandLine.indexOf(')', startingIndex);
+      int endingIndex = commandLine.indexOf(']', startingIndex);
         if (endingIndex != -1){
           scenarioType = commandLine.substring(startingIndex + 1, endingIndex);
         }
@@ -85,7 +85,7 @@ public class Twilight
 	private void execute(File file)
 	{
     List<String> commands = new ArrayList<String>();
-    System.out.println("Parsing script file...");
+    logger.info("Parsing script file...");
     try
     {
       /** get the list of commands from the script */
@@ -93,7 +93,6 @@ public class Twilight
       while (scanner.hasNextLine())
       {
         String line = scanner.nextLine(); 
-        System.out.println(line);
         if (!line.startsWith("#")){
           commands.add(line);
         }else{
@@ -174,7 +173,7 @@ public class Twilight
   	  if(tags.equalsIgnoreCase(prop.getProperty("tag0"))){
           final File dir = new File(prop.getProperty(tags + "_dir_url"));
           final File file = new File(dir.getPath());
-          System.out.println("Scanning script files in dir : " + dir.getAbsolutePath() + " \nNumber of files found : " + file.listFiles().length);
+          logger.info("Scanning script files in dir : " + dir.getAbsolutePath() + " \nNumber of files found : " + file.listFiles().length);
               for (File f : file.listFiles()) {
                  if (f.isFile()) {
                      this.execute(new File(f.getPath()));

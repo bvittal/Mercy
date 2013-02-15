@@ -171,6 +171,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 				{
 				  for(Adjustment baseAdjustment : baseAdjustments)
 				  {
+				  /**  
 				  String promoName = adjustment.getPromoName();
 				  String basePromoName = baseAdjustment.getPromoName();
 					  if(StringUtils.isNotBlank(promoName) && StringUtils.isNotBlank(basePromoName))
@@ -184,7 +185,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 					  {
 						  results.put("promoType", promoType.trim().equalsIgnoreCase(basePromoType.trim()) ? Boolean.TRUE : Boolean.FALSE);
 					  }
-				  
+				  */
 				  String promoCode = adjustment.getPromoCode();
 				  String basePromoCode = baseAdjustment.getPromoCode();
 					  if(StringUtils.isNotBlank(promoCode) && StringUtils.isNotBlank(basePromoCode))
@@ -226,7 +227,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 					  {
 						  results.put("markdownCode", markdownCode.equalsIgnoreCase(baseMarkdownCode.trim()) ? Boolean.TRUE : Boolean.FALSE);
 					  }
-					  
+					/**  
 				  String shortDesc = adjustment.getShortDesc();
 				  String baseShortDesc = baseAdjustment.getShortDesc();
 					  if(StringUtils.isNotBlank(shortDesc) && StringUtils.isNotBlank(baseShortDesc))
@@ -247,7 +248,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 					  {
 						  results.put("exclusionText", exclusionText.replace(" ", "").equalsIgnoreCase(baseExclusionText.trim()) ? Boolean.TRUE : Boolean.FALSE);
 					  }
-				  
+				  */
 				  String endDate = adjustment.getEndDate();
 				  String baseEndDate = baseAdjustment.getEndDate();
 					  if(StringUtils.isNotBlank(endDate) && StringUtils.isNotBlank(baseEndDate))
@@ -274,7 +275,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 	        {
 	          for(Adjustment basedcAdjustment : baseDcAdjustments)
 	          { 
-	            
+	          /**  
 					 String dcPromoName = dcAdjustment.getPromoName();
 					 String baseDcPromoName = basedcAdjustment.getPromoName();
 						 if(StringUtils.isNotBlank(dcPromoName) && StringUtils.isNotBlank(baseDcPromoName))
@@ -288,7 +289,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 						 {
 							 results.put("dcPromoType", dcPromoType.trim().equalsIgnoreCase(baseDcPromoType.trim()) ? Boolean.TRUE : Boolean.FALSE);
 						 }
-						 
+						 */
 					 String dcPromoCode = dcAdjustment.getPromoCode();
 					 String baseDcPromoCode = basedcAdjustment.getPromoCode();
 						 if(StringUtils.isNotBlank(dcPromoCode) && StringUtils.isNotBlank(baseDcPromoCode))
@@ -330,7 +331,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 						 {
 							 results.put("dcMarkdownCode", dcMarkdownCode.trim().equalsIgnoreCase(baseDcMarkdownCode.trim()) ? Boolean.TRUE : Boolean.FALSE);
 						 }
-						 
+						/** 
 					 String dcShortDesc = dcAdjustment.getShortDesc();
 					 String baseDcShortDesc = basedcAdjustment.getShortDesc();
 						 if(StringUtils.isNotBlank(dcShortDesc) && StringUtils.isNotBlank(baseDcShortDesc))
@@ -351,7 +352,7 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 						 {
 							 results.put("dcExclusionText", dcExclusionText.replace(" ", "").equalsIgnoreCase(baseDcExclusionText) ? Boolean.TRUE : Boolean.FALSE);
 						 }
-						 
+						 */
 					 String dcEndDate = dcAdjustment.getEndDate();
 					 String baseDcEndDate = basedcAdjustment.getEndDate();
 						 if(StringUtils.isNotBlank(dcEndDate) && StringUtils.isNotBlank(baseDcEndDate))

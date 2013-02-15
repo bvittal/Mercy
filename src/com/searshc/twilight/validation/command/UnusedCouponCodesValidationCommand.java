@@ -55,7 +55,7 @@ public class UnusedCouponCodesValidationCommand extends AbstractStringValidation
     
     for (Map.Entry<String, Boolean> entry : results.entries())
     {
-           System.out.println("Validating UnusedCouponCodes for coupon : " + entry.getKey() + " - reason code found is : " + entry.getValue() + "\n");
+           System.out.println("\nValidating UnusedCouponCodes for coupon : " + entry.getKey() + " - reason code found is : " + entry.getValue() + "\n");
     }
     
     if(results.containsValue(Boolean.FALSE))

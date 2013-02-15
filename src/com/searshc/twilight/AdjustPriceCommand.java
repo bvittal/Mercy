@@ -2,9 +2,12 @@ package com.searshc.twilight;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.log4j.Logger;
 
 public class AdjustPriceCommand extends AbstractScriptRequestCommand
 { 
+  private static Logger logger = Logger.getLogger(AdjustPriceCommand.class);
+  
   /** the method named expected by the service */
   private static final String METHOD = "adjustprice";
   
@@ -20,7 +23,7 @@ public class AdjustPriceCommand extends AbstractScriptRequestCommand
     {
       HttpPost postRequest = new HttpPost(BASE_URL + METHOD);
       String requestBody = mapper.writeValueAsString(order);
-      System.out.println("Actual request posted " + requestBody);
+      logger.debug("Actual request posted " + requestBody);
       
       StringEntity input = new StringEntity(requestBody);
         

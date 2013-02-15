@@ -36,7 +36,6 @@ public class ScriptCommandParser
       }catch(Exception ex){
         logger.error("Error " + ex);
       }
-    //System.out.println("Parsing command: [" + commandLine + "]");
     parse(commandLine);
   }
 

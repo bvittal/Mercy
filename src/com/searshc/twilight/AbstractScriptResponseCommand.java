@@ -97,12 +97,12 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
       }
       
       if(StringUtils.isNotBlank(recvdMethod) && this.getMethod().equals(recvdMethod)){
-        System.out.println("Recieved " + recvdMethod + " " + response.getStatusLine().getReasonPhrase());
+        logger.debug("Recieved " + recvdMethod + " " + response.getStatusLine().getReasonPhrase());
         
         if(this.getContentType(response).equals("application/json")){
         
           String rsp = getHttpResponse(response.getEntity().getContent());
-          System.out.println("Actual response recieved : " + rsp);
+          logger.debug("Actual response recieved : " + rsp);
           OrderResponse orderResp = mapper.readValue(rsp, com.upas.sears.service.domain.OrderResponse.class);
           
           /** now convert OrderResponse to JSON and then JSON to OrderResponseValidator */
@@ -114,8 +114,8 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
               dataBean.setScenarioType(scenario);
               dataBean.setTestResults("PASS");
               dataBeanList.add(dataBean);
-              System.out.println("********* TEST PASS **********");
-              logger.info("********* TEST PASS **********");
+              System.out.println(scenario + " : Test Result - PASS");
+              logger.info(scenario + " : Test Result - PASS");
               logger.info("\nProcessing next batch in script");
               recvdMethod = StringUtils.EMPTY;
               response = null;
@@ -127,8 +127,8 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
               dataBean.setScenarioType(scenario);
               dataBean.setTestResults("FAIL");
               dataBeanList.add(dataBean);
-              System.err.println("########## TEST FAILED ###########");
-              logger.info("########## TEST FAILED ###########");
+              System.err.println(scenario + " : Test Result - FAIL");
+              logger.info(scenario + " : Test Result - FAIL");
               logger.info("\nProcessing next batch in script");
               recvdMethod = StringUtils.EMPTY;
               response = null;
@@ -183,7 +183,11 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
         }
         else
         {
-          logger.error("Failed to process request (check script to correct response) - Error code recieved : " + recvdMethod);
+          dataBean.setScenarioType(scenario);
+          dataBean.setTestResults("FAIL");
+          dataBeanList.add(dataBean);
+          System.err.println("Test Result - FAIL (Reason: Error Code Recieved from UPAS : " + recvdMethod);
+          logger.error("Test Result - FAIL (Reason:- Error Code Recieved from UPAS: " + recvdMethod);
           logger.error("Processing next batch in script\n");
           ObjectBuilder.getObjects().clear();
           }
@@ -197,10 +201,12 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
   
   private byte[] byteArrayConverter() {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    for (int i = 0; i < byteArrayObj.length(); i += 3) {
-        String s = byteArrayObj.substring(i, i + 2);
-        int unsignedByte = Integer.parseInt(s, 16);
-        os.write(unsignedByte);
+    if(byteArrayObj != null){
+      for (int i = 0; i < byteArrayObj.length(); i += 3) {
+          String s = byteArrayObj.substring(i, i + 2);
+          int unsignedByte = Integer.parseInt(s, 16);
+          os.write(unsignedByte);
+      }
     }
     return os.toByteArray();
   }

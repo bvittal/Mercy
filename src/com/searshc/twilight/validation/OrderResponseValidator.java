@@ -28,7 +28,6 @@ public class OrderResponseValidator extends OrderResponse implements ResponseVal
       if(data != null)
       {
         ObjectMapper mapper = new ObjectMapper();
-        //System.out.println("need to have validator for each POJO in domain...convert to/from JSON using Jackson to inherently invoke overridden setters which will build the command list...when entire object is instantiated, run through list of commands performing validations....command list needs to live in the OrderResponseValidator (the top level)>>>>");
         order = mapper.readValue(mapper.writeValueAsString(data), com.searshc.twilight.validation.OrderValidator.class);
         super.setData(order);
       }

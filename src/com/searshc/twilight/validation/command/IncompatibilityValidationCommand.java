@@ -152,7 +152,7 @@ public class IncompatibilityValidationCommand extends AbstractStringValidationCo
     
     for (Map.Entry<String, Boolean> entry : results.entries())
     {
-           System.out.println("Validating : " + entry.getKey() + " - Match Found : " + entry.getValue() + "\n");
+           System.out.println("Validating : " + entry.getKey() + " - Match Found : " + entry.getValue());
     }
     
     if(results.containsValue(Boolean.FALSE))
