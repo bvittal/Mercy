@@ -34,8 +34,8 @@ public class TwilightConstants
   public static final String RESPONSE_INDICATOR_PLU_RESP_R4 = "PLU_RSP4";
   public static final String RESPONSE_INDICATOR_PLU_RESP_R5 = "PLU_RSP5";
   
-  public static final String REQUEST_INDICATOR_CUT2CLS_INQ = "CUT2CLS_INQ";
-  public static final String RESPONSE_INDICATOR_CUT2CLS_RESP = "CUT2CLS_RSP";
+  public static final String REQUEST_INDICATOR_C2C_INQ = "C2C_INQ";
+  public static final String RESPONSE_INDICATOR_C2C_RESP = "C2C_RSP";
   public static final String REQUEST_INDICATOR_DLVRY_FEE_INQ = "DLVRY_FEE_INQ";
   public static final String RESPONSE_INDICATOR_DLVRY_FEE_RESP = "DLVRY_FEE_RSP";
   public static final String REQUEST_INDICATOR_DLVRY_PRC_INQ = "DLVRY_PRC_INQ";

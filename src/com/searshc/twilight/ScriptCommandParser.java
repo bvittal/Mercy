@@ -317,7 +317,7 @@ public class ScriptCommandParser
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1) ||
         rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R2) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R3) ||
         rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5) ||        
-        rsp.equals(TwilightConstants.REQUEST_INDICATOR_CUT2CLS_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_CUT2CLS_RESP) || 
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_C2C_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_C2C_RESP) || 
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_DLVRY_FEE_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_DLVRY_FEE_RESP) ||
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_DLVRY_PRC_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_DLVRY_PRC_RESP) ||
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_INST_DLVRY_OFR_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_INST_DLVRY_OFR_RESP))
@@ -473,7 +473,7 @@ public class ScriptCommandParser
      /**
       * Coupon Inquiry Response 70B4
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase("REQUEST_INDICATOR_DLVRY_FEE_RSP"))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_DLVRY_FEE_RESP))
      {
        final DeliveryFeeByZipResponseParser deliveryFeeByZipResponseParser = new DeliveryFeeByZipResponseParser();
        builder = deliveryFeeByZipResponseParser.getDeliveryFeeByZipResponse(twilightJsonObject);
@@ -515,7 +515,7 @@ public class ScriptCommandParser
      /**
       * Coupon Inquiry 12A1
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_CUT2CLS_INQ))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_C2C_INQ))
      {
        final CutToCloseOfferInquiryParser cutToCloseOfferInquiryParser = new CutToCloseOfferInquiryParser();
        builder = cutToCloseOfferInquiryParser.getCutToCloseOfferInquiry(twilightJsonObject);
@@ -529,7 +529,7 @@ public class ScriptCommandParser
      /**
       * Coupon Inquiry Response 12B1
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_CUT2CLS_RESP))
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_C2C_RESP))
      {
        final CutToCloseOfferResponseParser cutToCloseOfferResponseParser = new CutToCloseOfferResponseParser();
        builder = cutToCloseOfferResponseParser.getCutToCloseOfferResponse(twilightJsonObject);
