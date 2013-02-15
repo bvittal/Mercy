@@ -427,7 +427,7 @@ public class PluResponseParser
   }
   
   
-  private StringBuilder processPluResponseEA(TwilightJsonObject twilightJsonObject)
+  protected StringBuilder processPluResponseEA(TwilightJsonObject twilightJsonObject)
   {
     
     String indicator = "EA";
@@ -1308,7 +1308,7 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_ID))
-             pluGroupId = StringUtils.rightPad(entry.getValue(), 7, StringUtils.EMPTY);
+             pluGroupId = StringUtils.rightPad(entry.getValue(), 7, '0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_FLAG)){
              pluItemFlag = entry.getValue();
            if(pluItemFlag.equalsIgnoreCase("null"))

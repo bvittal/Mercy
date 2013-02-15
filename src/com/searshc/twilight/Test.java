@@ -24,6 +24,14 @@ public class Test
     
     ResponseSeg60B1Validation valid = new ResponseSeg60B1Validation(buildRequest(baseBuilder));
     
+    String str = null;
+    
+    if(str.equalsIgnoreCase("Hello")){
+      System.out.println("Wow - True");
+    }else{
+      System.out.println("Oops - False");
+    }
+      
     
     String indicator = "60 B1";
     String segmentLevel = "02";

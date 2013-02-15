@@ -102,7 +102,7 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
         if(this.getContentType(response).equals("application/json")){
         
           String rsp = getHttpResponse(response.getEntity().getContent());
-          logger.debug("Actual response recieved : " + rsp);
+          System.out.println("Actual response recieved : " + rsp);
           OrderResponse orderResp = mapper.readValue(rsp, com.upas.sears.service.domain.OrderResponse.class);
           
           /** now convert OrderResponse to JSON and then JSON to OrderResponseValidator */

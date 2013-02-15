@@ -223,6 +223,10 @@ public class ScriptCommandParser
         {
           builder.newObject(TwilightPojo.PLU_RESP_58B1_KEY); 
         }
+        else if(action.equals("RESP") && nextToken.equals(TwilightPojo.COUPON_RESP_2AB7_KEY))
+        {
+          builder.newObject(TwilightPojo.COUPON_RESP_2AB7_KEY); 
+        }
         else if(action.equals("RESP") && nextToken.equals(TwilightPojo.PLU_RESPONSES_KEY))
         {
           builder.newObject(TwilightPojo.PLU_RESPONSES_KEY); 

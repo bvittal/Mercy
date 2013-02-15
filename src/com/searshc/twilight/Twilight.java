@@ -41,12 +41,14 @@ public class Twilight
       try {
         System.out.println( "Waiting for 2000 ms to process more request(s) before exitting" );
         wait(2000);
-        System.out.println( "No new request found. Generating test results report, please wait..." ); 
-        final List<DataBean> dataBeanList = AbstractScriptResponseCommand.getReportData();
-          if(dataBeanList.size() > 0){
-            String url = reporter.generateReport(dataBeanList, testReportName);
-            System.out.println( "Report generated successfully at :" + url);
-          }
+        if(prop.getProperty("generateReport").equalsIgnoreCase("true")){
+          System.out.println( "Generating test results report, please wait..." ); 
+          final List<DataBean> dataBeanList = AbstractScriptResponseCommand.getReportData();
+            if(dataBeanList.size() > 0){
+              String url = reporter.generateReport(dataBeanList, testReportName);
+              System.out.println( "Report generated successfully at :" + url);
+            }
+         }
       } catch (InterruptedException e) {
         Thread.currentThread().isInterrupted();
       } catch (JRException ex){
