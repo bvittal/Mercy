@@ -10,6 +10,7 @@ public class TwilightConstants
   public static final String ACTION_ADJUST_PRICE = "POST";
   public static final String ACTION_ISP_REQUEST = "REQT";
   public static final String ACTION_ISP_RESPONSE = "RESP";
+  public static final String ACTION_SCRIPT_RESPONSE = "RECV";
   
   /** supported HTTP responses */
   public static final String HTTP_200 = "200";

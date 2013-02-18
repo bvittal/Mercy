@@ -6,11 +6,13 @@ import java.io.*;
 import net.sf.jasperreports.engine.JRException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.reports.beans.DataBean;
 import com.searshc.twilight.reports.engine.Reporter;
+import com.searshc.twilight.service.TwilightConstants;
 import com.searshc.twilight.util.PropertyLoader;
 import com.searshc.twilight.util.TwilightHttpServer;
 
@@ -118,19 +120,27 @@ public class Twilight
         cmdParser = new ScriptCommandParser(commands.get(i));
         action = cmdParser.getAction();
         method = cmdParser.getMethod();
+        
         if(StringUtils.isBlank(action) && StringUtils.isBlank(method)){
           scenario = cmdParser.getScenario();
         }
         Object obj = null;
           
         if(StringUtils.isNotBlank(action) && StringUtils.isNotBlank(method)){
-          if(method.equals("adjustprice") && action.equals("POST") || action.equals("RECV")){
+          if(method.equals(TwilightConstants.METHOD_ADJUST_PRICE) && 
+              (action.equals(TwilightConstants.ACTION_ADJUST_PRICE) || 
+                  action.equals(TwilightConstants.ACTION_SCRIPT_RESPONSE))){
+              obj = cmdParser.getJsonObject();
+          }else if((method.equals(TwilightConstants.HTTP_400) || 
+                      method.equals(TwilightConstants.HTTP_404) || 
+                        method.equals(TwilightConstants.HTTP_500)) && 
+                          action.equals(TwilightConstants.ACTION_SCRIPT_RESPONSE)){
+              throw new HttpException();
+          }else if(method.equals(TwilightConstants.HTTP_200) && 
+              action.equals(TwilightConstants.ACTION_SCRIPT_RESPONSE)){
             obj = cmdParser.getJsonObject();
-        }
-        else{
-          if(StringUtils.isNotBlank(scenario)){
+          }else if(StringUtils.isNotBlank(scenario)){
             obj = cmdParser.getByteArrayObject();
-          }
         }
      
         /** now generate the command object and execute it */
@@ -163,9 +173,9 @@ public class Twilight
       }
      }
     }
-    catch (Exception e)
+    catch (Exception ex)
     {
-      e.printStackTrace();
+      System.err.println("Malformed Script Exception " + ex);
     }
 	}
 	
