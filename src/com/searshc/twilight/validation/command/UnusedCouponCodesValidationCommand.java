@@ -15,14 +15,12 @@ public class UnusedCouponCodesValidationCommand extends AbstractStringValidation
 {
   protected String getParameterName() { return "UnusedCouponCodes Parameter"; }
   
-  public boolean passes(Order order)
-  {
+  public boolean passes(Order order){
     Multimap<String, Boolean> results = ArrayListMultimap.create();   
     List<CoupounCode> couponList = order.getUnusedCouponCodes();
     boolean flag = Boolean.FALSE;
     
-    if(couponList.size() > 0 && baseValueforUnusedCoupons.size() > 0)
-    {
+    if(couponList != null && couponList.size() > 0 && baseValueforUnusedCoupons.size() > 0){
       Iterator<CoupounCode> couponItr = couponList.iterator();
       Iterator<CoupounCode> baseCouponItr = baseValueforUnusedCoupons.iterator();
       
@@ -51,11 +49,13 @@ public class UnusedCouponCodesValidationCommand extends AbstractStringValidation
             break;
         }
       }
+    }else{
+    	return Boolean.FALSE;
     }
     
     for (Map.Entry<String, Boolean> entry : results.entries())
     {
-           System.out.println("Validating UnusedCouponCodes for coupon : " + entry.getKey() + " - reason code found is : " + entry.getValue() + "\n");
+           System.out.println("\nValidating UnusedCouponCodes for coupon : " + entry.getKey() + " - reason code found is : " + entry.getValue() + "\n");
     }
     
     if(results.containsValue(Boolean.FALSE))

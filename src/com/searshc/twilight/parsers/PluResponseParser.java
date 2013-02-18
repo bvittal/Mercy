@@ -427,7 +427,7 @@ public class PluResponseParser
   }
   
   
-  private StringBuilder processPluResponseEA(TwilightJsonObject twilightJsonObject)
+  protected StringBuilder processPluResponseEA(TwilightJsonObject twilightJsonObject)
   {
     
     String indicator = "EA";
@@ -1308,18 +1308,18 @@ public class PluResponseParser
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_ID))
-             pluGroupId = StringUtils.rightPad(entry.getValue(), 7, StringUtils.EMPTY);
+             pluGroupId = StringUtils.rightPad(entry.getValue(), 7, '0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_FLAG)){
              pluItemFlag = entry.getValue();
            if(pluItemFlag.equalsIgnoreCase("null"))
-             pluItemFlag = StringUtils.rightPad(StringUtils.EMPTY, 1, StringUtils.EMPTY);
+             pluItemFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_TYPE))
              pluGroupType = StringUtils.rightPad(entry.getValue(), 1, '1');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY))
              pluGroupQuantity = StringUtils.leftPad(entry.getValue(), 3, '0');
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE))
-             pluGroupPrice = StringUtils.leftPad(entry.getValue().replace(".",StringUtils.EMPTY), 7,'0');
+             pluGroupPrice = StringUtils.leftPad(entry.getValue().replace(".", StringUtils.EMPTY), 7,'0');
          }
        }
       
@@ -2902,12 +2902,9 @@ public class PluResponseParser
     return null;
   }
   
-  private String byteResponse(byte[] buffer)
-  {
+  private String byteResponse(byte[] buffer){
     StringBuilder sb = new StringBuilder();
-
-    for (byte b : buffer)
-    {
+    for (byte b : buffer){
       sb.append(String.format("%02x", b).toUpperCase());
       sb.append(" ");
     }

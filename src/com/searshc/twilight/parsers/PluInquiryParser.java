@@ -13,7 +13,7 @@ import com.searshc.twilight.service.TwilightConstants;
 import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
-public class PluInquiryParser
+public class PluInquiryParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(PluInquiryParser.class);
   private static Properties prop;
@@ -43,7 +43,7 @@ public class PluInquiryParser
   }
   
   public StringBuilder getPluInquiry(TwilightJsonObject twilightJsonObject){
-    StringBuilder builder = new StringBuilder();
+    StringBuilder builder = new StringBuilder();  
     builder = this.processPluInquiryD8(twilightJsonObject);
     logger.info(builder);
     return builder;
@@ -117,9 +117,12 @@ public class PluInquiryParser
     {
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
-       if(entry.getKey().equalsIgnoreCase(PLU_INQ_DIVISION))
-         division = StringUtils.rightPad(entry.getValue(), 3,'0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_INQ_ITEM_NUMBER))
+       if(entry.getKey().equalsIgnoreCase(PLU_INQ_DIVISION)){
+         if(this.lengthCheck(3, entry.getValue()))
+           division = StringUtils.rightPad(entry.getValue(), 3,'0');
+         else
+           System.err.println(lengthCheckMsg(3,entry.getKey()));
+       }else if(entry.getKey().equalsIgnoreCase(PLU_INQ_ITEM_NUMBER))
          itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
        else if(entry.getKey().equalsIgnoreCase(PLU_INQ_SKU))
          sku = StringUtils.rightPad(entry.getValue(), 3,'0');
@@ -163,5 +166,20 @@ public class PluInquiryParser
       sb.append(" ");
     }
     return sb.toString();
+  }
+
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + TwilightConstants.INDICATOR_D8 + " length check failed for : " + field + " field, required " + length +" char(s)";
   }
 }

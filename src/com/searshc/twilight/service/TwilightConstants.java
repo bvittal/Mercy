@@ -18,11 +18,15 @@ public class TwilightConstants
   public static final String HTTP_500 = "500";
   
   /** Request Response Types */
-  public static final String REQUEST_INDICATOR_COUPON_INQ = "COUPON_INQ";
-  public static final String REQUEST_INDICATOR_PLU_INQ = "PLU_INQ";
   public static final String REQUEST_INDICATOR_FILE_INQ = "FILE_INQ";
+  public static final String REQUEST_INDICATOR_PLU_INQ = "PLU_INQ";
+  public static final String REQUEST_INDICATOR_COUPON_INQ = "COUPON_INQ";  
+  public static final String REQUEST_INDICATOR_DELIVERY_FEE_INQ = "DLVRY_FEE_INQ";
+  
   public static final String RESPONSE_INDICATOR_PLU_RESP = "PLU_RSP";
-  public static final String RESPONSE_INDICATOR_COUPON_RESP = "COUPON_RSP";
+  public static final String RESPONSE_INDICATOR_COUPON_RESP = "COUPON_RSP"; 
+  public static final String RESPONSE_INDICATOR_DELIVERY_FEE_RSP = "DLVRY_FEE_RSP";
+  
   public static final String REQUEST_INDICATOR_PLU_INQ_I1 = "PLU_INQ1";
   public static final String REQUEST_INDICATOR_PLU_INQ_I2 = "PLU_INQ2";
   public static final String REQUEST_INDICATOR_PLU_INQ_I3 = "PLU_INQ3";

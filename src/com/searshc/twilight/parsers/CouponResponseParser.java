@@ -10,11 +10,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.searshc.twilight.TwilightJsonObject;
+import com.searshc.twilight.TwilightPojo;
 import com.searshc.twilight.service.TwilightConstants;
 import com.searshc.twilight.util.DecoderUtils;
 import com.searshc.twilight.util.PropertyLoader;
 
-public class CouponResponseParser
+public class CouponResponseParser extends PluResponseParser
 {
   private static Logger logger = Logger.getLogger(CouponResponseParser.class);
   private static Properties prop;
@@ -109,12 +110,35 @@ public class CouponResponseParser
     }
   }
   
-  public StringBuilder getCouponResponse(TwilightJsonObject twilightJsonObject)
-  {
+  public StringBuilder getCouponResponse(TwilightJsonObject twilightJsonObject){
+    StringBuilder builder = new StringBuilder();
+    if(twilightJsonObject != null){
+      Iterator<TwilightJsonObject> itr = twilightJsonObject.getTwilightJsonObject().iterator();
+      while(itr.hasNext()){ 
+        Iterator<TwilightJsonObject> subItr = itr.next().getTwilightJsonObject().iterator();
+        while(subItr.hasNext()){
+          TwilightJsonObject obj = subItr.next();
+          if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.COUPON_RESP_2AB7_KEY)){
+            if(this.processCouponResponse2AB7(obj) != null)
+              builder.append(this.processCouponResponse2AB7(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_2AB7);
+          }else if(obj != null && obj.getName().equalsIgnoreCase(TwilightPojo.PLU_RESP_EA_KEY)){
+            if(this.processPluResponseEA(obj) != null)
+              builder.append(this.processPluResponseEA(obj));
+            else
+              System.err.println("Length check failed for Response Segment : " + TwilightConstants.INDICATOR_EA);
+          }
+        }
+      }
+    }
+    return builder;
+    /**
     StringBuilder builder = new StringBuilder();
     builder = this.processCouponResponse2AB7(twilightJsonObject);
     logger.info(builder);
     return builder;
+    */
   }
   
   private StringBuilder processCouponResponse2AB7(TwilightJsonObject twilightJsonObject)

@@ -5,7 +5,9 @@ public interface TwilightPojo
   public static final String ITEMS_KEY = "items";
   public static final String ITEM_KEY = "item";
   public static final String ADJUSTMENTS_KEY = "adjustments";
+  public static final String ADJUSTMENT_KEY = "adjustment";
   public static final String DCADJUSTMENTS_KEY = "dcAdjustments";
+  public static final String DCADJUSTMENT_KEY = "dcAdjustment";
   public static final String UNUSED_COUPON_CODES = "unusedCouponCodes";
   public static final String UNUSED_COUPON_KEY = "couponCode";
   public static final String COUPON_KEY = "couponCodes";
@@ -21,7 +23,7 @@ public interface TwilightPojo
   public static final String PROMO_DESC_KEY = "promoDesc";
   public static final String DESC_KEY = "desc";
   
-  //Response object
+  //Plu Response object
   public static final String PLU_RESP_EA_KEY = "indicator_EA";
   public static final String PLU_RESP_98_KEY = "indicator_98";
   public static final String PLU_RESP_E8_KEY = "indicator_E8";
@@ -33,6 +35,9 @@ public interface TwilightPojo
   public static final String PLU_RESP_60B1_KEY = "indicator_60B1";
   public static final String PLU_RESP_62B1_KEY = "indicator_62B1";
   public static final String PLU_RESP_58B1_KEY = "indicator_58B1";
+  
+  //Coupon Response object
+  public static final String COUPON_RESP_2AB7_KEY = "indicator_2AB7";
   
   public static final String COUPON_RESP_INCL_EXCLS_KEY = "includeExclude";
   public static final String COUPON_RESP_INCL_EXCL_KEY = "inclExcl";

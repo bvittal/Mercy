@@ -16,8 +16,6 @@ public class LineItemValidator extends LineItem implements ResponseValidator
   @Override
   public boolean isValid(OrderResponse orderResponse)
   {
-    // TODO Auto-generated method stub
-    //System.out.println("validating line item");
     return false;
   }
 

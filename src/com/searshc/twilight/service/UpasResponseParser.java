@@ -79,7 +79,7 @@ public class UpasResponseParser{
       List<SegmentIndex> segmentIndexes = parser.getSegmentList();
       for (SegmentIndex segmentIndex : segmentIndexes) {
         factory.getSegment(segmentIndex.getIndicatorString(), segmentIndex.getBuffer());
-        System.out.println("Segment " + segmentIndex.getIndicatorString() + "\t at position " 
+        logger.debug("Segment " + segmentIndex.getIndicatorString() + "\t at position " 
             + segmentIndex.getPosition() + " length of\t " 
             + segmentIndex.getLength());
       }

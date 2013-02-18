@@ -1,7 +1,7 @@
 package com.searshc.twilight.util;
 
 import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,19 +85,17 @@ class EchoHandler implements HttpHandler
         if(inquryResp != null){
           System.out.println("RESPONSE SENT : " + byteResponse(inquryResp));
           respLength = createXMLResponseHeader().length + inquryResp.length;
-          System.out.println("HTTP Response length : " + respLength);
-          System.out.println("HTTP Response : " + new String(inquryResp));
+          logger.debug("HTTP Response length : " + respLength);
+          logger.debug("HTTP Response : " + new String(inquryResp));
           outputStream.write(createXMLResponseHeader());
           outputStream.write(inquryResp);
           responseObject = outputStream.toByteArray();
-          //System.out.println("Response Object " + new String(responseObject));
           t.sendResponseHeaders(HTTP_OK, respLength);
         }else{
-          System.out.println("Response not found !!");
           outputStream.write(createXMLResponseHeader());
           outputStream.write("Response not found".getBytes());
           responseObject = outputStream.toByteArray();
-          t.sendResponseHeaders(HTTP_NO_CONTENT, respLength);
+          t.sendResponseHeaders(HTTP_INTERNAL_ERROR, respLength);
         }
         os = t.getResponseBody();
         os.write(responseObject);
@@ -125,7 +123,6 @@ class EchoHandler implements HttpHandler
   
   private String byteResponse(byte [] buffer){
     StringBuilder sb = new StringBuilder();
-
     for (byte b : buffer) {
         sb.append(String.format("%02x", b).toUpperCase());
         sb.append(" ");

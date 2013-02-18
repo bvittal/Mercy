@@ -1,13 +1,15 @@
 package com.searshc.twilight.validation.command;
 
+import org.apache.log4j.Logger;
 import com.upas.sears.service.domain.Order;
 
 public abstract class AbstractValidationCommand
 {
+  private static Logger logger = Logger.getLogger(AbstractValidationCommand.class);
   
   public AbstractValidationCommand()
   {
-    System.out.println("Validating parameter: " + getParameterName());
+    logger.info("Validating parameter: " + getParameterName());
   }
   
   private String message = "";

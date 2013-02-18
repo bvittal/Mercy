@@ -24,13 +24,21 @@ public class Test
     
     ResponseSeg60B1Validation valid = new ResponseSeg60B1Validation(buildRequest(baseBuilder));
     
+    String str = null;
+    
+    if(str.equalsIgnoreCase("Hello")){
+      System.out.println("Wow - True");
+    }else{
+      System.out.println("Oops - False");
+    }
+      
     
     String indicator = "60 B1";
     String segmentLevel = "02";
     String offerType = "N";
     String offerId = "1808";
     String financialCode = "NIWP18MO00";
-    String thresholdDollarAmount = "00001";
+    String thresholdDollarAmount = "49.99";
     String associateDiscountFlag = "N";
     String miscellaneousReductionsFlag = "Y";
     String instantRebateFlag = "Y";
@@ -49,7 +57,7 @@ public class Test
       offerType = StringUtils.rightPad(offerType, 1,'N');
       offerId = StringUtils.leftPad(offerId, 10,'0');
       financialCode = StringUtils.rightPad(financialCode, 10,'0');
-      thresholdDollarAmount = StringUtils.leftPad(thresholdDollarAmount.replace(".",""), 5);
+      thresholdDollarAmount = StringUtils.leftPad(thresholdDollarAmount.replace(".",StringUtils.EMPTY), 5);
       associateDiscountFlag = StringUtils.rightPad(associateDiscountFlag, 1,'N');
       miscellaneousReductionsFlag = StringUtils.rightPad(miscellaneousReductionsFlag, 1,'N');
       instantRebateFlag = StringUtils.rightPad(instantRebateFlag, 1,'N');

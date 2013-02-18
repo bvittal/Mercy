@@ -3,12 +3,15 @@ package com.searshc.twilight.validation.command;
 import com.upas.sears.service.domain.LineItem;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 public abstract class AbstractListValidationCommand extends AbstractValidationCommand
 {
+  private static Logger logger = Logger.getLogger(AbstractListValidationCommand.class);
   
   public AbstractListValidationCommand()
   {
-    System.out.println("Validating list: " + getParameterName()+"\n");
+    logger.info("Validating list: " + getParameterName()+"\n");
   }
   
   private String message = "";
