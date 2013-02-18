@@ -108,7 +108,8 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
           /** now convert OrderResponse to JSON and then JSON to OrderResponseValidator */
           this.toOrderResponse(jasonObj);
           OrderResponseValidator orderRespValidator = mapper.readValue(mapper.writeValueAsString(orderResponse), com.searshc.twilight.validation.OrderResponseValidator.class);
-            
+            boolean flag = orderRespValidator.isValid(orderResp);
+              
             if(orderRespValidator.isValid(orderResp))
             {
               dataBean.setScenarioType(scenario);

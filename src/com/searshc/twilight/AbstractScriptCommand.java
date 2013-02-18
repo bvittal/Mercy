@@ -132,8 +132,10 @@ public abstract class AbstractScriptCommand
   protected void toOrderResponse(TwilightJsonObject obj)
   {
     /** need to account for messages also */
-    this.toOrder(obj, false);
-    this.orderResponse.setData(order);
+    if(obj != null){
+      this.toOrder(obj, false);
+      this.orderResponse.setData(order);
+    }
   }
   
   protected void toOrder(TwilightJsonObject obj, boolean useDefaults)
@@ -300,6 +302,7 @@ public abstract class AbstractScriptCommand
           }
         }
       }
+        
           if(items.containsKey(ITEM_ID))
             item.setLineItemId(items.get(ITEM_ID));
           else
