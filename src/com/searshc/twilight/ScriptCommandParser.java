@@ -10,7 +10,13 @@ import com.searshc.twilight.parsers.CouponInquiryParser;
 import com.searshc.twilight.parsers.CouponResponseParser;
 import com.searshc.twilight.parsers.CutToCloseOfferInquiryParser;
 import com.searshc.twilight.parsers.CutToCloseOfferResponseParser;
+import com.searshc.twilight.parsers.DeliveryFeeByZipInquiryParser;
+import com.searshc.twilight.parsers.DeliveryFeeByZipResponseParser;
+import com.searshc.twilight.parsers.DeliveryPricingInquiryParser;
+import com.searshc.twilight.parsers.DeliveryPricingResponseParser;
 import com.searshc.twilight.parsers.FileInquiryParser;
+import com.searshc.twilight.parsers.InstantDeliveryOfferInquiryParser;
+import com.searshc.twilight.parsers.InstantDeliveryOfferResponseParser;
 import com.searshc.twilight.parsers.PluInquiryParser;
 import com.searshc.twilight.parsers.PluResponseParser;
 import com.searshc.twilight.service.TwilightConstants;
@@ -59,8 +65,15 @@ public class ScriptCommandParser
         TwilightConstants.INDICATOR_58B1,
         TwilightConstants.INDICATOR_60B1,
         TwilightConstants.INDICATOR_62B1,
+
+        TwilightConstants.INDICATOR_70A4,
+        TwilightConstants.INDICATOR_70B4,
+        TwilightConstants.INDICATOR_72A2,
+        TwilightConstants.INDICATOR_72B2,
+        TwilightConstants.INDICATOR_11A6,
+        TwilightConstants.INDICATOR_11B6,
         TwilightConstants.INDICATOR_12A1,
-        TwilightConstants.INDICATOR_12B1
+        TwilightConstants.INDICATOR_12B1,
     };
     
     if(commandLines.contains("#:")){
@@ -316,7 +329,12 @@ public class ScriptCommandParser
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I3) || rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I4) || 
         rsp.equals(TwilightConstants.REQUEST_INDICATOR_PLU_INQ_I5) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R1) ||
         rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R2) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R3) ||
-        rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5))
+        rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R4) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_PLU_RESP_R5) ||        
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_C2C_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_C2C_RESP) || 
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_DLVRY_FEE_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_DLVRY_FEE_RESP) ||
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_DLVRY_PRC_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_DLVRY_PRC_RESP) ||
+        rsp.equals(TwilightConstants.REQUEST_INDICATOR_INST_DLVRY_OFR_INQ) || rsp.equals(TwilightConstants.RESPONSE_INDICATOR_INST_DLVRY_OFR_RESP))
+      
       return true;
     else
       return false;
@@ -413,20 +431,7 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
-     }
-     
-     /**
-      * CutToCloseOffer Inquiry 12A1
-      */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_C2C_INQ))
-     {
-       final CutToCloseOfferInquiryParser cutToCloseOfferInquiryParser = new CutToCloseOfferInquiryParser();
-       builder = cutToCloseOfferInquiryParser.getCutToCloseOfferInquiry(twilightJsonObject);
-       if(builder != null)
-       {
-         this.byteArrayObj = builder;
-       }
-     }
+     }    
      
      /**
       * Plu Inquiry Response E8
@@ -457,10 +462,80 @@ public class ScriptCommandParser
        {
          this.byteArrayObj = builder;
        }
+       
      }
      
      /**
-      * CutToCloseOffer Inquiry Response 12B1
+      * Coupon Inquiry 70A4
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_DLVRY_FEE_INQ))
+     {
+       final DeliveryFeeByZipInquiryParser deliveryFeeByInquiryParser = new DeliveryFeeByZipInquiryParser();
+       builder = deliveryFeeByInquiryParser.getDeliveryFeeByZipInquiry(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
+       
+     }
+     
+     /**
+      * Coupon Inquiry Response 70B4
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_DLVRY_FEE_RESP))
+     {
+       final DeliveryFeeByZipResponseParser deliveryFeeByZipResponseParser = new DeliveryFeeByZipResponseParser();
+       builder = deliveryFeeByZipResponseParser.getDeliveryFeeByZipResponse(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
+       
+     }
+     
+     /**
+      * Coupon Inquiry 72A2
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_DLVRY_PRC_INQ))
+     {
+       final DeliveryPricingInquiryParser deliveryPricingInquiryParser = new DeliveryPricingInquiryParser();
+       builder = deliveryPricingInquiryParser.getDeliveryPricingInquiry(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
+       
+     }
+     
+     /**
+      * Coupon Inquiry Response 72B2
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_DLVRY_PRC_RESP))
+     {
+       final DeliveryPricingResponseParser deliveryPricingResponseParser = new DeliveryPricingResponseParser();
+       builder = deliveryPricingResponseParser.getDeliveryPricingResponse(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }
+       
+     }
+     
+     /**
+      * Coupon Inquiry 12A1
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_C2C_INQ))
+     {
+       final CutToCloseOfferInquiryParser cutToCloseOfferInquiryParser = new CutToCloseOfferInquiryParser();
+       builder = cutToCloseOfferInquiryParser.getCutToCloseOfferInquiry(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }       
+     }
+     
+     /**
+      * Coupon Inquiry Response 12B1          
       */
      if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_C2C_RESP))
      {
@@ -469,7 +544,34 @@ public class ScriptCommandParser
        if(builder != null)
        {
          this.byteArrayObj = builder;
-       }
+       }      
      }
+     
+     /**
+      * Coupon Inquiry 11A6
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.REQUEST_INDICATOR_INST_DLVRY_OFR_INQ))
+     {
+       final InstantDeliveryOfferInquiryParser instantDeliveryOfferInquiryParser = new InstantDeliveryOfferInquiryParser();
+       builder = instantDeliveryOfferInquiryParser.getInstantDeliveryOfferInquiry(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }       
+     }
+     
+     /**
+      * Coupon Inquiry Response 11B6
+      */
+     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(TwilightConstants.RESPONSE_INDICATOR_INST_DLVRY_OFR_RESP))
+     {
+       final InstantDeliveryOfferResponseParser instantDeliveryOfferResponseParser = new InstantDeliveryOfferResponseParser();
+       builder = instantDeliveryOfferResponseParser.getInstantDeliveryOfferResponse(twilightJsonObject);
+       if(builder != null)
+       {
+         this.byteArrayObj = builder;
+       }  
+     }    
+     
    }
  }

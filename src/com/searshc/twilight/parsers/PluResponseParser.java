@@ -1072,13 +1072,13 @@ public class PluResponseParser
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_QUALIFICATION_AMOUNT)){
            minimumQualificationAmount = entry.getValue();
            if(StringUtils.isBlank(minimumQualificationAmount) || minimumQualificationAmount.equalsIgnoreCase("null")){
-             minimumQualificationAmount = StringUtils.rightPad(StringUtils.EMPTY, 7, '0');
+             minimumQualificationAmount = StringUtils.leftPad(StringUtils.EMPTY, 7, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY)){
            maximumQuantity = entry.getValue();
            if(StringUtils.isBlank(maximumQuantity) || maximumQuantity.equalsIgnoreCase("null")){
-             maximumQuantity = StringUtils.rightPad(StringUtils.EMPTY, 3, '0');
+             maximumQuantity = StringUtils.leftPad(StringUtils.EMPTY, 3, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG)){
@@ -1174,7 +1174,7 @@ public class PluResponseParser
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER)){
            couponNumber = entry.getValue();
            if(StringUtils.isBlank(couponNumber) || couponNumber.equalsIgnoreCase("null")){
-             couponNumber = StringUtils.rightPad(StringUtils.EMPTY, 8, '0');
+             couponNumber = StringUtils.leftPad(StringUtils.EMPTY, 8, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_TYPE_CODE)){
@@ -1192,7 +1192,7 @@ public class PluResponseParser
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MARKDOWN_AMOUNT_PERCENT)){
            markdownAmountPercent = entry.getValue();
            if(StringUtils.isBlank(markdownAmountPercent) || markdownAmountPercent.equalsIgnoreCase("null")){
-             markdownAmountPercent = StringUtils.rightPad(StringUtils.EMPTY, 5, '0');
+             markdownAmountPercent = StringUtils.leftPad(StringUtils.EMPTY, 5, '0');
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_PURCHASE_COUPON_DESC)){

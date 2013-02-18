@@ -61,15 +61,15 @@ public class DeliveryFeeByZipResponseParser
     }
   }
   
-  public StringBuilder getCouponResponse(TwilightJsonObject twilightJsonObject)
+  public StringBuilder getDeliveryFeeByZipResponse(TwilightJsonObject twilightJsonObject)
   {
     StringBuilder builder = new StringBuilder();
-    builder = this.processCouponResponse70B4(twilightJsonObject);
+    builder = this.processDeliveryFeeByZipResponse70B4(twilightJsonObject);
     logger.info(builder);
     return builder;
   }
   
-  private StringBuilder processCouponResponse70B4(TwilightJsonObject twilightJsonObject)
+  private StringBuilder processDeliveryFeeByZipResponse70B4(TwilightJsonObject twilightJsonObject)
   {
       String indicator = "70 B4";
       String responseCode = StringUtils.EMPTY;
@@ -226,7 +226,7 @@ public class DeliveryFeeByZipResponseParser
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_MORNING_PREMIUM_WINDOW_DESCRIPTION)){           
            if(StringUtils.isBlank(morningPremiumWindowDescription) || morningPremiumWindowDescription.equalsIgnoreCase("null"))
              morningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 30,StringUtils.EMPTY);          
-         }         
+         }        
          else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_RESP_EVENING_PREMIUM_WINDOW_DESCRIPTION)){
            if(StringUtils.isBlank(eveningPremiumWindowDescription) || eveningPremiumWindowDescription.equalsIgnoreCase("null"))
            eveningPremiumWindowDescription = StringUtils.leftPad(StringUtils.EMPTY, 30,StringUtils.EMPTY);         
@@ -261,7 +261,7 @@ public class DeliveryFeeByZipResponseParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_70B4, sb)){
       return sb;
     }
-        return sb;
+        return null;
      }
   
   private String byteResponse(byte[] buffer)

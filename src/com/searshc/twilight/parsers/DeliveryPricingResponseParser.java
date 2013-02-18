@@ -50,15 +50,15 @@ public class DeliveryPricingResponseParser
     }
   }
   
-  public StringBuilder getCouponResponse(TwilightJsonObject twilightJsonObject)
+  public StringBuilder getDeliveryPricingResponse(TwilightJsonObject twilightJsonObject)
   {
     StringBuilder builder = new StringBuilder();
-    builder = this.processCouponResponse72B2(twilightJsonObject);
+    builder = this.processDeliveryPricingResponse72B2(twilightJsonObject);
     logger.info(builder);
     return builder;
   }
   
-  private StringBuilder processCouponResponse72B2(TwilightJsonObject twilightJsonObject)
+  private StringBuilder processDeliveryPricingResponse72B2(TwilightJsonObject twilightJsonObject)
   {
       String indicator = "72 B2";
       String messageVersion = StringUtils.EMPTY;
@@ -197,7 +197,7 @@ public class DeliveryPricingResponseParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_72B2, sb)){
       return sb;
     }
-        return sb;
+        return null;
      }
   
   private String byteResponse(byte[] buffer)

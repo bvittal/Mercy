@@ -21,13 +21,11 @@ public class TwilightConstants
   /** Request Response Types */
   public static final String REQUEST_INDICATOR_FILE_INQ = "FILE_INQ";
   public static final String REQUEST_INDICATOR_PLU_INQ = "PLU_INQ";
-  public static final String REQUEST_INDICATOR_COUPON_INQ = "COUPON_INQ";
-  public static final String REQUEST_INDICATOR_C2C_INQ = "C2C_INQ";
+  public static final String REQUEST_INDICATOR_COUPON_INQ = "COUPON_INQ";  
   public static final String REQUEST_INDICATOR_DELIVERY_FEE_INQ = "DLVRY_FEE_INQ";
   
   public static final String RESPONSE_INDICATOR_PLU_RESP = "PLU_RSP";
-  public static final String RESPONSE_INDICATOR_COUPON_RESP = "COUPON_RSP";
-  public static final String RESPONSE_INDICATOR_C2C_RESP = "C2C_RSP";
+  public static final String RESPONSE_INDICATOR_COUPON_RESP = "COUPON_RSP"; 
   public static final String RESPONSE_INDICATOR_DELIVERY_FEE_RSP = "DLVRY_FEE_RSP";
   
   public static final String REQUEST_INDICATOR_PLU_INQ_I1 = "PLU_INQ1";
@@ -40,6 +38,15 @@ public class TwilightConstants
   public static final String RESPONSE_INDICATOR_PLU_RESP_R3 = "PLU_RSP3";
   public static final String RESPONSE_INDICATOR_PLU_RESP_R4 = "PLU_RSP4";
   public static final String RESPONSE_INDICATOR_PLU_RESP_R5 = "PLU_RSP5";
+  
+  public static final String REQUEST_INDICATOR_C2C_INQ = "C2C_INQ";
+  public static final String RESPONSE_INDICATOR_C2C_RESP = "C2C_RSP";
+  public static final String REQUEST_INDICATOR_DLVRY_FEE_INQ = "DLVRY_FEE_INQ";
+  public static final String RESPONSE_INDICATOR_DLVRY_FEE_RESP = "DLVRY_FEE_RSP";
+  public static final String REQUEST_INDICATOR_DLVRY_PRC_INQ = "DLVRY_PRC_INQ";
+  public static final String RESPONSE_INDICATOR_DLVRY_PRC_RESP = "DLVRY_PRC_RSP";
+  public static final String REQUEST_INDICATOR_INST_DLVRY_OFR_INQ = "INST_DLVRY_OFR_INQ";
+  public static final String RESPONSE_INDICATOR_INST_DLVRY_OFR_RESP = "INST_DLVRY_OFR_RSP";  
   
   /** Indicators */
   public static final String INDICATOR_PMP = "PMP";

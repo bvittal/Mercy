@@ -158,7 +158,7 @@ public class CutToCloseOfferInquiryParser
     if(DecoderUtils.lengthMatch(TwilightConstants.INDICATOR_12A1, sb)){
       return sb;
     }
-    return sb;
+    return null;
   }
   
   private String byteResponse(byte[] buffer){
