@@ -1,4 +1,4 @@
-Twilight
+Mercy
 ========
 
-Twilight - UPAS Automated Testing App
+Mercy - UPAS Automated Testing App
