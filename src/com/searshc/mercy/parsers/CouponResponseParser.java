@@ -15,7 +15,7 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class CouponResponseParser extends PluResponseParser
+public class CouponResponseParser extends PluResponseParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(CouponResponseParser.class);
   private static Properties prop;
@@ -691,4 +691,20 @@ public class CouponResponseParser extends PluResponseParser
     }
     return sb.toString();
   }
+
+
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
   }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + MercyConstants.INDICATOR_70A4+ " length check failed for : " + field + " field, required " + length +" char(s)";
+  }
+}

@@ -13,7 +13,7 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class CouponInquiryParser
+public class CouponInquiryParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(CouponInquiryParser.class);
   private static Properties prop;
@@ -105,6 +105,7 @@ public class CouponInquiryParser
     {
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
+            
        if(entry.getKey().equalsIgnoreCase(COUPON_INQ_SEGMENT_LEVEL))
          segmentLvl = entry.getValue();
        else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_SEGMENT_LENGTH))
@@ -113,10 +114,18 @@ public class CouponInquiryParser
          if(StringUtils.isNotBlank(segmentLength))
            segmentLength = Integer.toHexString(Integer.parseInt(segmentLength));
        }
-       else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_COUPON_NUMBER))
-         couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
-       else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_STORE_NUMBER))
-         storeNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
+       else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_COUPON_NUMBER)){
+         if(this.lengthCheck(8, entry.getValue()))
+           couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
+         else
+           System.err.println(lengthCheckMsg(8,entry.getKey()));
+       }
+       else if(entry.getKey().equalsIgnoreCase(COUPON_INQ_STORE_NUMBER)){
+         if(this.lengthCheck(5, entry.getValue()))
+           storeNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
+         else
+           System.err.println(lengthCheckMsg(5,entry.getKey()));
+       }
       }
     }
     
@@ -147,5 +156,19 @@ public class CouponInquiryParser
       sb.append(" ");
     }
     return sb.toString();
+  }
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + MercyConstants.INDICATOR_2AA7 + " length check failed for : " + field + " field, required " + length +" char(s)";
   }
 }
