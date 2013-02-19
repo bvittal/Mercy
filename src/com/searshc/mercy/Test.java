@@ -4,10 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import com.searshc.mercy.service.ResponseSeg60B1Validation;
 import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
@@ -17,22 +20,12 @@ public class Test
   
   private void testMethod(){
     
-    //indicator_60B1(segmentLevel=02,offerType=N,offerId=1808,financialCode=NIWP18MO00,thresholdDollarAmount=1.00,associateDiscountFlag=N,miscellaneousReductionsFlag=Y,instantRebateFlag=Y,mailInRebateFlag=Y,delayedBillingEndDateInterval=549,delayedBillingEndDate=null,registerPromoDescriptionLine1=null,registerPromoDescriptionLine2=null,nbrOfReceiptPromoDescriptionLines=4,promoDesc(desc(receiptPromoDescriptionLine=null),desc(receiptPromoDescriptionLine=null),desc(receiptPromoDescriptionLine=null),desc(receiptPromoDescriptionLine=null))
     StringBuilder baseBuilder = new StringBuilder();
     //baseBuilder.append("E8 30 30 33 35 32 39 39 35 30 30 30 30 33 31 30 32 30 30 33 30 53 4F 4E 59 20 44 53 43 54 39 2C 53 4E 59 20 30 20 53 4C 56 52 31 32 4D 50 2D 30 30 30 30 30 31 2D 30 30 30 30 30 31 33 20 20 30 30 30 30 30 30 10 08 00 90");
     baseBuilder.append("60 B1 30 32 4E 30 30 30 30 30 30 31 38 30 38 4E 49 57 50 31 38 4D 4F 30 30 30 30 30 30 31 4E 59 59 59 30 35 34 39 20 20 20 20 20 20 20 20 20 20 4E 4F 20 49 4E 54 45 52 45 53 54 20 46 4F 52 20 31 38 20 4D 4F 4E 54 48 53 20 20 20 20 20 4F 4E 20 54 48 49 53 20 50 55 52 43 48 41 53 45 20 20 20 20 20 20 20 20 20 20 20 20 20 20 34 4E 4F 20 49 4E 54 45 52 45 53 54 20 49 46 20 50 41 49 44 20 49 4E 20 46 55 4C 4C 20 57 49 54 48 49 4E 20 20 20 20 20 20 31 38 20 4D 4F 4E 54 48 53 20 44 45 46 45 52 52 45 44 20 49 4E 54 45 52 45 53 54 20 20 20 20 20 20 20 20 20 20 20 20 20 46 49 4E 41 4E 43 49 4E 47 20 57 48 45 4E 20 59 4F 55 20 55 53 45 20 59 4F 55 52 20 53 45 41 52 53 20 20 20 20 20 20 20 43 41 52 44 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20");
     
     ResponseSeg60B1Validation valid = new ResponseSeg60B1Validation(buildRequest(baseBuilder));
-    
-    String str = null;
-    
-    if(str.equalsIgnoreCase("Hello")){
-      System.out.println("Wow - True");
-    }else{
-      System.out.println("Oops - False");
-    }
-      
-    
+
     String indicator = "60 B1";
     String segmentLevel = "02";
     String offerType = "N";

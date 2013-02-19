@@ -65,7 +65,6 @@ public class ScriptCommandParser
         MercyConstants.INDICATOR_58B1,
         MercyConstants.INDICATOR_60B1,
         MercyConstants.INDICATOR_62B1,
-
         MercyConstants.INDICATOR_70A4,
         MercyConstants.INDICATOR_70B4,
         MercyConstants.INDICATOR_72A2,
@@ -90,17 +89,13 @@ public class ScriptCommandParser
     StringTokenizer tok2 = new StringTokenizer(tok1.nextToken(),"(");
     this.method = tok2.nextToken();
     (t1 = new StringTokenizer(commandLines)).nextToken();
-    StringTokenizer tok = new StringTokenizer(t1.nextToken(), "(),=", true);
+    String nxt = t1.nextToken(";");
+    StringTokenizer tok = new StringTokenizer(nxt, "()=,", true);
     
     boolean found = Boolean.FALSE;
     
-    if(!(method.equals("adjustprice") && action.equals("POST") || action.equals("RECV")))
-    {
-    int startingIndex = commandLines.indexOf("(");
-        if (startingIndex != -1){
-          int endingIndex = commandLines.indexOf(")", startingIndex);
-          if (endingIndex != -1){
-            String pattern = commandLines.substring(startingIndex + 1, endingIndex).replace(" ", "");
+    if(!(method.equals("adjustprice") && action.equals("POST") || action.equals("RECV"))){
+    		String pattern = this.getFormattedString(commandLines).replace(" ", "");
             for(int i=0; i<validIndicators.length; i++)
             {
               if(pattern.startsWith(validIndicators[i].trim()))
@@ -111,18 +106,15 @@ public class ScriptCommandParser
               }
             }
           }
-        }
-      }
             
     if(!found)
     {
      while(tok.hasMoreTokens())
      {
-      token = tok.nextToken();
-        //System.out.println("While loop token " + token);
+      token = tok.nextToken().trim();
         if(token.equals("(") || token.equals(","))
         {
-          String nextToken = tok.nextToken();
+          String nextToken = tok.nextToken().trim();
           //System.out.println("nextToken : " + nextToken);
         if(nextToken.equals(MercyPojo.ITEMS_KEY))
         {
@@ -387,7 +379,11 @@ public class ScriptCommandParser
   private void parseStringReqRespObject(MercyJsonObject mercyJsonObject)
   { 
     StringBuilder builder = new StringBuilder();
-    final String commandType = mercyJsonObject.getName();
+    String commandType = null;
+    
+    if(mercyJsonObject != null){
+    	commandType = mercyJsonObject.getName();
+  	}
     
       /**
       * File Inquiry D3
@@ -572,6 +568,17 @@ public class ScriptCommandParser
          this.byteArrayObj = builder;
        }  
      }    
-     
+   }
+  
+  private String getFormattedString(String input){
+	  int startingIndex = input.indexOf("(");
+      if (startingIndex != -1){
+        int endingIndex = input.indexOf(")", startingIndex);
+        if (endingIndex != -1){
+          String pattern = input.substring(startingIndex + 1, endingIndex);
+          return pattern;
+        }
+     }
+      return null;
    }
  }

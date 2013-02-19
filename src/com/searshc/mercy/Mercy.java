@@ -89,6 +89,7 @@ public class Mercy
 	private void execute(File file)
 	{
     List<String> commands = new ArrayList<String>();
+    StringBuilder lineBuilder = new StringBuilder();
     logger.info("Parsing script file...");
     try
     {
@@ -97,8 +98,19 @@ public class Mercy
       while (scanner.hasNextLine())
       {
         String line = scanner.nextLine(); 
-        if (!line.startsWith("#")){
-          commands.add(line);
+        System.out.println(line);
+        if (StringUtils.isNotBlank(line) && !line.startsWith("#")){
+        	if(line.endsWith(";")){
+        		if(lineBuilder != null && lineBuilder.length() > 0){
+        			lineBuilder.append(line.trim());
+        			commands.add(lineBuilder.toString());
+        			lineBuilder.setLength(0);
+        		}else{
+        			commands.add(line);
+        		}
+        	}else{
+        		lineBuilder.append(line);
+        	}
         }else{
           if(StringUtils.isNotBlank(line)){
             scenarioType = this.getScenarioType(line);
@@ -107,6 +119,7 @@ public class Mercy
           }
         }
       }
+      
 
       ScriptCommandParser cmdParser;      
       String action, method;
