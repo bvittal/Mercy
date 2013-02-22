@@ -13,6 +13,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.searshc.mercy.reports.beans.DataBean;
 import com.searshc.mercy.reports.engine.Reporter;
 import com.searshc.mercy.service.MercyConstants;
+import com.searshc.mercy.util.MercyTrace;
 import com.searshc.mercy.util.PropertyLoader;
 import com.searshc.mercy.util.MercyHttpServer;
 
@@ -44,11 +45,11 @@ public class Mercy
         System.out.println( "Waiting for 2000 ms to process more request(s) before exitting" );
         wait(2000);
         if(prop.getProperty("generateReport").equalsIgnoreCase("true")){
-          System.out.println( "Generating test results report, please wait..." ); 
+          System.err.println( "Generating test results report, please wait..." ); 
           final List<DataBean> dataBeanList = AbstractScriptResponseCommand.getReportData();
             if(dataBeanList.size() > 0){
               String url = reporter.generateReport(dataBeanList, testReportName);
-              System.out.println( "Report generated successfully at :" + url);
+              System.err.println( "Report generated successfully at :" + url);
             }
          }
       } catch (InterruptedException e) {
@@ -79,11 +80,23 @@ public class Mercy
 	public static void main(String[] args)
 	{ 
 	  String tag = args[0];
-	  String reportName = args[1]; 
+	  String reportName = args[1];
+	  String trace = args[2];
+	  if(StringUtils.isBlank(tag) && StringUtils.isBlank(reportName) && StringUtils.isBlank(trace)){
+		  System.err.println("Missing input parameters");
+		  System.exit(0);
+	  }else{
+	  if(trace.equalsIgnoreCase("-v"))
+		  MercyTrace.switchTraceOn(Boolean.TRUE);
+	  else if(trace.equalsIgnoreCase("-o"))
+		  MercyTrace.switchTraceOn(Boolean.FALSE);
+	  else
+		  System.err.println("Invalid input parameters");
 	  new Mercy(tag,reportName);
 	  final HttpServerThread httpServer = new HttpServerThread();
 	  Thread serverThread = new Thread(httpServer);
 	  serverThread.start();
+	  }
 	}
 	
 	private void execute(File file)

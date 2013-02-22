@@ -305,7 +305,7 @@ public class ScriptCommandParser
         {
           sb.append(commandLines.substring(startingIndex + 1, endingIndex));
         }
-          //System.out.println("ByteArray Request " + sb);
+          System.out.println("ScriptCommand Parser - ByteArray Request " + sb);
           this.byteArrayObj = sb;
        }
     }
@@ -313,9 +313,15 @@ public class ScriptCommandParser
   private boolean isValidResponse(String rsp)
   {
     if(rsp.equals("200") || rsp.equals("400") || rsp.equals("404") || 
-        rsp.equals("500") || rsp.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ) || 
+        rsp.equals("500") || 
+        rsp.contains(MercyConstants.REQUEST_INDICATOR_FILE_INQ) || 
+        rsp.contains(MercyConstants.REQUEST_INDICATOR_PLU_INQ) ||
+        rsp.contains(MercyConstants.REQUEST_INDICATOR_COUPON_INQ) ||
+        rsp.contains(MercyConstants.RESPONSE_INDICATOR_FILE_RESP) ||
+        rsp.contains(MercyConstants.RESPONSE_INDICATOR_PLU_RESP) ||
+        rsp.contains(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP)
+        /**
         rsp.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_PLU_RESP) ||
-        rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP) ||
         rsp.equals(MercyConstants.REQUEST_INDICATOR_C2C_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_C2C_RESP) ||
         rsp.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1) || rsp.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I2) ||
         rsp.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I3) || rsp.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I4) || 
@@ -325,7 +331,15 @@ public class ScriptCommandParser
         rsp.equals(MercyConstants.REQUEST_INDICATOR_C2C_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_C2C_RESP) || 
         rsp.equals(MercyConstants.REQUEST_INDICATOR_DLVRY_FEE_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_DLVRY_FEE_RESP) ||
         rsp.equals(MercyConstants.REQUEST_INDICATOR_DLVRY_PRC_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_DLVRY_PRC_RESP) ||
-        rsp.equals(MercyConstants.REQUEST_INDICATOR_INST_DLVRY_OFR_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_INST_DLVRY_OFR_RESP))
+        rsp.equals(MercyConstants.REQUEST_INDICATOR_INST_DLVRY_OFR_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_INST_DLVRY_OFR_RESP) ||
+        rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP) ||
+        rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I1) || rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I2) ||
+        rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I3) || rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I4) || 
+        rsp.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I5) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R1) ||
+        rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R2) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R3) ||
+        rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R4) || rsp.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R5)*/
+        
+        )
       
       return true;
     else
@@ -388,7 +402,7 @@ public class ScriptCommandParser
       /**
       * File Inquiry D3
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_FILE_INQ))
+     if(StringUtils.isNotBlank(commandType) && commandType.contains(MercyConstants.REQUEST_INDICATOR_FILE_INQ))
      {
        final FileInquiryParser fileInquiryParser = new FileInquiryParser();
        builder = fileInquiryParser.getFileInquiry(mercyJsonObject);
@@ -401,12 +415,7 @@ public class ScriptCommandParser
      /**
       * Plu Inquiry D8
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ)
-         || commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1) 
-         || commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I2) 
-         || commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I3) 
-         || commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I4) 
-         || commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I5))
+     if(StringUtils.isNotBlank(commandType) && commandType.contains(MercyConstants.REQUEST_INDICATOR_PLU_INQ))
      {
        final PluInquiryParser pluInquiryParser = new PluInquiryParser();
        builder = pluInquiryParser.getPluInquiry(mercyJsonObject);
@@ -419,7 +428,7 @@ public class ScriptCommandParser
      /**
       * Coupon Inquiry 2AA7
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_COUPON_INQ))
+     if(StringUtils.isNotBlank(commandType) && commandType.contains(MercyConstants.REQUEST_INDICATOR_COUPON_INQ))
      {
        final CouponInquiryParser couponInquiryParser = new CouponInquiryParser();
        builder = couponInquiryParser.getCouponInquiry(mercyJsonObject);
@@ -432,12 +441,7 @@ public class ScriptCommandParser
      /**
       * Plu Inquiry Response E8
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP)
-         || commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R1)
-         || commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R2)
-         || commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R3)
-         || commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R4)
-         || commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R5))
+     if(StringUtils.isNotBlank(commandType) && commandType.contains(MercyConstants.RESPONSE_INDICATOR_PLU_RESP))
      {
        final PluResponseParser pluResponseParser = new PluResponseParser();
        builder = pluResponseParser.getPluResponse(mercyJsonObject);
@@ -450,7 +454,7 @@ public class ScriptCommandParser
      /**
       * Coupon Inquiry Response 2AB7
       */
-     if(StringUtils.isNotBlank(commandType) && commandType.equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP))
+     if(StringUtils.isNotBlank(commandType) && commandType.contains(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP))
      {
        final CouponResponseParser couponResponseParser = new CouponResponseParser();
        builder = couponResponseParser.getCouponResponse(mercyJsonObject);

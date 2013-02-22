@@ -28,10 +28,100 @@ public class ScriptCommandFactory
     if(method.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ))
     {
       if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
-        return new HttpFileInqCommand(byteArrayObj);
+        return new HttpFILE_INQCommand(byteArrayObj);
       else
         return null;
     }
+    
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_FILE_RESP))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpFILE_RSPCommand(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I1))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpFILE_INQ1Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R1))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpFILE_RSP1Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I2))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpFILE_INQ2Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R2))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpFILE_RSP2Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I3))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpFILE_INQ3Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R3))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpFILE_RSP3Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I4))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpFILE_INQ4Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R4))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpFILE_RSP4Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I5))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpFILE_INQ5Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R5))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpFILE_RSP5Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    /**
     if(method.equals(MercyConstants.INDICATOR_PMP))
     {
       if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
@@ -52,13 +142,13 @@ public class ScriptCommandFactory
         return new HttpD00Command(byteArrayObj);
       else
         return null;
-    }
+    }*/
     
     //D8 Plu Inquiry
     if(method.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ))
     {
       if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
-        return new HttpPluInqCommand(byteArrayObj);
+        return new HttpPLU_INQCommand(byteArrayObj);
       else
         return null;
     }
@@ -66,7 +156,7 @@ public class ScriptCommandFactory
     if(method.equals(MercyConstants.RESPONSE_INDICATOR_PLU_RESP))
     {
       if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
-        return new HttpPluRspCommand(byteArrayObj);
+        return new HttpPLU_RSPCommand(byteArrayObj);
       else
         return null;
     }
@@ -155,14 +245,89 @@ public class ScriptCommandFactory
     if(method.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ))
     {
       if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
-        return new HttpCouponInqCommand(byteArrayObj);
+        return new HttpCOUPON_INQCommand(byteArrayObj);
       else
         return null;
     }
     if(method.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP))
     {
       if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
-        return new HttpCouponRspCommand(byteArrayObj);
+        return new HttpCOUPON_RSPCommand(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I1))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpCOUPON_INQ1Command(byteArrayObj);
+      else
+        return null;
+    }
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R1))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpCOUPON_RSP1Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I2))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpCOUPON_INQ2Command(byteArrayObj);
+      else
+        return null;
+    }
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R2))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpCOUPON_RSP2Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I3))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpCOUPON_INQ3Command(byteArrayObj);
+      else
+        return null;
+    }
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R3))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpCOUPON_RSP3Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I4))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpCOUPON_INQ4Command(byteArrayObj);
+      else
+        return null;
+    }
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R4))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpCOUPON_RSP4Command(byteArrayObj);
+      else
+        return null;
+    }
+    
+    if(method.equals(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I5))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_REQUEST))
+        return new HttpCOUPON_INQ5Command(byteArrayObj);
+      else
+        return null;
+    }
+    if(method.equals(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R5))
+    {
+      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
+        return new HttpCOUPON_RSP5Command(byteArrayObj);
       else
         return null;
     }

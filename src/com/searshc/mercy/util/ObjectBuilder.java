@@ -14,6 +14,7 @@ public class ObjectBuilder
 { 
   private static List<byte[]> scriptObjectList = new ArrayList<byte[]>();
   private static Map<String,byte[]> inquiryObjectMap = new HashMap<String,byte[]>();
+  private static Map<String,byte[]> responseObjectMap = new HashMap<String,byte[]>();
   
   public static List<byte[]> getObjects()
   {
@@ -27,15 +28,27 @@ public class ObjectBuilder
     }
   }
 
-  public static Map<String,byte[]> getInqObjects()
-  {
-    return inquiryObjectMap;
-  }
+	  public static Map<String,byte[]> getInqObjects()
+	  {
+	    return inquiryObjectMap;
+	  }
+	
+	  public static void setInqObjects(String indicator, byte [] buf)
+	  {
+	    if(StringUtils.isNotBlank(indicator) && buf != null){
+	      inquiryObjectMap.put(indicator, buf);
+	    }
+	  }
+    
+	  public static Map<String,byte[]> getRespObjects()
+	  {
+		return responseObjectMap;
+	  }
 
-  public static void setInqObjects(String indicator, byte [] buf)
-  {
-    if(StringUtils.isNotBlank(indicator) && buf != null){
-      inquiryObjectMap.put(indicator, buf);
-    }
-  }
+	  public static void setRespObjects(String indicator, byte [] buf)
+	  {
+		if(StringUtils.isNotBlank(indicator) && buf != null){
+			  responseObjectMap.put(indicator, buf);
+		}
+	  }
  }

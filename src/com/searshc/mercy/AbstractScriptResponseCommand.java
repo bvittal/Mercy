@@ -16,6 +16,7 @@ import org.codehaus.jackson.map.*;
 
 import com.searshc.mercy.reports.beans.DataBean;
 import com.searshc.mercy.service.MercyConstants;
+import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.ObjectBuilder;
 import com.searshc.mercy.validation.OrderResponseValidator;
 import com.upas.sears.service.domain.OrderResponse;
@@ -115,7 +116,7 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
               dataBean.setScenarioType(scenario);
               dataBean.setTestResults("PASS");
               dataBeanList.add(dataBean);
-              System.out.println(scenario + " : Test Result - PASS");
+              System.err.println("PASS - " + scenario);
               logger.info(scenario + " : Test Result - PASS");
               logger.info("\nProcessing next batch in script");
               recvdMethod = StringUtils.EMPTY;
@@ -128,7 +129,7 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
               dataBean.setScenarioType(scenario);
               dataBean.setTestResults("FAIL");
               dataBeanList.add(dataBean);
-              System.err.println(scenario + " : Test Result - FAIL");
+              System.err.println("FAIL - " + scenario);
               logger.info(scenario + " : Test Result - FAIL");
               logger.info("\nProcessing next batch in script");
               recvdMethod = StringUtils.EMPTY;
@@ -148,39 +149,20 @@ public abstract class AbstractScriptResponseCommand extends AbstractScriptComman
       { 
         if(StringUtils.isNotBlank(this.getMethod()) && !this.getMethod().equals("200"))
         { 
-          String indicator = this.getMethod();
+          String cmdType = this.getMethod();
           byte [] buffer = byteArrayConverter();
           
-          if(StringUtils.isNotBlank(indicator) && 
-              indicator.equalsIgnoreCase(MercyConstants.INDICATOR_PMP)){
-              if(buffer != null){
-                ObjectBuilder.setInqObjects(indicator, buffer);
-              }
-          }else if(StringUtils.isNotBlank(indicator) && 
-              indicator.equalsIgnoreCase(MercyConstants.INDICATOR_MP0)){
-            if(buffer != null){
-              ObjectBuilder.setInqObjects(indicator, buffer);
-            }
-          }else if(StringUtils.isNotBlank(indicator) && 
-              indicator.equalsIgnoreCase(MercyConstants.INDICATOR_D00)){
-            if(buffer != null){
-              ObjectBuilder.setInqObjects(indicator, buffer);
-            }
-          }else if(buffer != null && this.getMethod().equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1) || 
-              this.getMethod().equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1) || 
-              this.getMethod().equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I2) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I3) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I4) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I5) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R1) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R2) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R3) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R4) ||
-              this.getMethod().equalsIgnoreCase(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R5)){
-              ObjectBuilder.setInqObjects(this.getMethod(), buffer);
-          }
-          else if(buffer != null)
-            ObjectBuilder.setObjects(buffer);
+          if(StringUtils.isNotBlank(cmdType) && buffer != null && buffer.length > 0){
+        	  if(cmdType.contains(MercyConstants.REQUEST_INDICATOR_FILE_INQ) || 
+        		 cmdType.contains(MercyConstants.REQUEST_INDICATOR_PLU_INQ)	 ||	
+        		 cmdType.contains(MercyConstants.REQUEST_INDICATOR_COUPON_INQ)){
+        		  ObjectBuilder.setInqObjects(cmdType, buffer);
+        	  }else if(cmdType.contains(MercyConstants.RESPONSE_INDICATOR_FILE_RESP) || 
+        			   cmdType.contains(MercyConstants.RESPONSE_INDICATOR_PLU_RESP)	 ||	
+        			   cmdType.contains(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP)){
+        		  		ObjectBuilder.setRespObjects(cmdType, buffer);
+        	  	}
+          	}
         }
         else
         {

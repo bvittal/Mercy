@@ -313,14 +313,17 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 					  break;
 				   }
 				}
-			}
+			}else
+			  {
+				  results.put("No Adjustments", Boolean.FALSE);
+			  }
 			 
 		 
 			//dcadjustments Iterator start
 			  if(dcAdjustments != null && baseDcAdjustments != null)
 			  {
 			    for(Adjustment dcAdjustment : dcAdjustments)
-	        {
+			    {
 	          for(Adjustment basedcAdjustment : baseDcAdjustments)
 	          { 
 	          /**  
@@ -437,6 +440,9 @@ public class LineItemValidationCommand extends AbstractListValidationCommand
 						 break;
 	          }	 
 	        }
+			  }else
+			  {
+				  results.put("No DCAdjustments", Boolean.FALSE);
 			  }
 			  
 			  /**

@@ -1,6 +1,6 @@
 package com.searshc.mercy.service;
 
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,23 +19,25 @@ public class UPASResponseFinder
 {
   private static Logger logger = Logger.getLogger(UPASResponseFinder.class);
   private final UpasResponseParser parser = new UpasResponseParser();
-  private final List<byte[]> results = ObjectBuilder.getObjects();
   private final Map<String, byte[]> inquiryMap = ObjectBuilder.getInqObjects();
+  private final Map<String, byte[]> responseMap = ObjectBuilder.getRespObjects();
   
-  public byte[] findResponse(byte[] reqBuffer)
-  {
+  public byte[] findResponse(byte[] reqBuffer){
     final PluInquiryD8Segment pluReqInq = new PluInquiryD8Segment(reqBuffer);
     String pluItemNumber = pluReqInq.getPLUItemNumber();
     String pluSKU = pluReqInq.getPLUSKU();
     String pluDivisionNumber = pluReqInq.getPLUDivisionNumber();
     String d3respIndicator = StringUtils.EMPTY;
+    byte [] response = null;
+    
     if(reqBuffer != null){
       if (String.format("%02X", reqBuffer[0]).contains(MercyConstants.INDICATOR_D3)){
-        if (keyMatch("îPMP?????", byteToChar(reqBuffer))){
+    	if (keyMatch("îPMP?????", byteToChar(reqBuffer))){
           d3respIndicator = MercyConstants.INDICATOR_PMP;
           System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
         else if (keyMatch("îMP0000", byteToChar(reqBuffer))){
+          System.out.println("QMP - REQUEST - " + byteResponse(reqBuffer));
           d3respIndicator = MercyConstants.INDICATOR_MP0;
           System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
@@ -43,149 +45,104 @@ public class UPASResponseFinder
           d3respIndicator = MercyConstants.INDICATOR_D00;
           System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
-          return fileInquiryResponse(d3respIndicator);
+    	response = fileInquiryResponse(reqBuffer);
+    	if(response != null && this.validateResponse(response)){
+    		return response;
+    	}
       }else if (String.format("%02X", reqBuffer[0]).contains(MercyConstants.INDICATOR_D8)){
-        if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
-          if (pluSKU.equals("000") && pluDivisionNumber.equals("998") && pluItemNumber.equals("99999")){
+          if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
             System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
-            return pluInquiryEAResponse(MercyConstants.INDICATOR_EA);
-          }else 
-            if (pluSKU.equals("000") && pluDivisionNumber.equals("099") && pluItemNumber.equals("99999")){
-              System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
-            return pluInquiry98Response(MercyConstants.INDICATOR_98);
-          }else
-            if(StringUtils.isNotBlank(pluItemNumber) && StringUtils.isNotBlank(pluSKU) && StringUtils.isNotBlank(pluDivisionNumber)){
-              System.out.println("Request recieved for item no: " + pluDivisionNumber + pluItemNumber + pluSKU);
-            return pluInquiryResponse(pluDivisionNumber + pluItemNumber + pluSKU);
+            response = pluInquiryResponse(reqBuffer);
+            if(response != null && this.validateResponse(response)){
+            	return response;
+            }
           }
-        }
       }else if (String.format("%02X%02X", reqBuffer[0], reqBuffer[1]).contains(MercyConstants.INDICATOR_2AA7)){
           final CouponInquiry2AA7Segment segment = new CouponInquiry2AA7Segment(reqBuffer);
           String couponNumber = segment.getCouponNumber();
             if(StringUtils.isNotBlank(couponNumber)){
               System.out.println("Request recieved for coupon number: " + couponNumber);
-              return couponInquiryResponse(couponNumber);
+              response = couponInquiryResponse(couponNumber,reqBuffer);
+              if(response != null && this.validateResponse(response)){
+              	return response;
+              }
             }
-          }
-        }
+      	}
+    }
     return null;
   }
   
-  private byte[] fileInquiryResponse(String indicator){
-    byte [] fileInqResp = null;
-    if(inquiryMap != null){
-      if(StringUtils.isNotBlank(indicator)){
-        fileInqResp = inquiryMap.get(indicator);
-      }
+  private byte[] fileInquiryResponse(byte[] requestBuf){
+    if(inquiryMap != null && inquiryMap.size()>0){
+    	for (Map.Entry<String, byte[]> entry : inquiryMap.entrySet()){
+    		byte [] fileInquiryFrmScript = entry.getValue();
+    	 if(fileInquiryFrmScript != null && Arrays.equals(requestBuf, fileInquiryFrmScript)){
+    		 String key = entry.getKey();
+    		 if(MercyConstants.REQUEST_INDICATOR_FILE_INQ.equalsIgnoreCase(key))
+    			 return responseMap.get(MercyConstants.RESPONSE_INDICATOR_FILE_RESP);
+    		 else if(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I1.equalsIgnoreCase(key))
+    			 return responseMap.get(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R1);
+    		 else if(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I2.equalsIgnoreCase(key))
+    			 return responseMap.get(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R2);
+    		 else if(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I3.equalsIgnoreCase(key))
+    			 return responseMap.get(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R3);
+    		 else if(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I4.equalsIgnoreCase(key))
+    			 return responseMap.get(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R4);
+    		 else if(MercyConstants.REQUEST_INDICATOR_FILE_INQ_I5.equalsIgnoreCase(key))
+    			 return responseMap.get(MercyConstants.RESPONSE_INDICATOR_FILE_RESP_R5);
+    	  }
+       }
     }
-    return fileInqResp;
+    return null;
   }
   
-  private byte[] pluInquiryResponse(String itemNumber){
-    if(inquiryMap != null){
+  private byte[] pluInquiryResponse(byte[] requestBuf){
+    if(inquiryMap != null && inquiryMap.size()>0){
       for (Map.Entry<String, byte[]> entry : inquiryMap.entrySet()){
-        if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1.equalsIgnoreCase(entry.getKey()))
-          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
-            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
-          }
-        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I2.equalsIgnoreCase(entry.getKey()))
-          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
-            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
-          }
-        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I3.equalsIgnoreCase(entry.getKey()))
-          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
-            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
-          }
-        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I4.equalsIgnoreCase(entry.getKey()))
-          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
-            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
-          }
-        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I5.equalsIgnoreCase(entry.getKey()))
-          if(this.getPluResponseFromMap(entry.getKey(), itemNumber) != null){
-            return this.getPluResponseFromMap(entry.getKey(), itemNumber);
-          }
-       }
+    	  byte [] pluInquiryFrmScript = entry.getValue();
+    	if(pluInquiryFrmScript != null && Arrays.equals(requestBuf, pluInquiryFrmScript)){
+    	  String key = entry.getKey();
+    	if(MercyConstants.REQUEST_INDICATOR_PLU_INQ.equalsIgnoreCase(key))
+    		return responseMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP);
+        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1.equalsIgnoreCase(key))
+        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R1);
+        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I2.equalsIgnoreCase(key))
+        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R2);
+        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I3.equalsIgnoreCase(key))
+        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R3);
+        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I4.equalsIgnoreCase(key))
+        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R4);
+        else if(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I5.equalsIgnoreCase(key))
+        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R5);
+    	}
+      }
     }
    return null;
  }
   
-  private byte[] getPluResponseFromMap(String key, String itemNumber){
-    if(inquiryMap != null){
-      byte [] pluInq = inquiryMap.get(key);
-      if(pluInq != null){
-        PluInquiryD8Segment seg = new PluInquiryD8Segment(pluInq);
-        if(seg != null && StringUtils.isNotBlank(seg.getPLUDivisionNumber()) && 
-            StringUtils.isNotBlank(seg.getPLUItemNumber()) && 
-              StringUtils.isNotBlank(seg.getPLUSKU())){
-          String baseItemNumber = seg.getPLUDivisionNumber()+seg.getPLUItemNumber()+seg.getPLUSKU();
-          if(itemNumber.equalsIgnoreCase(baseItemNumber))
-            if(key.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I1))
-              return inquiryMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R1);
-            else if(key.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I2))
-              return inquiryMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R2);
-            else if(key.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I3))
-              return inquiryMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R3);
-            else if(key.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I4))
-              return inquiryMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R4);
-            else if(key.equalsIgnoreCase(MercyConstants.REQUEST_INDICATOR_PLU_INQ_I5))
-              return inquiryMap.get(MercyConstants.RESPONSE_INDICATOR_PLU_RESP_R5);
-          }
-        }
-      }
-    return null;
-  }
-  
-  private byte[] pluInquiryEAResponse(String indicator){
-    if(results.size() > 0){
-      Iterator<byte[]> itr = results.iterator();
-        while(itr.hasNext()){
-            byte buf[] = itr.next();
-            if(buf != null){
-              if (String.format("%02X", buf[0]).contains(indicator)){
-                if(validateResponse(buf))
-                  return buf;
-              }
-            }
-         }
-      }
-    return null;
-  }
-  
-  private byte[] pluInquiry98Response(String indicator){
-    if(results.size() > 0){
-      Iterator<byte[]> itr = results.iterator();
-        while(itr.hasNext()){
-            byte buf[] = itr.next();
-            if(buf != null){
-              if (String.format("%02X", buf[0]).contains(indicator)){
-                if(validateResponse(buf))
-                  return buf;
-              }
-            }
-         }
-      }
-    return null;
-  }
-  
-  private byte[] couponInquiryResponse(String requestCoupon){
-    if(results.size() > 0){
-      Iterator<byte[]> itr = results.iterator();
-        while(itr.hasNext()){
-            byte buf[] = itr.next();
-            if(buf != null){
-              if (String.format("%02X%02X", buf[0], buf[1]).contains(MercyConstants.INDICATOR_2AB7)){
-                final CouponInquiry2AA7Segment segment = new CouponInquiry2AA7Segment(buf);
-                String responseCoupon = segment.getCouponNumber();
-                if(StringUtils.isNotBlank(responseCoupon) && responseCoupon.equalsIgnoreCase(requestCoupon)){
-                  if(validateResponse(buf))
-                    return buf;
-                }
-              }
-            }
-         }
-      }
-    return null;
-  }
+  private byte[] couponInquiryResponse(String couponNumber, byte[] requestBuf){
+	    if(inquiryMap != null && inquiryMap.size()>0){
+	      for (Map.Entry<String, byte[]> entry : inquiryMap.entrySet()){
+	    	  byte [] couponInquiryFrmScript = entry.getValue();
+    	  if(couponInquiryFrmScript != null && Arrays.equals(requestBuf, couponInquiryFrmScript)){
+        	  String key = entry.getKey();
+	    	if(MercyConstants.REQUEST_INDICATOR_COUPON_INQ.equalsIgnoreCase(key))
+	    		  return responseMap.get(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP);
+		    else if(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I1.equalsIgnoreCase(key))
+		    	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R1);
+	        else if(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I2.equalsIgnoreCase(key))
+	        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R2);
+	        else if(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I3.equalsIgnoreCase(key))
+	        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R3);
+	        else if(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I4.equalsIgnoreCase(key))
+	        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R4);
+	        else if(MercyConstants.REQUEST_INDICATOR_COUPON_INQ_I5.equalsIgnoreCase(key))
+	        	return responseMap.get(MercyConstants.RESPONSE_INDICATOR_COUPON_RESP_R5);
+	       	}
+	      } 
+	    }
+	   return null;
+   }
 
   private boolean keyMatch(String key, char[] inquiry){
     KeyMatcher matcher = new KeyMatcher(key, inquiry);
@@ -194,11 +151,11 @@ public class UPASResponseFinder
   
   private boolean validateResponse(byte[] buf){
     try{
-      List<SegmentIndex> segIndexes = parser.parseResponse(buf); //just to check response is correct
+      List<SegmentIndex> segIndexes = parser.parseResponse(buf); //just to validate that response is correct
       if(segIndexes.size() > 0)
         return Boolean.TRUE;
     }catch(Exception ex){
-      System.out.println("Exception " + ex);
+      System.out.println("Response validation failed for : " + DecoderUtils.showByteResponse(buf) + " " + ex);
     }
     return Boolean.FALSE;
   }
