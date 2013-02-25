@@ -196,5 +196,14 @@ public class DecoderUtils
       }
     return os.toByteArray();
   }
+  
+  public static String showByteResponse(byte[] buffer){
+	    StringBuilder sb = new StringBuilder();
+	    for (byte b : buffer){
+	      sb.append(String.format("%02x", b).toUpperCase());
+	      sb.append(" ");
+	    }
+	    return sb.toString();
+	  }
 }
 

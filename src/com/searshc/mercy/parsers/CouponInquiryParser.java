@@ -137,6 +137,8 @@ public class CouponInquiryParser implements LengthCheck
     .append(" ")
     .append(segmentLength)
     .append(" ")
+    .append("00")
+    .append(" ")
     .append(this.byteResponse(couponNumber.getBytes()))
     .append(this.byteResponse(storeNumber.getBytes()));
     
