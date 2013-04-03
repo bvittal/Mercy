@@ -14,7 +14,7 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class InstantDeliveryOfferInquiryParser
+public class InstantDeliveryOfferInquiryParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(InstantDeliveryOfferInquiryParser.class);
   private static Properties prop;
@@ -144,12 +144,20 @@ public class InstantDeliveryOfferInquiryParser
             if(numOfItmModifiableMap.size() > 0)
             {
               for (Map.Entry<String, String> entry : numOfItmModifiableMap.entrySet())
-              { 
-                if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_INQ_ITM_COUNT_DIVISION))
-                  division = StringUtils.rightPad(entry.getValue(), 3);                
-                else if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_INQ_ITM_COUNT_ITEM_NUMBER))
-                  itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0'); 
-             
+              {                
+                if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_INQ_ITM_COUNT_DIVISION)){
+                  if(this.lengthCheck(3, entry.getValue()))
+                    division = StringUtils.rightPad(entry.getValue(), 3,'0');
+                  else
+                    System.err.println(lengthCheckMsg(3,entry.getKey()));
+                }
+                
+               if(entry.getKey().equalsIgnoreCase(INSTANT_DELIVERY_OFFER_INQ_ITM_COUNT_ITEM_NUMBER)){
+                if(this.lengthCheck(5, entry.getValue()))
+                  itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
+                else
+                  System.err.println(lengthCheckMsg(5,entry.getKey()));
+              }
                 }
               }
           
@@ -174,5 +182,20 @@ public class InstantDeliveryOfferInquiryParser
       sb.append(" ");
     }
     return sb.toString();
+  }
+  
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + MercyConstants.INDICATOR_11A6+ " length check failed for : " + field + " field, required " + length +" char(s)";
   }
 }

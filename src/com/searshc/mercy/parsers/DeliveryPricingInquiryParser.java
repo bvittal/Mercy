@@ -14,7 +14,7 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class DeliveryPricingInquiryParser
+public class DeliveryPricingInquiryParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(DeliveryPricingInquiryParser.class);
   private static Properties prop;
@@ -304,21 +304,43 @@ public class DeliveryPricingInquiryParser
             {
               for (Map.Entry<String, String> entry : numOfItmModifiableMap.entrySet())
               { 
-                if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_DIVISION))
-                  division = StringUtils.rightPad(entry.getValue(), 3);                
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_LINE))
-                  line = StringUtils.rightPad(entry.getValue(), 3,'0');
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE))
-                  subLine = StringUtils.rightPad(entry.getValue(), 3,'0');
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE_VAR))
-                  subLineVar = StringUtils.rightPad(entry.getValue(), 3,'0');
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_NUMBER))
-                  itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_QUANTITY))
-                  quantity = StringUtils.rightPad(entry.getValue(), 4,'0');
-                else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_SETUP_OPTION_SELECTED))
+                 if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_DIVISION)){
+                  if(this.lengthCheck(3, entry.getValue()))
+                    division = StringUtils.rightPad(entry.getValue(), 3,'0');
+                  else
+                    System.err.println(lengthCheckMsg(3,entry.getKey()));
+                }else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_LINE)){
+                  if(this.lengthCheck(3, entry.getValue()))
+                    line = StringUtils.rightPad(entry.getValue(), 3,'0');
+                  else
+                    System.err.println(lengthCheckMsg(3,entry.getKey()));
+                }else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE)){
+                  if(this.lengthCheck(3, entry.getValue()))
+                    subLine = StringUtils.rightPad(entry.getValue(), 3,'0');
+                  else
+                    System.err.println(lengthCheckMsg(3,entry.getKey()));
+               }if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_SUBLINE_VAR)){
+                 if(this.lengthCheck(3, entry.getValue()))
+                   subLineVar = StringUtils.rightPad(entry.getValue(), 3,'0');
+                 else
+                   System.err.println(lengthCheckMsg(3,entry.getKey()));
+               }else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_NUMBER)){
+                 if(this.lengthCheck(5, entry.getValue()))
+                   itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
+                 else
+                   System.err.println(lengthCheckMsg(5,entry.getKey()));
+               }else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_QUANTITY)){
+                 if(this.lengthCheck(5, entry.getValue()))
+                   quantity = StringUtils.rightPad(entry.getValue(), 5,'0');
+                 else
+                   System.err.println(lengthCheckMsg(5,entry.getKey()));
+              }else if(entry.getKey().equalsIgnoreCase(DELIVERY_PRICING_INQ_NUM_OF_ITMS_ITEM_SETUP_OPTION_SELECTED)){
+                if(this.lengthCheck(1, entry.getValue()))
                   itemSetupOptionSelected = StringUtils.rightPad(entry.getValue(), 1,'0');
-                
+                else
+                  System.err.println(lengthCheckMsg(1,entry.getKey()));
+             }              
+            
                 }
               }
           
@@ -348,4 +370,21 @@ public class DeliveryPricingInquiryParser
     }
     return sb.toString();
   }
+
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + MercyConstants.INDICATOR_72A2+ " length check failed for : " + field + " field, required " + length +" char(s)";
+  }
 }
+
+  

@@ -122,11 +122,17 @@ public class PluInquiryParser implements LengthCheck
            division = StringUtils.rightPad(entry.getValue(), 3,'0');
          else
            System.err.println(lengthCheckMsg(3,entry.getKey()));
-       }else if(entry.getKey().equalsIgnoreCase(PLU_INQ_ITEM_NUMBER))
-         itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_INQ_SKU))
-         sku = StringUtils.rightPad(entry.getValue(), 3,'0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_INQ_TYPE))
+       }else if(entry.getKey().equalsIgnoreCase(PLU_INQ_ITEM_NUMBER)){
+         if(this.lengthCheck(5, entry.getValue()))
+           itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
+         else
+           System.err.println(lengthCheckMsg(5,entry.getKey()));
+       }else if(entry.getKey().equalsIgnoreCase(PLU_INQ_SKU)){
+         if(this.lengthCheck(3, entry.getValue()))
+           sku = StringUtils.rightPad(entry.getValue(), 3,'0');
+         else
+           System.err.println(lengthCheckMsg(3,entry.getKey()));
+      }else if(entry.getKey().equalsIgnoreCase(PLU_INQ_TYPE))
        {
          inqType= entry.getValue();       
          if(StringUtils.isBlank(inqType) || inqType.equalsIgnoreCase("null"))

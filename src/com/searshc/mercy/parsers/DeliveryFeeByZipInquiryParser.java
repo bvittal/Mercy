@@ -13,7 +13,7 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class DeliveryFeeByZipInquiryParser
+public class DeliveryFeeByZipInquiryParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(DeliveryFeeByZipInquiryParser.class);
   private static Properties prop;
@@ -115,17 +115,33 @@ public class DeliveryFeeByZipInquiryParser
     if(modifiableMap.size() > 0)
     {
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
-      { 
-       if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_CLIENT_ID))
-         clientId = entry.getValue();
-       else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_USER_ID))
-         userId = entry.getValue();
-       else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_PASSWORD))
-         password = entry.getValue();
-       else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_SERIVICE_INDICATOR))
-         serviceIndicator = entry.getValue();
-       else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_ZIP_CODE))
-         zipCode = entry.getValue();
+      {         
+        if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_CLIENT_ID)){
+          if(this.lengthCheck(3, entry.getValue()))
+            clientId = StringUtils.rightPad(entry.getValue(), 3);
+          else
+            System.err.println(lengthCheckMsg(3,entry.getKey()));
+        }
+        else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_USER_ID)){
+          if(this.lengthCheck(8, entry.getValue()))
+            userId = StringUtils.rightPad(entry.getValue(), 8,'0');
+          else
+            System.err.println(lengthCheckMsg(8,entry.getKey()));
+        }
+        else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_PASSWORD)){
+          if(this.lengthCheck(8, entry.getValue()))
+            password = StringUtils.rightPad(entry.getValue(), 8);
+          else
+            System.err.println(lengthCheckMsg(8,entry.getKey()));
+        }
+        else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_SERIVICE_INDICATOR))
+          serviceIndicator = entry.getValue();        
+        else if(entry.getKey().equalsIgnoreCase(DELIVERY_FEE_BY_ZIP_INQ_ZIP_CODE)){
+          if(this.lengthCheck(5, entry.getValue()))
+            zipCode = StringUtils.rightPad(entry.getValue(), 5,'0');
+          else
+            System.err.println(lengthCheckMsg(5,entry.getKey()));
+        }      
       }
     }
     
@@ -153,5 +169,20 @@ public class DeliveryFeeByZipInquiryParser
       sb.append(" ");
     }
     return sb.toString();
+  }
+  
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + MercyConstants.INDICATOR_70A4+ " length check failed for : " + field + " field, required " + length +" char(s)";
   }
 }

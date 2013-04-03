@@ -15,7 +15,7 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class CouponResponseParser extends PluResponseParser
+public class CouponResponseParser extends PluResponseParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(CouponResponseParser.class);
   private static Properties prop;
@@ -453,24 +453,60 @@ public class CouponResponseParser extends PluResponseParser
            String secondByte = segmentLength.substring(2,4);
            segmentLength = firstByte + " " + secondByte;
          }
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SEGMENT_LEVEL))
-           segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_NUMBER))
-           couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_TYPE))
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SEGMENT_LEVEL)){
+           if(this.lengthCheck(2, entry.getValue()))
+             segmentLevel = StringUtils.rightPad(entry.getValue(), 2,StringUtils.EMPTY);
+           else
+             System.err.println(lengthCheckMsg(2,entry.getKey()));
+         }         
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_NUMBER)){
+           if(this.lengthCheck(8, entry.getValue()))
+            couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
+           else
+             System.err.println(lengthCheckMsg(8,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUPON_TYPE)){
+           if(this.lengthCheck(1, entry.getValue()))
            type = StringUtils.rightPad(entry.getValue(), 1);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_START_DATE))
+           else
+             System.err.println(lengthCheckMsg(1,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_START_DATE)){
+           if(this.lengthCheck(10, entry.getValue()))
            startDate = StringUtils.rightPad(entry.getValue(), 10);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_START_TIME))
+         else
+           System.err.println(lengthCheckMsg(10,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_START_TIME)){
+           if(this.lengthCheck(8, entry.getValue()))
            startTime = StringUtils.rightPad(entry.getValue(), 8);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_END_DATE))
+         else
+           System.err.println(lengthCheckMsg(8,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_END_DATE)){
+           if(this.lengthCheck(10, entry.getValue()))
            endDate = StringUtils.rightPad(entry.getValue(), 10);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_END_TIME))
-           endTime = StringUtils.rightPad(entry.getValue(), 8);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_TYPE))
+         else
+           System.err.println(lengthCheckMsg(10,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_END_TIME)){
+           if(this.lengthCheck(8, entry.getValue()))
+           endTime = StringUtils.rightPad(entry.getValue(), 8);           
+           else
+             System.err.println(lengthCheckMsg(8,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_TYPE)){
+           if(this.lengthCheck(1, entry.getValue()))
            reductionType = StringUtils.rightPad(entry.getValue(), 1);
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_AMOUNT))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_AMOUNT)){
+           if(this.lengthCheck(8, entry.getValue()))
            reductionAmount = StringUtils.leftPad(entry.getValue().replace(".", ""), 8,'0');
+         else
+           System.err.println(lengthCheckMsg(8,entry.getKey()));
+       }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REDUCTION_FLAG))
          {
            reductionFlag = entry.getValue();
@@ -485,42 +521,102 @@ public class CouponResponseParser extends PluResponseParser
            String secondByte = retailFormat.substring(2,4);
            retailFormat = firstByte + " " + secondByte;
          }
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUNT_COUPON))
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_COUNT_COUPON)){
+           if(this.lengthCheck(1, entry.getValue()))
            countCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_TRANSACTION))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_TRANSACTION)){
+           if(this.lengthCheck(1, entry.getValue()))
            oneCouponPerTransaction = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ONE_COUPON_PER_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            oneCouponPerItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SINGLE_USE_COUPON))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SINGLE_USE_COUPON)){
+           if(this.lengthCheck(1, entry.getValue()))
            singleUseCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INITIAL_PURCHASE_THRESHOLD))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INITIAL_PURCHASE_THRESHOLD)){
+           if(this.lengthCheck(5, entry.getValue()))
            initialPurchaseThreshold = StringUtils.rightPad(entry.getValue(), 5,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SIGNAL_ITEM))
+         else
+           System.err.println(lengthCheckMsg(5,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_SIGNAL_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            signalItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_PRICE_MATCH))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_PRICE_MATCH)){
+           if(this.lengthCheck(1, entry.getValue()))
            priceMatch = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_GREAT_VALUE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_GREAT_VALUE)){
+           if(this.lengthCheck(1, entry.getValue()))
            greatValue = StringUtils.rightPad(entry.getValue(), 1,'N');
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
          else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_MARKETING_CODE))
          {
            marketingCode = entry.getValue();
            if(StringUtils.isBlank(marketingCode) || marketingCode.equalsIgnoreCase("null"))
              marketingCode = StringUtils.rightPad(StringUtils.EMPTY, 24); 
          }
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ITEM_LEVEL_COUPON))
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_ITEM_LEVEL_COUPON)){
+           if(this.lengthCheck(1, entry.getValue()))
            itemLevelCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_MANAGER_APPROVAL_FLAG))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_MANAGER_APPROVAL_FLAG)){
+           if(this.lengthCheck(1, entry.getValue()))
            managerApprovalFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_FRIENDS_AND_FAMILY_COUPON))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_FRIENDS_AND_FAMILY_COUPON)){
+           if(this.lengthCheck(1, entry.getValue()))
            friendsAndFamilyCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_DISCOUNT_WITH_SEARS_CARD_COUPON))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_DISCOUNT_WITH_SEARS_CARD_COUPON)){
+           if(this.lengthCheck(1, entry.getValue()))
            discountWithSearsCardCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_VALID_WITH_ZERO_PERCENT_FINANCING))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_VALID_WITH_ZERO_PERCENT_FINANCING)){
+           if(this.lengthCheck(1, entry.getValue()))
            validWithZeroPercentFinancing = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REGULAR_PRICE_COUPON))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_REGULAR_PRICE_COUPON)){
+           if(this.lengthCheck(1, entry.getValue()))
            regularPriceCoupon = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_NBR_OF_INCL_EXCL))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_NBR_OF_INCL_EXCL)){
+           if(this.lengthCheck(3, entry.getValue()))
            nbrOfInclExcl = StringUtils.rightPad(entry.getValue(), 3);
+         else
+           System.err.println(lengthCheckMsg(3,entry.getKey()));
+       }
         }
       }
       
@@ -641,8 +737,12 @@ public class CouponResponseParser extends PluResponseParser
                 {
                   for (Map.Entry<String, String> entry : inclExclModifiableMap.entrySet())
                   { 
-                    if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SEQ_NUMBER))
+                    if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SEQ_NUMBER)){
+                      if(this.lengthCheck(3, entry.getValue()))
                       sequenceNumber = StringUtils.rightPad(entry.getValue(), 3);
+                      else
+                        System.err.println(lengthCheckMsg(3,entry.getKey()));
+                    }
                     else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_FLAG))
                     {
                       incExcFlag = entry.getValue();
@@ -651,16 +751,36 @@ public class CouponResponseParser extends PluResponseParser
                       else
                         incExcFlag = "E";
                     }
-                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_DIVISION_NUMBER))
+                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_DIVISION_NUMBER)){
+                      if(this.lengthCheck(3, entry.getValue()))
                       divisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
-                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_LINE_NUMBER))
+                      else
+                        System.err.println(lengthCheckMsg(3,entry.getKey()));
+                    }
+                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_LINE_NUMBER)){
+                      if(this.lengthCheck(2, entry.getValue()))
                       lineNumber = StringUtils.rightPad(entry.getValue(), 2,'0');
-                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SUB_LINE_NUMBER))
+                      else
+                        System.err.println(lengthCheckMsg(2,entry.getKey()));
+                    }
+                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SUB_LINE_NUMBER)){
+                      if(this.lengthCheck(2, entry.getValue()))
                       subLineNumber = StringUtils.rightPad(entry.getValue(), 2,'0');
-                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SUB_LINE_VARIABLE))
+                      else
+                        System.err.println(lengthCheckMsg(2,entry.getKey()));
+                    }
+                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_SUB_LINE_VARIABLE)){
+                      if(this.lengthCheck(3, entry.getValue()))
                       subLineVariable = StringUtils.rightPad(entry.getValue(), 3,'0');
-                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_ITEM_NUMBER))
+                      else
+                        System.err.println(lengthCheckMsg(3,entry.getKey()));
+                    }
+                    else if(entry.getKey().equalsIgnoreCase(COUPON_RESP_INCL_EXCL_ITEM_NUMBER)){
+                      if(this.lengthCheck(5, entry.getValue()))
                       itemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
+                      else
+                        System.err.println(lengthCheckMsg(5,entry.getKey()));
+                    }
                     }
                   }
               
@@ -691,4 +811,20 @@ public class CouponResponseParser extends PluResponseParser
     }
     return sb.toString();
   }
+
+
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
   }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + MercyConstants.INDICATOR_2AB7+ " length check failed for : " + field + " field, required " + length +" char(s)";
+  }
+}
