@@ -21,6 +21,7 @@ public class UPASResponseFinder
   private final UpasResponseParser parser = new UpasResponseParser();
   private final Map<String, byte[]> inquiryMap = ObjectBuilder.getInqObjects();
   private final Map<String, byte[]> responseMap = ObjectBuilder.getRespObjects();
+  private final SegmentFactory factory = new SegmentFactory();
   
   public byte[] findResponse(byte[] reqBuffer){
     final PluInquiryD8Segment pluReqInq = new PluInquiryD8Segment(reqBuffer);
@@ -47,6 +48,7 @@ public class UPASResponseFinder
         }
     	response = fileInquiryResponse(reqBuffer);
     	if(response != null && this.validateResponse(response)){
+    	  factory.getSegment(d3respIndicator, response);
     		return response;
     	}
       }else if (String.format("%02X", reqBuffer[0]).contains(MercyConstants.INDICATOR_D8)){
