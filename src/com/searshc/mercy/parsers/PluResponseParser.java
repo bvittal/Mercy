@@ -17,10 +17,11 @@ import com.searshc.mercy.service.MercyConstants;
 import com.searshc.mercy.util.DecoderUtils;
 import com.searshc.mercy.util.PropertyLoader;
 
-public class PluResponseParser
+public class PluResponseParser implements LengthCheck
 {
   private static Logger logger = Logger.getLogger(PluResponseParser.class);
   private static Properties prop;
+  private String indicatorMsg = StringUtils.EMPTY;
   
   private static final String SEGMENT_LEVEL = "segmentLevel";
   private static final String SEGMENT_LENGTH = "segmentLength";
@@ -434,6 +435,8 @@ public class PluResponseParser
     String pluErrorType = StringUtils.EMPTY;
     String pluMessage = StringUtils.EMPTY;
     
+    indicatorMsg = indicator;
+    
     final Map<String, String> pluResponseEAMap = mercyJsonObject.getParameters();
     final Map<String, String> modifiableMap = new HashMap<String,String>();
     final StringBuilder sb = new StringBuilder();
@@ -501,6 +504,8 @@ public class PluResponseParser
       String biasCount = StringUtils.EMPTY;
       String commitedQuantity = StringUtils.EMPTY;
       String productRegistrationFlags = StringUtils.EMPTY;
+      
+      indicatorMsg = indicator;
       
       final Map<String, String> pluInquiryE8Map = mercyJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -642,39 +647,89 @@ public class PluResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_DIVISION_NUMBER))
-           pluDivisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_NUMBER))
+          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_DIVISION_NUMBER)){
+            if(this.lengthCheck(3, entry.getValue()))
+            pluDivisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
+          else
+            System.err.println(lengthCheckMsg(3,entry.getKey()));
+        }         
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_NUMBER)){
+           if(this.lengthCheck(5, entry.getValue()))
            pluItemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SKU))
+           else
+             System.err.println(lengthCheckMsg(5,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SKU)){
+           if(this.lengthCheck(3, entry.getValue()))
            pluSku = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_LINE_NUMBER))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_LINE_NUMBER)){
+           if(this.lengthCheck(3, entry.getValue()))
            pluLineNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SUBLINE_NUMBER))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SUBLINE_NUMBER)){
+           if(this.lengthCheck(3, entry.getValue()))
            pluSubLineNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SUBLINE_VARIABLE_NUMBER))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SUBLINE_VARIABLE_NUMBER)){
+           if(this.lengthCheck(3, entry.getValue()))
            pluSubLineVariableNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_DESCRIPTION)){
            if(StringUtils.isBlank(pluItemDescription) || pluItemDescription.equalsIgnoreCase("null")){
              pluItemDescription = StringUtils.leftPad(StringUtils.EMPTY, 25,StringUtils.EMPTY);
            }
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_REGULAR_PRICE)){
-             pluRegularPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');
+           if(this.lengthCheck(7, entry.getValue()))
+             pluRegularPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');     
+           else
+             System.err.println(lengthCheckMsg(7,entry.getKey()));
          }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE)){
-             pluPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');
+           if(this.lengthCheck(7, entry.getValue()))
+             pluPrice = StringUtils.leftPad(entry.getValue().replace(".", ""), 7,'0');   
+           else
+             System.err.println(lengthCheckMsg(7,entry.getKey()));
          }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE_TYPE))
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRICE_TYPE)){
+           if(this.lengthCheck(1, entry.getValue()))
            pluPriceType = StringUtils.rightPad(entry.getValue(), 1,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SOURCE_ORDER_PROCESSING_TIME))
+           else
+             System.err.println(lengthCheckMsg(1,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SOURCE_ORDER_PROCESSING_TIME)){
+           if(this.lengthCheck(2, entry.getValue()))
            sourceOrderProcessingTime = StringUtils.rightPad(entry.getValue(), 2,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_BIAS_COUNT))
+           else
+             System.err.println(lengthCheckMsg(2,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_BIAS_COUNT)){
+           if(this.lengthCheck(3, entry.getValue()))
            biasCount =  StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_COMMITED_QUANTITY))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_COMMITED_QUANTITY)){
+           if(this.lengthCheck(3, entry.getValue()))
            commitedQuantity =  StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRODUCT_REG_FLAGS))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_PRODUCT_REG_FLAGS)){
+           if(this.lengthCheck(4, entry.getValue()))
            productRegistrationFlags =  StringUtils.rightPad(entry.getValue(), 4,'0');
+           else
+             System.err.println(lengthCheckMsg(4,entry.getKey()));
+         }
         }
       }
       sb.append(indicator)
@@ -708,6 +763,7 @@ public class PluResponseParser
       String pluSku = StringUtils.EMPTY;
       String pluResponseTypeCode = StringUtils.EMPTY;
       
+      indicatorMsg = indicator;
       
       final Map<String, String> pluInquiryE9Map = mercyJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -759,14 +815,30 @@ public class PluResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_DIVISION_NUMBER))
-           pluDivisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_NUMBER))
+          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_DIVISION_NUMBER)){
+            if(this.lengthCheck(3, entry.getValue()))
+            pluDivisionNumber = StringUtils.rightPad(entry.getValue(), 3,'0');
+          else
+            System.err.println(lengthCheckMsg(3,entry.getKey()));
+        }          
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_NUMBER)){
+           if(this.lengthCheck(5, entry.getValue()))
            pluItemNumber = StringUtils.rightPad(entry.getValue(), 5,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SKU))
+           else
+             System.err.println(lengthCheckMsg(5,entry.getKey()));
+         } 
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_SKU)){
+           if(this.lengthCheck(3, entry.getValue()))
            pluSku = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_RESPONSE_TYPE_CODE))
-           pluResponseTypeCode = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+         else
+           System.err.println(lengthCheckMsg(3,entry.getKey()));
+       } 
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_RESPONSE_TYPE_CODE)){
+           if(this.lengthCheck(3, entry.getValue()))
+           pluResponseTypeCode = StringUtils.rightPad(entry.getValue(), 3, StringUtils.EMPTY);
+         else
+           System.err.println(lengthCheckMsg(3,entry.getKey()));
+       } 
         }
       }
       
@@ -813,6 +885,8 @@ public class PluResponseParser
       String markdownTypeCode = StringUtils.EMPTY;
       String markdownAmountPercent = StringUtils.EMPTY;
       String futurePurchaseCouponDesc = StringUtils.EMPTY;
+      
+      indicatorMsg = indicator;
       
       final Map<String, String> pluResponse98Map = mercyJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -1248,6 +1322,8 @@ public class PluResponseParser
     String pluGroupQuantity = StringUtils.EMPTY;
     String pluGroupPrice = StringUtils.EMPTY;
     
+    indicatorMsg = indicator;
+    
     final Map<String, String> pluResponseECMap = mercyJsonObject.getParameters();
     final Map<String, String> modifiableMap = new HashMap<String,String>();
     final StringBuilder sb = new StringBuilder();
@@ -1307,19 +1383,35 @@ public class PluResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_ID))
-             pluGroupId = StringUtils.rightPad(entry.getValue(), 7, '0');
+          if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_ID)){
+            if(this.lengthCheck(7, entry.getValue()))
+              pluGroupId = StringUtils.rightPad(entry.getValue(), 7,'0');
+          else
+            System.err.println(lengthCheckMsg(7,entry.getKey()));
+        }         
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_ITEM_FLAG)){
              pluItemFlag = entry.getValue();
            if(pluItemFlag.equalsIgnoreCase("null"))
              pluItemFlag = StringUtils.rightPad(StringUtils.EMPTY, 1);
          }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_TYPE))
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_TYPE)){
+           if(this.lengthCheck(1, entry.getValue()))
              pluGroupType = StringUtils.rightPad(entry.getValue(), 1, '1');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY))
+           else
+             System.err.println(lengthCheckMsg(1,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_QUANTITY)){
+           if(this.lengthCheck(3, entry.getValue()))
              pluGroupQuantity = StringUtils.leftPad(entry.getValue(), 3, '0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_GROUP_PRICE)){
+           if(this.lengthCheck(7, entry.getValue()))
              pluGroupPrice = StringUtils.leftPad(entry.getValue().replace(".", StringUtils.EMPTY), 7,'0');
+           else
+             System.err.println(lengthCheckMsg(7,entry.getKey()));
+         }
          }
        }
       
@@ -1381,6 +1473,8 @@ public class PluResponseParser
     String freeDeliveryZeroPercentFlag = StringUtils.EMPTY;
     String rebateMethodCode = StringUtils.EMPTY;
     String filler = StringUtils.EMPTY;
+    
+    indicatorMsg = indicator;
     
     final Map<String, String> pluResponse95Map = mercyJsonObject.getParameters();
     final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -2069,6 +2163,8 @@ public class PluResponseParser
       String messageTypeCode = StringUtils.EMPTY;
       String messageText = StringUtils.EMPTY;
       
+      indicatorMsg = indicator;
+      
       
       final Map<String, String> pluInquiry9CMap = mercyJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -2120,12 +2216,24 @@ public class PluResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH))
-           segmentLength = StringUtils.rightPad(entry.getValue(), 2,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_KEY))
+          if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH)){
+            if(this.lengthCheck(2, entry.getValue()))
+              segmentLength = StringUtils.rightPad(entry.getValue(), 2,'0');
+          else
+            System.err.println(lengthCheckMsg(2,entry.getKey()));
+        }         
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_KEY)){
+           if(this.lengthCheck(3, entry.getValue()))
            messageKey = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_TYPE_CODE))
+           else
+             System.err.println(lengthCheckMsg(3,entry.getKey()));
+         } 
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_TYPE_CODE)){
+           if(this.lengthCheck(2, entry.getValue()))
            messageTypeCode = StringUtils.rightPad(entry.getValue(), 2,'0');
+           else
+             System.err.println(lengthCheckMsg(2,entry.getKey()));
+         } 
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_TEXT)){
            messageText = StringUtils.rightPad(entry.getValue(), 3,'0');
            if(StringUtils.isBlank(messageText) || messageText.equalsIgnoreCase("null"))
@@ -2174,6 +2282,8 @@ public class PluResponseParser
       String unusedTwo = StringUtils.EMPTY;
       String restockingFeePercent = StringUtils.EMPTY;
       String cancellationFeePercent = StringUtils.EMPTY;
+      
+      indicatorMsg = indicator;
       
       final Map<String, String> pluInquiry40BAMap = mercyJsonObject.getParameters();
       final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -2396,52 +2506,144 @@ public class PluResponseParser
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH))
+         if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH)){
+           if(this.lengthCheck(3, entry.getValue()))
            segmentLength = StringUtils.rightPad(entry.getValue(), 3,'0');
-         else if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
+         else
+           System.err.println(lengthCheckMsg(3,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL)){
+           if(this.lengthCheck(2, entry.getValue()))
            segmentLevel = StringUtils.rightPad(entry.getValue(), 2,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_TAX_STATUS_CODE))
+         else
+           System.err.println(lengthCheckMsg(2,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_TAX_STATUS_CODE)){
+           if(this.lengthCheck(1, entry.getValue()))
            taxStatusCode = StringUtils.rightPad(StringUtils.EMPTY, 1,StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILL_FLOOR_ELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILL_FLOOR_ELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            fillFloorEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SKU991_ELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SKU991_ELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            sku991Eligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_ONE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_ONE)){
+           if(this.lengthCheck(1, entry.getValue()))
            unusedOne = StringUtils.rightPad(StringUtils.EMPTY, 1,StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_EXCEPTIONAL_VALUE_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_EXCEPTIONAL_VALUE_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            exceptionalValueItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PA_REPLACEMENT_ELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PA_REPLACEMENT_ELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            paReplacementEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SIGNAL_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SIGNAL_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            signalItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_ELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_ELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            restockingFeeEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CANCELLATION_FEE_ELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CANCELLATION_FEE_ELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            cancellationFeeEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PREPAID_CARD_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PREPAID_CARD_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            prepaidCardItem = StringUtils.rightPad(entry.getValue(), 1,StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CONVERTER_BOX_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CONVERTER_BOX_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            converterBoxItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_IIAS_ELIGIBLE_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_IIAS_ELIGIBLE_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            iiasEligibleItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_INELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_INELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            associateDiscountIneligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SUBSCRIPTION_PLAN_ELIGIBLE))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SUBSCRIPTION_PLAN_ELIGIBLE)){
+           if(this.lengthCheck(1, entry.getValue()))
            subscriptionPlanEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THIRD_PARTY_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THIRD_PARTY_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            thirdPartyItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ALPHALINE_ENTERTAINMENT_ITEM))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ALPHALINE_ENTERTAINMENT_ITEM)){
+           if(this.lengthCheck(1, entry.getValue()))
            alphalineEntertainmentItem = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SYWR_REDEMPTION_EXCLUSION))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SYWR_REDEMPTION_EXCLUSION)){
+           if(this.lengthCheck(1, entry.getValue()))
            sywrRedemptionExclusion = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SYWR_REDEMPTION_AFTER_TAX_FLAG))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SYWR_REDEMPTION_AFTER_TAX_FLAG)){
+           if(this.lengthCheck(1, entry.getValue()))
            sywrRedemptionAfterTaxFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_TWO))
+         else
+           System.err.println(lengthCheckMsg(1,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_TWO)){
+           if(this.lengthCheck(2, entry.getValue()))
            unusedTwo = StringUtils.rightPad(StringUtils.EMPTY, 2,StringUtils.EMPTY);
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_PERCENT))
+         else
+           System.err.println(lengthCheckMsg(2,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_PERCENT)){
+           if(this.lengthCheck(2, entry.getValue()))
            restockingFeePercent = StringUtils.rightPad(entry.getValue(), 2,'0');
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CANCELLATION_FEE_PERCENT))
+         else
+           System.err.println(lengthCheckMsg(2,entry.getKey()));
+       }
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CANCELLATION_FEE_PERCENT)){
+           if(this.lengthCheck(2, entry.getValue()))
            cancellationFeePercent = StringUtils.rightPad(entry.getValue(), 2,'0');
+         else
+           System.err.println(lengthCheckMsg(2,entry.getKey()));
+       }
         }
       }
       
@@ -2486,6 +2688,8 @@ public class PluResponseParser
     String installationCutOffTime = StringUtils.EMPTY;
     String longItemDescription = StringUtils.EMPTY;
     
+    indicatorMsg = indicator;
+    
     final Map<String, String> pluResponse58B1Map = mercyJsonObject.getParameters();
     final Map<String, String> modifiableMap = new HashMap<String,String>();
     final StringBuilder sb = new StringBuilder();
@@ -2526,12 +2730,24 @@ public class PluResponseParser
     {
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
-       if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLER_LEAD_TIME_VALUE))
+       if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLER_LEAD_TIME_VALUE)){
+         if(this.lengthCheck(2, entry.getValue()))
          installerLeadTimeValue = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_CUTOFF_TIME))
+       else
+         System.err.println(lengthCheckMsg(2,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_CUTOFF_TIME)){
+         if(this.lengthCheck(4, entry.getValue()))
          installationCutOffTime = StringUtils.rightPad(entry.getValue(), 4, StringUtils.EMPTY);
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_LONG_ITEM_DESCRIPTION))
+       else
+         System.err.println(lengthCheckMsg(4,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_LONG_ITEM_DESCRIPTION)){
+         if(this.lengthCheck(182, entry.getValue()))
          longItemDescription = StringUtils.rightPad(StringUtils.EMPTY, 182, StringUtils.EMPTY);
+       else
+         System.err.println(lengthCheckMsg(182,entry.getKey()));
+     }
       }
     }
     
@@ -2568,6 +2784,7 @@ public class PluResponseParser
     String nbrOfReceiptPromoDescriptionLines = StringUtils.EMPTY;
     
     String receiptPromoDescriptionLine = StringUtils.EMPTY;
+    indicatorMsg = indicator;
     
     
     final Map<String, String> pluResponse60B1Map = mercyJsonObject.getParameters();
@@ -2707,24 +2924,60 @@ public class PluResponseParser
     {
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
-       if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
+       if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL)){
+         if(this.lengthCheck(2, entry.getValue()))
          segmentLevel = StringUtils.rightPad(entry.getValue(), 2,'0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_TYPE))
+       else
+         System.err.println(lengthCheckMsg(2,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_TYPE)){
+         if(this.lengthCheck(1, entry.getValue()))
          offerType = StringUtils.rightPad(entry.getValue(), 1,'N');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_ID))
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_ID)){
+         if(this.lengthCheck(10, entry.getValue()))
          offerId = StringUtils.leftPad(entry.getValue(), 10,'0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FINANCIAL_CODE))
+       else
+         System.err.println(lengthCheckMsg(10,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FINANCIAL_CODE)){
+         if(this.lengthCheck(10, entry.getValue()))
          financialCode = StringUtils.rightPad(entry.getValue(), 10,'0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THRESHOLD_DOLLAR_AMOUNT))
+       else
+         System.err.println(lengthCheckMsg(10,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THRESHOLD_DOLLAR_AMOUNT)){
+         if(this.lengthCheck(5, entry.getValue()))
          thresholdDollarAmount = StringUtils.leftPad(entry.getValue().replace(".",""), 5);
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_FLAG))
+       else
+         System.err.println(lengthCheckMsg(5,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATE_DISCOUNT_FLAG)){
+         if(this.lengthCheck(1, entry.getValue()))
          associateDiscountFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MISCELLANEOUS_REDUCTION_FLAG))
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MISCELLANEOUS_REDUCTION_FLAG)){
+         if(this.lengthCheck(1, entry.getValue()))
          miscellaneousReductionsFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTANT_REBATE_FLAG))
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTANT_REBATE_FLAG)){
+         if(this.lengthCheck(1, entry.getValue()))
          instantRebateFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAILIN_REBATE_FLAG))
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAILIN_REBATE_FLAG)){
+         if(this.lengthCheck(1, entry.getValue()))
          mailInRebateFlag = StringUtils.rightPad(entry.getValue(), 1,'N');
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELAYED_BILLING_END_DATE_INTERVAL)){
          delayedBillingEndDateInterval = entry.getValue();
          if(delayedBillingEndDateInterval.equalsIgnoreCase("null"))
@@ -2737,12 +2990,24 @@ public class PluResponseParser
            delayedBillingEndDate = StringUtils.rightPad(StringUtils.EMPTY, 10);
          else
            delayedBillingEndDate = StringUtils.rightPad(entry.getValue(), 10, '0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE1))
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE1)){
+         if(this.lengthCheck(30, entry.getValue()))
          registerPromoDescriptionLine1 = StringUtils.leftPad(StringUtils.EMPTY, 30, StringUtils.EMPTY);
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE2))
+       else
+         System.err.println(lengthCheckMsg(30,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGISTER_PROMO_DESCRIPTION_LINE2)){
+         if(this.lengthCheck(30, entry.getValue()))
          registerPromoDescriptionLine2 = StringUtils.leftPad(StringUtils.EMPTY, 30, StringUtils.EMPTY);
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_NBR_OF_RECEIPT_PROMO_DESC_LINES))
+       else
+         System.err.println(lengthCheckMsg(30,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_NBR_OF_RECEIPT_PROMO_DESC_LINES)){
+         if(this.lengthCheck(1, entry.getValue()))
          nbrOfReceiptPromoDescriptionLines = StringUtils.rightPad(entry.getValue(), 1,'1');
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
       }
     }
     
@@ -2792,8 +3057,12 @@ public class PluResponseParser
               {
                 for (Map.Entry<String, String> entry : promoDescLinesModifiableMap.entrySet())
                 { 
-                  if(entry.getKey().equalsIgnoreCase(PLU_RESP_RECEIPT_PROMO_DESC_LINE))
+                  if(entry.getKey().equalsIgnoreCase(PLU_RESP_RECEIPT_PROMO_DESC_LINE)){
+                    if(this.lengthCheck(40, entry.getValue()))
                     receiptPromoDescriptionLine = StringUtils.leftPad(StringUtils.EMPTY, 40, StringUtils.EMPTY);
+                    else
+                      System.err.println(lengthCheckMsg(40,entry.getKey()));
+                  }
                 }
               }
             sb.append(this.byteResponse(receiptPromoDescriptionLine.getBytes()));
@@ -2815,6 +3084,8 @@ public class PluResponseParser
     String minimumAgeValue = StringUtils.EMPTY;
     String maximumQuantityValue = StringUtils.EMPTY;
     String itemMatchIndicator = StringUtils.EMPTY;
+    
+    indicatorMsg = indicator;
     
     final Map<String, String> pluResponse62B1Map = mercyJsonObject.getParameters();
     final Map<String, String> modifiableMap = new HashMap<String,String>();
@@ -2874,16 +3145,36 @@ public class PluResponseParser
     {
       for (Map.Entry<String, String> entry : modifiableMap.entrySet())
       { 
-       if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL))
+       if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL)){
+         if(this.lengthCheck(2, entry.getValue()))
          segmentLevel = StringUtils.rightPad(entry.getValue(), 2, '0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTRICTION_TYPE))
+       else
+         System.err.println(lengthCheckMsg(2,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTRICTION_TYPE)){
+         if(this.lengthCheck(1, entry.getValue()))
          restrictionType = StringUtils.rightPad(entry.getValue(), 1, '1');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_AGE_VALUE))
+       else
+         System.err.println(lengthCheckMsg(1,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MINIMUM_AGE_VALUE)){
+         if(this.lengthCheck(3, entry.getValue()))
          minimumAgeValue = StringUtils.rightPad(entry.getValue(), 3, '0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY_VALUE))
+       else
+         System.err.println(lengthCheckMsg(3,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAXIMUM_QUANTITY_VALUE)){
+         if(this.lengthCheck(3, entry.getValue()))
          maximumQuantityValue = StringUtils.rightPad(entry.getValue(), 3, '0');
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ITEM_MATCH_INDICATOR))
+       else
+         System.err.println(lengthCheckMsg(3,entry.getKey()));
+     }
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ITEM_MATCH_INDICATOR)){
+         if(this.lengthCheck(2, entry.getValue()))
          itemMatchIndicator = StringUtils.rightPad(entry.getValue(), 2, '0');
+       else
+         System.err.println(lengthCheckMsg(2,entry.getKey()));
+     }
       }
     }
     
@@ -2909,5 +3200,19 @@ public class PluResponseParser
       sb.append(" ");
     }
     return sb.toString();
+  }
+  @Override
+  public boolean lengthCheck(int length, String field)
+  {
+   if(!(StringUtils.isNotBlank(field) && field.length() > length)){
+     return Boolean.TRUE;
+   }
+    return Boolean.FALSE;
+  }
+
+  @Override
+  public String lengthCheckMsg(int length, String field)
+  {
+    return "Indicator : " + indicatorMsg+ " length check failed for : " + field + " field, required " + length +" char(s)";
   }
 }
