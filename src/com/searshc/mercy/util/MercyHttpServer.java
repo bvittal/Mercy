@@ -81,6 +81,7 @@ class EchoHandler implements HttpHandler
         int endPosition = findXMLHeaderEnd(requestBuffer);
         byte[] buffer = new byte[requestBuffer.length - endPosition];
         buffer = Arrays.copyOfRange(requestBuffer, endPosition, requestBuffer.length);
+        System.out.println("@@@@@@@@ REQUEST RECIEVED : " + byteResponse(buffer));
         byte[] inquryResp = finder.findResponse(buffer);
         
         if(inquryResp != null){

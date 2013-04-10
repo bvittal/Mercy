@@ -76,6 +76,22 @@ public abstract class AbstractScriptCommand
   public static final String INCOMPATIBILITY_REASON_PROMO_CODES = "incompPromoCodes";
   public static final String INCOMPATIBILITY_REASON_COUPON_CODES = "incompCouponCodes";
   
+  /** Rebates */
+  public static final String REBATES = "rebates";
+  public static final String REBATES_ID = "id";
+  public static final String REBATES_AMOUNT = "amount";
+  
+  /**
+  public static final String REBATE_THRESHOLD = "threshold";
+  public static final String REBATE_MISC_ACCOUNT_NUMBER = "miscAccountNbr";
+  
+  /** Allocations 
+  public static final String ALLOCATIONS = "longDesc";
+  public static final String ALLOCATIONS_SEARS_CARD_PROVIDED = "markdownCode";
+  public static final String ALLOCATIONS_MRM_SELECTED = "nfxCode";
+  public static final String ALLOCATIONS_CURRENT_CART_ALLOCATIONS = "promoName";
+  */
+  
   /** Unused Coupon Codes*/
   public static final String BASE_UNUSED_COUPON_CODE = "unusedCouponCodes";
   public static final String SUB_BASE_COUPON_CODE = "couponCode";

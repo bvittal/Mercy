@@ -8,6 +8,12 @@ public interface MercyPojo
   public static final String ADJUSTMENT_KEY = "adjustment";
   public static final String DCADJUSTMENTS_KEY = "dcAdjustments";
   public static final String DCADJUSTMENT_KEY = "dcAdjustment";
+  public static final String REBATES_KEY = "rebates";
+  public static final String REBATE_KEY = "rebate";
+  public static final String ALLOCATIONS_KEY = "allocations";
+  public static final String ALLOCATION_KEY = "allocation";
+  public static final String DISTRIBUTIONS_KEY = "distributions";
+  public static final String DISTRIBUTION_KEY = "distribution";
   public static final String UNUSED_COUPON_CODES = "unusedCouponCodes";
   public static final String UNUSED_COUPON_KEY = "couponCode";
   public static final String COUPON_KEY = "couponCodes";
@@ -22,6 +28,8 @@ public interface MercyPojo
   public static final String PLU_RESPONSES_KEY = "resp";
   public static final String PROMO_DESC_KEY = "promoDesc";
   public static final String DESC_KEY = "desc";
+  
+  
   
   //Plu Response object
   public static final String PLU_RESP_EA_KEY = "indicator_EA";

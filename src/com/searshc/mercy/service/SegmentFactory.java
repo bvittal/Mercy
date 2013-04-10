@@ -15,6 +15,8 @@ public class SegmentFactory
       segment = new ResponseSegECValidation(buffer);
     else if (indicator.equals("9C"))
       segment = new ResponseSeg9CValidation(buffer);
+    else if (indicator.equals("E3"))
+      segment = new ResponseSegE3Validation(buffer);
     else if (indicator.equals("98"))
       segment = new ResponseSeg98Validation(buffer);
     else if(String.format("%02X%02X", buffer[0], buffer[1]).contains("2AA7"))

@@ -140,6 +140,14 @@ public class ScriptCommandParser
         {
           builder.newObject(MercyPojo.DCADJUSTMENT_KEY); 
         }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.REBATE_KEY))
+        {
+          builder.newObject(MercyPojo.REBATE_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.REBATES_KEY))
+        {
+          builder.newObject(MercyPojo.REBATES_KEY); 
+        }
         else if(action.equals("RECV") && nextToken.equals(MercyPojo.UNUSED_COUPON_CODES))
         {
           builder.newObject(MercyPojo.UNUSED_COUPON_CODES); 
