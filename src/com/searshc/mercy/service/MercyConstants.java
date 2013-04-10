@@ -74,6 +74,7 @@ public class MercyConstants
   public static final String INDICATOR_PMP = "PMP";
   public static final String INDICATOR_MP0 = "MP0";
   public static final String INDICATOR_D00 = "D00";
+  public static final String INDICATOR_GFT = "GFT";
   public static final String INDICATOR_D3 = "D3";
   public static final String INDICATOR_E3 = "E3";
   public static final String INDICATOR_D8 = "D8";

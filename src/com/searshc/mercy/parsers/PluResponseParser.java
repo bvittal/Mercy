@@ -2217,10 +2217,7 @@ public class PluResponseParser implements LengthCheck
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
           if(entry.getKey().equalsIgnoreCase(SEGMENT_LENGTH)){
-            if(this.lengthCheck(2, entry.getValue()))
-              segmentLength = StringUtils.rightPad(entry.getValue(), 2,'0');
-          else
-            System.err.println(lengthCheckMsg(2,entry.getKey()));
+              segmentLength = entry.getValue();
         }         
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MESSAGE_KEY)){
            if(this.lengthCheck(3, entry.getValue()))
@@ -2537,10 +2534,9 @@ public class PluResponseParser implements LengthCheck
            System.err.println(lengthCheckMsg(1,entry.getKey()));
        }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_ONE)){
-           if(this.lengthCheck(1, entry.getValue()))
-           unusedOne = StringUtils.rightPad(StringUtils.EMPTY, 1,StringUtils.EMPTY);
-         else
-           System.err.println(lengthCheckMsg(1,entry.getKey()));
+           unusedOne = entry.getValue();
+           if(unusedOne.equalsIgnoreCase("null"))
+           unusedOne = StringUtils.rightPad(StringUtils.EMPTY, 1, StringUtils.EMPTY);
        }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_EXCEPTIONAL_VALUE_ITEM)){
            if(this.lengthCheck(1, entry.getValue()))
@@ -2627,10 +2623,9 @@ public class PluResponseParser implements LengthCheck
            System.err.println(lengthCheckMsg(1,entry.getKey()));
        }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_TWO)){
-           if(this.lengthCheck(2, entry.getValue()))
+           unusedTwo = entry.getValue();
+           if(unusedTwo.equalsIgnoreCase("null"))
            unusedTwo = StringUtils.rightPad(StringUtils.EMPTY, 2,StringUtils.EMPTY);
-         else
-           System.err.println(lengthCheckMsg(2,entry.getKey()));
        }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_PERCENT)){
            if(this.lengthCheck(2, entry.getValue()))

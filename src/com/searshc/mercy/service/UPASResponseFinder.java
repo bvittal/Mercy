@@ -38,12 +38,15 @@ public class UPASResponseFinder
           System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
         else if (keyMatch("ÓMP0000", byteToChar(reqBuffer))){
-          System.out.println("QMP - REQUEST - " + byteResponse(reqBuffer));
           d3respIndicator = MercyConstants.INDICATOR_MP0;
           System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
         else if (keyMatch("ÓD00000", byteToChar(reqBuffer))){
           d3respIndicator = MercyConstants.INDICATOR_D00;
+          System.out.println("Request recieved for file inquiry: " + d3respIndicator);
+        }
+        else if (keyMatch("ÓGFT00000", byteToChar(reqBuffer))){
+          d3respIndicator = MercyConstants.INDICATOR_GFT;
           System.out.println("Request recieved for file inquiry: " + d3respIndicator);
         }
     	response = fileInquiryResponse(reqBuffer);

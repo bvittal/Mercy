@@ -10,6 +10,10 @@ public interface MercyPojo
   public static final String DCADJUSTMENT_KEY = "dcAdjustment";
   public static final String REBATES_KEY = "rebates";
   public static final String REBATE_KEY = "rebate";
+  public static final String ALLOCATIONS_KEY = "allocations";
+  public static final String ALLOCATION_KEY = "allocation";
+  public static final String DISTRIBUTIONS_KEY = "distributions";
+  public static final String DISTRIBUTION_KEY = "distribution";
   public static final String UNUSED_COUPON_CODES = "unusedCouponCodes";
   public static final String UNUSED_COUPON_KEY = "couponCode";
   public static final String COUPON_KEY = "couponCodes";

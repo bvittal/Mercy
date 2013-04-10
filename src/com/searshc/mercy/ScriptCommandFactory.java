@@ -121,29 +121,6 @@ public class ScriptCommandFactory
         return null;
     }
     
-    /**
-    if(method.equals(MercyConstants.INDICATOR_PMP))
-    {
-      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
-        return new HttpPMPCommand(byteArrayObj);
-      else
-        return null;
-    }
-    if(method.equals(MercyConstants.INDICATOR_MP0))
-    {
-      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
-        return new HttpMP0Command(byteArrayObj);
-      else
-        return null;
-    }
-    if(method.equals(MercyConstants.INDICATOR_D00))
-    {
-      if(action.equals(MercyConstants.ACTION_ISP_RESPONSE))
-        return new HttpD00Command(byteArrayObj);
-      else
-        return null;
-    }*/
-    
     //D8 Plu Inquiry
     if(method.equals(MercyConstants.REQUEST_INDICATOR_PLU_INQ))
     {
