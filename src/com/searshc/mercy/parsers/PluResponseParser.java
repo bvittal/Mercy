@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -165,7 +166,7 @@ public class PluResponseParser implements LengthCheck
   private static final String PLU_RESP_REDEMPTION_CENTER_PHONE = "redemptionCenterPhone";
   private static final String PLU_RESP_REDEMPTION_CENTER_HOURS = "redemptionCenterHours";
   private static final String PLU_RESP_REDEMPTION_CENTER_DESCRIPTION = "redemptionCenterDescription";
-  private static final String PLU_RESP_REBATE_AMOUNT = "rebateAmount";
+  private static final String PLU_RESP_REBATE_AMOUNT = "rebateAmountInDollars";
   private static final String PLU_RESP_INSTALLATION_FLAG = "installationFlag";
   private static final String PLU_RESP_FREE_DELIVERY_ZERO_PERCENT_FLAG = "freeDeliveryZeroPercentFlag";
   private static final String PLU_RESP_REBATE_METHOD_CODE = "rebateMethodCode";
@@ -244,7 +245,7 @@ public class PluResponseParser implements LengthCheck
   private static final String PLU_RESP_ALPHALINE_ENTERTAINMENT_ITEM =  "alphalineEntertainmentItem";
   private static final String PLU_RESP_SYWR_REDEMPTION_EXCLUSION = "sywrRedemptionExclusion";
   private static final String PLU_RESP_SYWR_REDEMPTION_AFTER_TAX_FLAG = "sywrRedemptionAfterTaxFlag";
-  private static final String PLU_RESP_UNUSED_TWO = "unusedTwo";
+  private static final String PLU_RESP_FUTURE_USE = "futureUse";
   private static final String PLU_RESP_RESTOCKING_FEE_PERCENT = "restockingFeePercent";
   private static final String PLU_RESP_CANCELLATION_FEE_PERCENT = "cancellationFeePercent";
   
@@ -834,8 +835,8 @@ public class PluResponseParser implements LengthCheck
            System.err.println(lengthCheckMsg(3,entry.getKey()));
        } 
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PLU_RESPONSE_TYPE_CODE)){
-           if(this.lengthCheck(3, entry.getValue()))
-           pluResponseTypeCode = StringUtils.rightPad(entry.getValue(), 3, StringUtils.EMPTY);
+           if(this.lengthCheck(1, entry.getValue()))
+           pluResponseTypeCode = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
          else
            System.err.println(lengthCheckMsg(3,entry.getKey()));
        } 
@@ -1468,7 +1469,7 @@ public class PluResponseParser implements LengthCheck
     String redemptionCenterPhone = StringUtils.EMPTY;
     String redemptionCenterHours = StringUtils.EMPTY;
     String redemptionCenterDescription = StringUtils.EMPTY;
-    String rebateAmount = StringUtils.EMPTY;
+    String rebateAmountInDollars = StringUtils.EMPTY;
     String installationFlag = StringUtils.EMPTY;
     String freeDeliveryZeroPercentFlag = StringUtils.EMPTY;
     String rebateMethodCode = StringUtils.EMPTY;
@@ -1855,252 +1856,418 @@ public class PluResponseParser implements LengthCheck
       {
         for (Map.Entry<String, String> entry : modifiableMap.entrySet())
         { 
-         if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL)){
-           segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
-           if(StringUtils.isBlank(outletFlag) || outletFlag.equalsIgnoreCase("null")){
-             segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_ID)){
-           rebateId = entry.getValue();
-           if(StringUtils.isBlank(rebateId) || rebateId.equalsIgnoreCase("null")){
-             rebateId = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_EFFECTIVE_DATE)){
-           printEffectiveDate = entry.getValue();
-           if(StringUtils.isBlank(printEffectiveDate) || printEffectiveDate.equalsIgnoreCase("null")){
-             printEffectiveDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_END_DATE)){
-           printEndDate = entry.getValue();
-           if(StringUtils.isBlank(printEndDate) || printEndDate.equalsIgnoreCase("null")){
-             printEndDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REPRINT_END_DATE)){
-           reprintEndDate = entry.getValue();
-           if(StringUtils.isBlank(reprintEndDate) || reprintEndDate.equalsIgnoreCase("null")){
-             reprintEndDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MIN_QUALIFICATION_AMT)){
-           minimumQualificationAmount = entry.getValue();
-           if(StringUtils.isBlank(minimumQualificationAmount) || minimumQualificationAmount.equalsIgnoreCase("null")){
-             minimumQualificationAmount = StringUtils.rightPad(entry.getValue(), 7,'0');
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAX_QUANTITY)){
-           maximumQuantity = entry.getValue();
-           if(StringUtils.isBlank(maximumQuantity) || maximumQuantity.equalsIgnoreCase("null")){
-             maximumQuantity = StringUtils.rightPad(entry.getValue(), 3,'0');
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UPC_REQUIRED_FLAG)){
-           upcRequiredFlag = entry.getValue();
-           if(StringUtils.isBlank(upcRequiredFlag) || upcRequiredFlag.equalsIgnoreCase("null")){
-             upcRequiredFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG)){
-           searsChargeFlag = entry.getValue();
-           if(StringUtils.isBlank(searsChargeFlag) || searsChargeFlag.equalsIgnoreCase("null")){
-             searsChargeFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGULAR_PRICE_FLAG)){
-           regularPriceFlag = entry.getValue();
-           if(StringUtils.isBlank(regularPriceFlag) || regularPriceFlag.equalsIgnoreCase("null")){
-             regularPriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PROMOTION_PRICE_FLAG)){
-           promotionPriceFlag = entry.getValue();
-           if(StringUtils.isBlank(promotionPriceFlag) || promotionPriceFlag.equalsIgnoreCase("null")){
-             promotionPriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CLEARANCE_PRICE_FLAG)){
-           clearancePriceFlag = entry.getValue();
-           if(StringUtils.isBlank(clearancePriceFlag) || clearancePriceFlag.equalsIgnoreCase("null")){
-             clearancePriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MALL_FLAG)){
-           mallFlag = entry.getValue();
-           if(StringUtils.isBlank(mallFlag) || mallFlag.equalsIgnoreCase("null")){
-             mallFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_HARDWARE_FLAG)){
-           hardwareFlag = entry.getValue();
-           if(StringUtils.isBlank(hardwareFlag) || hardwareFlag.equalsIgnoreCase("null")){
-             hardwareFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THE_GREAT_INDOORS_FLAG)){
-           theGreatIndoorsFlag = entry.getValue();
-           if(StringUtils.isBlank(theGreatIndoorsFlag) || theGreatIndoorsFlag.equalsIgnoreCase("null")){
-             theGreatIndoorsFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_AUTOMOTIVE_FLAG)){
-           automotiveFlag = entry.getValue();
-           if(StringUtils.isBlank(automotiveFlag) || automotiveFlag.equalsIgnoreCase("null")){
-             automotiveFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OUTLET_FLAG)){
-           outletFlag = entry.getValue();
-           if(StringUtils.isBlank(outletFlag) || outletFlag.equalsIgnoreCase("null")){
-             outletFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DEALER_FLAG)){
-           dealerFlag = entry.getValue();
-           if(StringUtils.isBlank(dealerFlag) || dealerFlag.equalsIgnoreCase("null")){
-             dealerFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WWW_FLAG)){
-           wwwFlag = entry.getValue();
-           if(StringUtils.isBlank(wwwFlag) || wwwFlag.equalsIgnoreCase("null")){
-             wwwFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRODUCT_SERVICE_FLAG)){
-           productServiceFlag = entry.getValue();
-           if(StringUtils.isBlank(productServiceFlag) || productServiceFlag.equalsIgnoreCase("null")){
-             productServiceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELIVERY_FLAG)){
-           deliveryFlag = entry.getValue();
-           if(StringUtils.isBlank(deliveryFlag) || deliveryFlag.equalsIgnoreCase("null")){
-             deliveryFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER)){
-           couponNumber = entry.getValue();
-           if(StringUtils.isBlank(couponNumber) || couponNumber.equalsIgnoreCase("null")){
-             couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATED_PROGRAM_NUMBER)){
-           associatedProgramNumber = entry.getValue();
-           if(StringUtils.isBlank(associatedProgramNumber) || associatedProgramNumber.equalsIgnoreCase("null")){
-             associatedProgramNumber = StringUtils.rightPad(entry.getValue(), 8, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_VENDOR_NAME)){
-           vendorName = entry.getValue();
-           if(StringUtils.isBlank(vendorName) || vendorName.equalsIgnoreCase("null")){
-             vendorName = StringUtils.rightPad(entry.getValue(), 25, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WEEKS_BEFORE_RECV_REBATE)){
-           weeksBeforeRecvRebate = entry.getValue();
-           if(StringUtils.isBlank(weeksBeforeRecvRebate) || weeksBeforeRecvRebate.equalsIgnoreCase("null")){
-             weeksBeforeRecvRebate = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_POSTMARK_DATE_TXT)){
-           postMarkDateText = entry.getValue();
-           if(StringUtils.isBlank(postMarkDateText) || postMarkDateText.equalsIgnoreCase("null")){
-             postMarkDateText = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_NAME)){
-           redemptionCenterName = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterName) || redemptionCenterName.equalsIgnoreCase("null")){
-             redemptionCenterName = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS1)){
-           redemptionCenterAddress1 = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterAddress1) || redemptionCenterAddress1.equalsIgnoreCase("null")){
-             redemptionCenterAddress1 = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS2)){
-           redemptionCenterAddress2 = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterAddress2) || redemptionCenterAddress2.equalsIgnoreCase("null")){
-             redemptionCenterAddress2 = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_POBOX)){
-           redemptionCenterPOBox = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterPOBox) || redemptionCenterPOBox.equalsIgnoreCase("null")){
-             redemptionCenterPOBox = StringUtils.rightPad(entry.getValue(), 6, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_CITY)){
-           redemptionCenterCity = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterCity) || redemptionCenterCity.equalsIgnoreCase("null")){
-             redemptionCenterCity = StringUtils.rightPad(entry.getValue(), 25, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_STATE)){
-           redemptionCenterState = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterState) || redemptionCenterState.equalsIgnoreCase("null")){
-             redemptionCenterState = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ZIP)){
-           redemptionCenterZip = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterZip) || redemptionCenterZip.equalsIgnoreCase("null")){
-             redemptionCenterZip = StringUtils.leftPad(entry.getValue(), 9, '0');
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_PHONE)){
-           redemptionCenterPhone = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterPhone) || redemptionCenterPhone.equalsIgnoreCase("null")){
-             redemptionCenterPhone = StringUtils.rightPad(entry.getValue(), 11, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_HOURS)){
-           redemptionCenterHours = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterHours) || redemptionCenterHours.equalsIgnoreCase("null")){
-             redemptionCenterHours = StringUtils.rightPad(entry.getValue(), 80, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_DESCRIPTION)){
-           redemptionCenterDescription = entry.getValue();
-           if(StringUtils.isBlank(redemptionCenterDescription) || redemptionCenterDescription.equalsIgnoreCase("null")){
-             redemptionCenterDescription = StringUtils.rightPad(entry.getValue(), 480, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_AMOUNT)){
-           rebateAmount = entry.getValue();
-           if(StringUtils.isBlank(rebateAmount) || rebateAmount.equalsIgnoreCase("null")){
-             rebateAmount = StringUtils.rightPad(entry.getValue(), 5, '0');
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_FLAG)){
-           installationFlag = entry.getValue();
-           if(StringUtils.isBlank(installationFlag) || installationFlag.equalsIgnoreCase("null")){
-             installationFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FREE_DELIVERY_ZERO_PERCENT_FLAG)){
-           freeDeliveryZeroPercentFlag = entry.getValue();
-           if(StringUtils.isBlank(freeDeliveryZeroPercentFlag) || freeDeliveryZeroPercentFlag.equalsIgnoreCase("null")){
-             freeDeliveryZeroPercentFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_METHOD_CODE)){
-           rebateMethodCode = entry.getValue();
-           if(StringUtils.isBlank(rebateMethodCode) || rebateMethodCode.equalsIgnoreCase("null")){
-             rebateMethodCode = StringUtils.rightPad(entry.getValue(), 1, 'I');
-           }
-         }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILLER)){
-           filler = entry.getValue();
-           if(StringUtils.isBlank(filler) || filler.equalsIgnoreCase("null")){
-             filler = StringUtils.rightPad(entry.getValue(), 20, StringUtils.EMPTY);
-            }
+          if(entry.getKey().equalsIgnoreCase(SEGMENT_LEVEL)){
+            segmentLevel = entry.getValue();
+            if(StringUtils.isBlank(segmentLevel) || segmentLevel.equalsIgnoreCase("null")){
+              segmentLevel = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
+            } /*else if(this.lengthCheck(2, entry.getValue()))
+              segmentLevel = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(2,entry.getKey()));
+            } */
           }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_ID)){
+            rebateId = entry.getValue();
+            if(StringUtils.isBlank(rebateId) || rebateId.equalsIgnoreCase("null")){
+              rebateId = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(10, entry.getValue()))
+              rebateId = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(10,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_EFFECTIVE_DATE)){
+            printEffectiveDate = entry.getValue();
+            if(StringUtils.isBlank(printEffectiveDate) || printEffectiveDate.equalsIgnoreCase("null")){
+              printEffectiveDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(10, entry.getValue()))
+              printEffectiveDate = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(10,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRINT_END_DATE)){
+            printEndDate = entry.getValue();
+            if(StringUtils.isBlank(printEndDate) || printEndDate.equalsIgnoreCase("null")){
+              printEndDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(10, entry.getValue()))
+              printEndDate = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(10,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REPRINT_END_DATE)){
+            reprintEndDate = entry.getValue();
+            if(StringUtils.isBlank(reprintEndDate) || reprintEndDate.equalsIgnoreCase("null")){
+              reprintEndDate = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(10, entry.getValue()))
+              reprintEndDate = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(10,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MIN_QUALIFICATION_AMT)){
+            minimumQualificationAmount = entry.getValue();
+            if(StringUtils.isBlank(minimumQualificationAmount) || minimumQualificationAmount.equalsIgnoreCase("null")){
+              minimumQualificationAmount = StringUtils.rightPad(entry.getValue(), 7,'0');
+            }/*else if(this.lengthCheck(7, entry.getValue()))
+              minimumQualificationAmount = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(7,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MAX_QUANTITY)){
+            maximumQuantity = entry.getValue();
+            if(StringUtils.isBlank(maximumQuantity) || maximumQuantity.equalsIgnoreCase("null")){
+              maximumQuantity = StringUtils.rightPad(entry.getValue(), 3,'0');
+            }/*else if(this.lengthCheck(3, entry.getValue()))
+              maximumQuantity = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(3,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UPC_REQUIRED_FLAG)){
+            upcRequiredFlag = entry.getValue();
+            if(StringUtils.isBlank(upcRequiredFlag) || upcRequiredFlag.equalsIgnoreCase("null")){
+              upcRequiredFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              upcRequiredFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_SEARS_CHARGE_FLAG)){
+            searsChargeFlag = entry.getValue();
+            if(StringUtils.isBlank(searsChargeFlag) || searsChargeFlag.equalsIgnoreCase("null")){
+              searsChargeFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }
+            /*else if(this.lengthCheck(1, entry.getValue()))
+              searsChargeFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REGULAR_PRICE_FLAG)){
+            regularPriceFlag = entry.getValue();
+            if(StringUtils.isBlank(regularPriceFlag) || regularPriceFlag.equalsIgnoreCase("null")){
+              regularPriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              regularPriceFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PROMOTION_PRICE_FLAG)){
+            promotionPriceFlag = entry.getValue();
+            if(StringUtils.isBlank(promotionPriceFlag) || promotionPriceFlag.equalsIgnoreCase("null")){
+              promotionPriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              promotionPriceFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_CLEARANCE_PRICE_FLAG)){
+            clearancePriceFlag = entry.getValue();
+            if(StringUtils.isBlank(clearancePriceFlag) || clearancePriceFlag.equalsIgnoreCase("null")){
+              clearancePriceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              clearancePriceFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_MALL_FLAG)){
+            mallFlag = entry.getValue();
+            if(StringUtils.isBlank(mallFlag) || mallFlag.equalsIgnoreCase("null")){
+              mallFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              mallFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_HARDWARE_FLAG)){
+            hardwareFlag = entry.getValue();
+            if(StringUtils.isBlank(hardwareFlag) || hardwareFlag.equalsIgnoreCase("null")){
+              hardwareFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              hardwareFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_THE_GREAT_INDOORS_FLAG)){
+            theGreatIndoorsFlag = entry.getValue();
+            if(StringUtils.isBlank(theGreatIndoorsFlag) || theGreatIndoorsFlag.equalsIgnoreCase("null")){
+              theGreatIndoorsFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              theGreatIndoorsFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_AUTOMOTIVE_FLAG)){
+            automotiveFlag = entry.getValue();
+            if(StringUtils.isBlank(automotiveFlag) || automotiveFlag.equalsIgnoreCase("null")){
+              automotiveFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              automotiveFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OUTLET_FLAG)){
+            outletFlag = entry.getValue();
+            if(StringUtils.isBlank(outletFlag) || outletFlag.equalsIgnoreCase("null")){
+              outletFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              outletFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DEALER_FLAG)){
+            dealerFlag = entry.getValue();
+            if(StringUtils.isBlank(dealerFlag) || dealerFlag.equalsIgnoreCase("null")){
+              dealerFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              dealerFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WWW_FLAG)){
+            wwwFlag = entry.getValue();
+            if(StringUtils.isBlank(wwwFlag) || wwwFlag.equalsIgnoreCase("null")){
+              wwwFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              wwwFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_PRODUCT_SERVICE_FLAG)){
+            productServiceFlag = entry.getValue();
+            if(StringUtils.isBlank(productServiceFlag) || productServiceFlag.equalsIgnoreCase("null")){
+              productServiceFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              productServiceFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_DELIVERY_FLAG)){
+            deliveryFlag = entry.getValue();
+            if(StringUtils.isBlank(deliveryFlag) || deliveryFlag.equalsIgnoreCase("null")){
+              deliveryFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              deliveryFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_COUPON_NUMBER)){
+            couponNumber = entry.getValue();
+            if(StringUtils.isBlank(couponNumber) || couponNumber.equalsIgnoreCase("null")){
+              couponNumber = StringUtils.rightPad(entry.getValue(), 8,'0');
+            }/*else if(this.lengthCheck(8, entry.getValue()))
+              couponNumber = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(8,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_ASSOCIATED_PROGRAM_NUMBER)){
+            associatedProgramNumber = entry.getValue();
+            if(StringUtils.isBlank(associatedProgramNumber) || associatedProgramNumber.equalsIgnoreCase("null")){
+              associatedProgramNumber = StringUtils.rightPad(entry.getValue(), 8, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(8, entry.getValue()))
+              associatedProgramNumber = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(8,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_VENDOR_NAME)){
+            vendorName = entry.getValue();
+            if(StringUtils.isBlank(vendorName) || vendorName.equalsIgnoreCase("null")){
+              vendorName = StringUtils.rightPad(entry.getValue(), 25, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(25, entry.getValue()))
+              vendorName = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(25,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_WEEKS_BEFORE_RECV_REBATE)){
+            weeksBeforeRecvRebate = entry.getValue();
+            if(StringUtils.isBlank(weeksBeforeRecvRebate) || weeksBeforeRecvRebate.equalsIgnoreCase("null")){
+              weeksBeforeRecvRebate = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              weeksBeforeRecvRebate = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_POSTMARK_DATE_TXT)){
+            postMarkDateText = entry.getValue();
+            if(StringUtils.isBlank(postMarkDateText) || postMarkDateText.equalsIgnoreCase("null")){
+              postMarkDateText = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(40, entry.getValue()))
+              postMarkDateText = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(40,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_NAME)){
+            redemptionCenterName = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterName) || redemptionCenterName.equalsIgnoreCase("null")){
+              redemptionCenterName = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(40, entry.getValue()))
+              redemptionCenterName = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(40,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS1)){
+            redemptionCenterAddress1 = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterAddress1) || redemptionCenterAddress1.equalsIgnoreCase("null")){
+              redemptionCenterAddress1 = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(40, entry.getValue()))
+              redemptionCenterAddress1 = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(40,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ADDRESS2)){
+            redemptionCenterAddress2 = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterAddress2) || redemptionCenterAddress2.equalsIgnoreCase("null")){
+              redemptionCenterAddress2 = StringUtils.rightPad(entry.getValue(), 40, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(40, entry.getValue()))
+              redemptionCenterAddress2 = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(40,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_POBOX)){
+            redemptionCenterPOBox = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterPOBox) || redemptionCenterPOBox.equalsIgnoreCase("null")){
+              redemptionCenterPOBox = StringUtils.rightPad(entry.getValue(), 6, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(6, entry.getValue()))
+              redemptionCenterPOBox = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(6,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_CITY)){
+            redemptionCenterCity = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterCity) || redemptionCenterCity.equalsIgnoreCase("null")){
+              redemptionCenterCity = StringUtils.rightPad(entry.getValue(), 25, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(25, entry.getValue()))
+              redemptionCenterCity = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(25,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_STATE)){
+            redemptionCenterState = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterState) || redemptionCenterState.equalsIgnoreCase("null")){
+              redemptionCenterState = StringUtils.rightPad(entry.getValue(), 2, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(2, entry.getValue()))
+              redemptionCenterState = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(2,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_ZIP)){
+            redemptionCenterZip = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterZip) || redemptionCenterZip.equalsIgnoreCase("null")){
+              redemptionCenterZip = StringUtils.leftPad(entry.getValue(), 9, '0');
+            }/*else if(this.lengthCheck(9, entry.getValue()))
+              redemptionCenterZip = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(9,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_PHONE)){
+            redemptionCenterPhone = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterPhone) || redemptionCenterPhone.equalsIgnoreCase("null")){
+              redemptionCenterPhone = StringUtils.rightPad(entry.getValue(), 11, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(11, entry.getValue()))
+              redemptionCenterPhone = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(11,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_HOURS)){
+            redemptionCenterHours = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterHours) || redemptionCenterHours.equalsIgnoreCase("null")){
+              redemptionCenterHours = StringUtils.rightPad(entry.getValue(), 80, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(80, entry.getValue()))
+              redemptionCenterHours = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(80,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REDEMPTION_CENTER_DESCRIPTION)){
+            redemptionCenterDescription = entry.getValue();
+            if(StringUtils.isBlank(redemptionCenterDescription) || redemptionCenterDescription.equalsIgnoreCase("null")){
+              redemptionCenterDescription = StringUtils.rightPad(entry.getValue(), 480, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(480, entry.getValue()))
+              redemptionCenterDescription = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(480,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_AMOUNT)){
+            rebateAmountInDollars = entry.getValue();
+            if(StringUtils.isBlank(rebateAmountInDollars) || rebateAmountInDollars.equalsIgnoreCase("null")){
+              rebateAmountInDollars = StringUtils.rightPad(entry.getValue(), 5, '0');
+            }/*else if(this.lengthCheck(5, entry.getValue()))
+              rebateAmountInDollars = entry.getValue();       
+            else {
+              System.err.println(lengthCheckMsg(5,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_INSTALLATION_FLAG)){
+            installationFlag = entry.getValue();
+            if(StringUtils.isBlank(installationFlag) || installationFlag.equalsIgnoreCase("null")){
+              installationFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              installationFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FREE_DELIVERY_ZERO_PERCENT_FLAG)){
+            freeDeliveryZeroPercentFlag = entry.getValue();
+            if(StringUtils.isBlank(freeDeliveryZeroPercentFlag) || freeDeliveryZeroPercentFlag.equalsIgnoreCase("null")){
+              freeDeliveryZeroPercentFlag = StringUtils.rightPad(entry.getValue(), 1, StringUtils.EMPTY);
+            }/*else if(this.lengthCheck(1, entry.getValue()))
+              freeDeliveryZeroPercentFlag = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            }*/ 
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_REBATE_METHOD_CODE)){
+            rebateMethodCode = entry.getValue();
+            if(StringUtils.isBlank(rebateMethodCode) || rebateMethodCode.equalsIgnoreCase("null")){
+              rebateMethodCode = StringUtils.rightPad(entry.getValue(), 1, 'I');
+            }
+            /*else if(this.lengthCheck(1, entry.getValue()))
+              rebateMethodCode = entry.getValue();
+            else {
+              System.err.println(lengthCheckMsg(1,entry.getKey()));
+            } */
+          }
+          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILLER)){
+            filler = entry.getValue();
+            if(StringUtils.isBlank(filler) || filler.equalsIgnoreCase("null")){
+              filler = StringUtils.rightPad(entry.getValue(), 20, StringUtils.EMPTY);
+            }
+            /*else if(this.lengthCheck(20, entry.getValue()))
+              filler = entry.getValue();
+            else
+              System.err.println(lengthCheckMsg(20,entry.getKey()));
+          */}
         }
       }
       
@@ -2143,7 +2310,7 @@ public class PluResponseParser implements LengthCheck
       .append(this.byteResponse(redemptionCenterPhone.getBytes()))
       .append(this.byteResponse(redemptionCenterHours.getBytes()))
       .append(this.byteResponse(redemptionCenterDescription.getBytes()))
-      .append(this.byteResponse(rebateAmount.getBytes()))
+      .append(this.byteResponse(rebateAmountInDollars.getBytes()))
       .append(this.byteResponse(installationFlag.getBytes()))
       .append(this.byteResponse(freeDeliveryZeroPercentFlag.getBytes()))
       .append(this.byteResponse(rebateMethodCode.getBytes()))
@@ -2276,7 +2443,7 @@ public class PluResponseParser implements LengthCheck
       String alphalineEntertainmentItem = StringUtils.EMPTY;
       String sywrRedemptionExclusion = StringUtils.EMPTY;
       String sywrRedemptionAfterTaxFlag = StringUtils.EMPTY;
-      String unusedTwo = StringUtils.EMPTY;
+      String futureUse = StringUtils.EMPTY;
       String restockingFeePercent = StringUtils.EMPTY;
       String cancellationFeePercent = StringUtils.EMPTY;
       
@@ -2470,9 +2637,9 @@ public class PluResponseParser implements LengthCheck
           modifiableMap.put(entry.getKey(), entry.getValue());
         }
         
-        if(!pluInquiry40BAMap.containsKey(PLU_RESP_UNUSED_TWO))
+        if(!pluInquiry40BAMap.containsKey(PLU_RESP_FUTURE_USE))
         {
-            modifiableMap.put(PLU_RESP_UNUSED_TWO, prop.getProperty(DEFAULT_PLU_RESP_UNUSED_TWO));
+            modifiableMap.put(PLU_RESP_FUTURE_USE, prop.getProperty(DEFAULT_PLU_RESP_UNUSED_TWO));
         }
         else
         {
@@ -2515,12 +2682,13 @@ public class PluResponseParser implements LengthCheck
          else
            System.err.println(lengthCheckMsg(2,entry.getKey()));
        }
+         
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_TAX_STATUS_CODE)){
-           if(this.lengthCheck(1, entry.getValue()))
-           taxStatusCode = StringUtils.rightPad(StringUtils.EMPTY, 1,StringUtils.EMPTY);
-         else
-           System.err.println(lengthCheckMsg(1,entry.getKey()));
-       }
+           taxStatusCode = entry.getValue();
+           if(StringUtils.isBlank(taxStatusCode) || taxStatusCode.equalsIgnoreCase("null")){
+             taxStatusCode = StringUtils.leftPad(StringUtils.EMPTY, 1, '0');
+           }
+         }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FILL_FLOOR_ELIGIBLE)){
            if(this.lengthCheck(1, entry.getValue()))
            fillFloorEligible = StringUtils.rightPad(entry.getValue(), 1,'N');
@@ -2622,10 +2790,10 @@ public class PluResponseParser implements LengthCheck
          else
            System.err.println(lengthCheckMsg(1,entry.getKey()));
        }
-         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_UNUSED_TWO)){
-           unusedTwo = entry.getValue();
-           if(unusedTwo.equalsIgnoreCase("null"))
-           unusedTwo = StringUtils.rightPad(StringUtils.EMPTY, 2,StringUtils.EMPTY);
+         else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FUTURE_USE)){
+           futureUse = entry.getValue();
+           if(futureUse.equalsIgnoreCase("null"))
+           futureUse = StringUtils.rightPad(StringUtils.EMPTY, 2,StringUtils.EMPTY);
        }
          else if(entry.getKey().equalsIgnoreCase(PLU_RESP_RESTOCKING_FEE_PERCENT)){
            if(this.lengthCheck(2, entry.getValue()))
@@ -2664,7 +2832,7 @@ public class PluResponseParser implements LengthCheck
       .append(this.byteResponse(alphalineEntertainmentItem.getBytes()))
       .append(this.byteResponse(sywrRedemptionExclusion.getBytes()))
       .append(this.byteResponse(sywrRedemptionAfterTaxFlag.getBytes()))
-      .append(this.byteResponse(unusedTwo.getBytes()))
+      .append(this.byteResponse(futureUse.getBytes()))
       .append(this.byteResponse(restockingFeePercent.getBytes()))
       .append(this.byteResponse(cancellationFeePercent.getBytes()));
       
@@ -2931,12 +3099,14 @@ public class PluResponseParser implements LengthCheck
        else
          System.err.println(lengthCheckMsg(1,entry.getKey()));
      }
-       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_ID)){
-         if(this.lengthCheck(10, entry.getValue()))
-         offerId = StringUtils.leftPad(entry.getValue(), 10,'0');
-       else
-         System.err.println(lengthCheckMsg(10,entry.getKey()));
-     }
+       
+       
+       else if(entry.getKey().equalsIgnoreCase(PLU_RESP_OFFER_ID))
+         if(StringUtils.isBlank(entry.getValue()) || entry.getValue().equalsIgnoreCase("null"))
+           offerId = StringUtils.rightPad(StringUtils.EMPTY, 10);
+         else
+           offerId = StringUtils.rightPad(entry.getValue(), 10, StringUtils.EMPTY);
+      
        else if(entry.getKey().equalsIgnoreCase(PLU_RESP_FINANCIAL_CODE)){
          if(this.lengthCheck(10, entry.getValue()))
          financialCode = StringUtils.rightPad(entry.getValue(), 10,'0');
@@ -3023,7 +3193,6 @@ public class PluResponseParser implements LengthCheck
     .append(this.byteResponse(registerPromoDescriptionLine2.getBytes()))
     .append(this.byteResponse(nbrOfReceiptPromoDescriptionLines.getBytes()));
   }
-      
     
       for(MercyJsonObject promoDescObject : mercyJsonObject.getMercyJsonObject())
       {

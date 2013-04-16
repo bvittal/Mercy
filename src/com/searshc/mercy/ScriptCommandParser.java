@@ -115,8 +115,7 @@ public class ScriptCommandParser
         if(token.equals("(") || token.equals(","))
         {
           String nextToken = tok.nextToken().trim();
-          //System.out.println("nextToken : " + nextToken);
-        if(nextToken.equals(MercyPojo.ITEMS_KEY))
+              if(nextToken.equals(MercyPojo.ITEMS_KEY))
         {
           builder.newObject(MercyPojo.ITEMS_KEY);
         }
@@ -147,6 +146,22 @@ public class ScriptCommandParser
         else if(action.equals("RECV") && nextToken.equals(MercyPojo.REBATES_KEY))
         {
           builder.newObject(MercyPojo.REBATES_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.ALLOCATION_KEY))
+        {
+          builder.newObject(MercyPojo.ALLOCATION_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.ALLOCATIONS_KEY))
+        {
+          builder.newObject(MercyPojo.ALLOCATIONS_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.DISTRIBUTION_KEY))
+        {
+          builder.newObject(MercyPojo.DISTRIBUTION_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.DISTRIBUTIONS_KEY))
+        {
+          builder.newObject(MercyPojo.DISTRIBUTIONS_KEY); 
         }
         else if(action.equals("RECV") && nextToken.equals(MercyPojo.UNUSED_COUPON_CODES))
         {
@@ -183,6 +198,14 @@ public class ScriptCommandParser
         else if(action.equals("RECV") && nextToken.equals(MercyPojo.INCOMPATIBILITIES_FIELDS_KEY))
         {
           builder.newObject(MercyPojo.INCOMPATIBILITIES_FIELDS_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.LINE_ITEM_REBATE_KEY))
+        {
+          builder.newObject(MercyPojo.LINE_ITEM_REBATE_KEY); 
+        }
+        else if(action.equals("RECV") && nextToken.equals(MercyPojo.LINE_ITEM_REBATES_KEY))
+        {
+          builder.newObject(MercyPojo.LINE_ITEM_REBATES_KEY); 
         }
         else if(action.equals("RESP") && nextToken.equals(MercyPojo.COUPON_RESP_INCL_EXCLS_KEY))
         {

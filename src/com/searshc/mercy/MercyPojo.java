@@ -50,6 +50,9 @@ public interface MercyPojo
   public static final String COUPON_RESP_INCL_EXCLS_KEY = "includeExclude";
   public static final String COUPON_RESP_INCL_EXCL_KEY = "inclExcl";
   
+  public static final String LINE_ITEM_REBATES_KEY = "lineItemRebates";
+  public static final String LINE_ITEM_REBATE_KEY = "lineItemRebate";
+  
   public void setName(String str);
   public MercyPojoType getType();
 }

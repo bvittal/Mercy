@@ -80,6 +80,21 @@ public abstract class AbstractScriptCommand
   public static final String REBATES = "rebates";
   public static final String REBATES_ID = "id";
   public static final String REBATES_AMOUNT = "amount";
+  public static final String REBATES_THRESHOLD = "threshold";
+  public static final String REBATES_MISC_ACCOUNT_NUMBER = "miscAccountNumber";
+  public static final String REBATES_METHOD = "method";
+  
+  /** Allocations */
+  public static final String ALLOCATIONS = "allocations";
+  public static final String ALLOCATIONS_SEARS_CARD_PROVIDED = "searsCardProvided";
+  public static final String ALLOCATIONS_MRM_SELECTED = "mrmSelected";
+  public static final String ALLOCATIONS_CURRENT_CART_ALLOCATION = "currentCartAllocation";
+ 
+  /** Distributions */
+  public static final String DISTRIBUTIONS = "distributions";
+  public static final String DISTRIBUTIONS_DISTRIBUTION_AMOUNT = "distributionAmount";
+  public static final String DISTRIBUTIONS_DISTRIBUTION_ID = "distributionId";
+  
   
   /**
   public static final String REBATE_THRESHOLD = "threshold";
@@ -158,6 +173,11 @@ public abstract class AbstractScriptCommand
   {
     List<CoupounCode> couponCodesList = new ArrayList<CoupounCode>();
     List<Incompatibility> incompatibilityList = new ArrayList<Incompatibility>();
+
+    List<Rebate> rebatesInCart = new ArrayList<Rebate>();
+    List<Allocation> allocations = new ArrayList<Allocation>();
+    List<Distribution> distributions = new ArrayList<Distribution>();
+    
     HashMap<String,String> map = obj.getParameters();
     Iterator<MercyJsonObject> jasonObjItr = obj.getMercyJsonObject().iterator();
     order = new Order();
@@ -174,7 +194,35 @@ public abstract class AbstractScriptCommand
           couponCodesList.add(this.getCouponCodes(objt.getParameters()));
           order.setUnusedCouponCodes(couponCodesList);
         }
+      } 
+    else if(mercyJsonObj != null && mercyJsonObj.getName().equalsIgnoreCase(REBATES))
+    {
+      List<MercyJsonObject> subObject = mercyJsonObj.getMercyJsonObject();
+      for(MercyJsonObject objt : subObject)
+      {
+        rebatesInCart.add(this.getRebates(objt.getParameters()));
+         
+        }
       }
+    else if(mercyJsonObj != null && mercyJsonObj.getName().equalsIgnoreCase(DISTRIBUTIONS))
+    {
+      List<MercyJsonObject> subObject = mercyJsonObj.getMercyJsonObject();
+      for(MercyJsonObject objt : subObject)
+      {
+          distributions.add(this.getDistributions(objt.getParameters()));
+         
+        }
+      }
+    else if(mercyJsonObj != null && mercyJsonObj.getName().equalsIgnoreCase(ALLOCATIONS))
+    {
+      List<MercyJsonObject> subObject = mercyJsonObj.getMercyJsonObject();
+      for(MercyJsonObject objt : subObject)
+      {
+          allocations.add(this.getAllocations(objt.getParameters()));
+          
+        }
+      }
+    
     else if(mercyJsonObj != null && mercyJsonObj.getName().equalsIgnoreCase(BASE_INCOMPATIBILITIES))
     {
       Iterator<MercyJsonObject> incompatibilityObjItr = mercyJsonObj.getMercyJsonObject().iterator();
@@ -186,6 +234,10 @@ public abstract class AbstractScriptCommand
       }
     }
   }
+    for(Allocation allocation : allocations){
+      allocation.setDistributions(distributions);
+    }
+    order.setAllocations(allocations);
     
     if(map != null)
     {
@@ -267,6 +319,10 @@ public abstract class AbstractScriptCommand
       List<LineItem> allItems = new ArrayList<LineItem>();
       List<Adjustment> adjustments = new ArrayList<Adjustment>();
       List<Adjustment> dcAdjustments = new ArrayList<Adjustment>();
+      
+      List<Rebate> rebates = new ArrayList<Rebate>();
+      
+
       Iterator<MercyJsonObject> itemIterator = null;
       MercyJsonObject lineItems;
       
@@ -316,7 +372,26 @@ public abstract class AbstractScriptCommand
               }
             }
           }
-        }
+        } 
+          
+          MercyJsonObject rebateObj = itr.next();
+          if (rebateObj != null)
+          {
+            Iterator<MercyJsonObject> baseRebateItr =  rebateObj.getMercyJsonObject().iterator();
+
+            while(baseRebateItr.hasNext()){ 
+              HashMap<String, String> rebateMap = baseRebateItr.next().getParameters();
+
+              if (rebateMap.size() > 0)
+              {
+                if (rebateObj.getName().equalsIgnoreCase(MercyPojo.REBATES_KEY))
+                {
+                  rebates.add(this.getRebates(rebateMap));
+                  item.setRebates(rebates);
+                }
+              }
+            }
+          }
       }
         
           if(items.containsKey(ITEM_ID))
@@ -402,6 +477,7 @@ public abstract class AbstractScriptCommand
         Incompatibility[] incompatibilityArray = new Incompatibility[incompatibilityList.size()];
         incompatibilityList.toArray(incompatibilityArray);
         order.setIncompatibilities(incompatibilityArray);
+       
       }
       order.setLineItems(allItems);
     }
@@ -544,4 +620,53 @@ public abstract class AbstractScriptCommand
             }
             return incompatibility;
           }
+  
+ 
+  private Distribution getDistributions(HashMap<String,String> map){
+    Distribution distribution = new Distribution();
+    for (Map.Entry<String, String> entry : map.entrySet()){
+      if(entry.getKey().equals(DISTRIBUTIONS_DISTRIBUTION_AMOUNT))
+        distribution.setAmount(entry.getValue());
+      else if(entry.getKey().equals(DISTRIBUTIONS_DISTRIBUTION_ID))
+        distribution.setId(entry.getValue());
+       }
+    return distribution;
+    }
+  
+  
+  private Rebate getRebates(HashMap<String,String> map){
+    Rebate rebate = new Rebate();
+    for (Map.Entry<String, String> entry : map.entrySet()){
+      if(entry.getKey().equals(REBATES_ID))
+        rebate.setId(entry.getValue());
+      else if(entry.getKey().equals(REBATES_AMOUNT))
+        rebate.setAmount(entry.getValue());
+      else if(entry.getKey().equals(REBATES_THRESHOLD))
+        rebate.setThreshold(entry.getValue());
+      else if(entry.getKey().equals(REBATES_MISC_ACCOUNT_NUMBER))
+        rebate.setMiscAccountNumber(entry.getValue());
+      else if(entry.getKey().equals(REBATES_METHOD))
+        rebate.setMethod(entry.getValue());
+       }
+    return rebate;
+    }
+  
+  private Allocation getAllocations(HashMap<String,String> map){
+    Allocation allocation = new Allocation();
+    for (Map.Entry<String, String> entry : map.entrySet()){
+      if(entry.getKey().equals(ALLOCATIONS_SEARS_CARD_PROVIDED))
+        allocation.setSearsCardProvided(entry.getValue());
+      else if(entry.getKey().equals(ALLOCATIONS_MRM_SELECTED))
+        allocation.setMrmSelected(entry.getValue());
+      else if(entry.getKey().equals(ALLOCATIONS_CURRENT_CART_ALLOCATION))
+        allocation.setCurrentCartAllocation(entry.getValue());
+      
+       }
+    return allocation;
+    }
+  
+  
+  
+  
+  
         }
